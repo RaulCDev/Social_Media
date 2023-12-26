@@ -15,6 +15,17 @@ services:
       - '3306'
     volumes:
       - my-db:/var/lib/mysql
+  kong:
+    image: kong:latest
+    restart: always
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    environment:
+      - "KONG_DATABASE=off"
+      - "KONG_DECLARATIVE_CONFIG=/usr/local/kong/declarative/kong.yml"
+    volumes:
+      - ./kong.yml:/usr/local/kong/declarative/kong.yml
 
 # Names our volume
 volumes:

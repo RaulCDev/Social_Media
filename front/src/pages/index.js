@@ -17,7 +17,7 @@ export default function Home() {
 
     try {
       // Realizar la solicitud a la API para enviar los datos en formato JSON
-      const response = await fetch('url_de_tu_api', {
+      const response = await fetch('http://localhost:8000/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -51,13 +51,11 @@ export default function Home() {
         <form onSubmit={handleSubmit} className='form'>
           <input
             type='text'
-            value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder='Nombre'
           />
           <input
             type='password'
-            value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder='Contraseña'
           />
