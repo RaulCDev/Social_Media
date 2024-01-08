@@ -1,29 +1,52 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin
+from flask_login import LoginManager
 
-#Import SQL database models from models.py
-from models import db, User
+#Import SQL database models from models.py and the database itself from database.py
+from models import User
+from database import db
 
 app = Flask(__name__)
+app.secret_key = 'tu_clave_secreta'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://user:1234@localhost:3306/socialmedia'
-
 # Initialize the database
 db.init_app(app)
 
+# Inicializa la extensión CORS
+cors = CORS(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@cross_origin
 @app.route('/register', methods=['POST'])
 def register_user():
-    print('Entro')
     username = request.json['username']
     password = request.json['password']
+    #image_url = request.json['image_url']
+    # Add below a mew parameter for add to the database
 
-    # Crear una nueva instancia del modelo de usuario
-    new_user = User(username=username, password=password, image_url=image_url)
+    # Search if the user already exists
+    existing_user = User.query.filter_by(username=username).first()
 
-    # Guardar el nuevo usuario en la base de datos
-    db.session.add(new_user)
-    db.session.commit()
+    if existing_user:
+        # The user already exists
+        return jsonify({"message": "El usuario ya existe", "success": False})
+    else:
+        try:
+            # Create a new instance of the User model
+            new_user = User(username=username, password=password)
 
-    # Devolver una respuesta adecuada, por ejemplo un mensaje de éxito
-    return jsonify({"message": "Usuario registrado exitosamente","success": true})
+            # Save the new user in the database
+            db.session.add(new_user)
+            db.session.commit()
+
+            # Return a response with a success message
+            return jsonify({"message": "Usuario registrado exitosamente", "success": True})
+        except Exception as e:
+            # If there is a problem rollback the changes
+            db.session.rollback()
+            return jsonify({"message": "Error al registrar el usuario", "success": False, "error": str(e)})
 
 if __name__ == '__main__':
     with app.app_context():

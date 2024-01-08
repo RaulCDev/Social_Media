@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function Home() {
   const [username, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +17,7 @@ export default function Home() {
 
     try {
       // Realizar la solicitud a la API para enviar los datos en formato JSON
-      const response = await fetch('http://localhost:8000/register', {
+      const response = await fetch('http://localhost:5000/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -26,14 +26,18 @@ export default function Home() {
       });
 
       // Manejar la respuesta de la API según tus necesidades
+      // const responseData = await response.json();
       if (response.ok) {
-        toast.success('Datos enviados correctamente');
+        setSuccessMessage(responseData.message);
+        setErrorMessage('');
       } else {
-        toast.error('Error al enviar los datos');
+        setErrorMessage(responseData.message);
+        setSuccessMessage('');
       }
     } catch (error) {
       console.log('Error al realizar la solicitud a la API:', error);
-    }
+      setErrorMessage('Error al realizar la solicitud a la API');
+      setSuccessMessage('');
   };
 
   return (
@@ -61,8 +65,8 @@ export default function Home() {
           />
           <button type='submit' className='btn'>Send</button>
         </form>
-        <ToastContainer />
       </div>
     </>
   );
+  }
 }

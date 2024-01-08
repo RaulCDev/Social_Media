@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 .icons {
   display: flex;
@@ -8,12 +8,11 @@
   float: right;
   margin-top: 10px;
   margin-right: 10px;
-  img {
-    width: 30px;
-    height: 30px;
-  }
 }
-
+.icons img{
+  width: 30px;
+  height: 30px;
+}
 .title{
   font-size: 25px;
   margin-top: 10px;
