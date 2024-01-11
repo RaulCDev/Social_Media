@@ -33,20 +33,15 @@ def register_user():
         # The user already exists
         return jsonify({"message": "El usuario ya existe", "success": False})
     else:
-        try:
-            # Create a new instance of the User model
-            new_user = User(username=username, password=password)
+        # Create a new instance of the User model
+        new_user = User(username=username, password=password)
 
-            # Save the new user in the database
-            db.session.add(new_user)
-            db.session.commit()
+        # Save the new user in the database
+        db.session.add(new_user)
+        db.session.commit() 
 
-            # Return a response with a success message
-            return jsonify({"message": "Usuario registrado exitosamente", "success": True})
-        except Exception as e:
-            # If there is a problem rollback the changes
-            db.session.rollback()
-            return jsonify({"message": "Error al registrar el usuario", "success": False, "error": str(e)})
+        # Return a response with a success message
+        return jsonify({"message": "Usuario registrado exitosamente", "success": True})
 
 if __name__ == '__main__':
     with app.app_context():
