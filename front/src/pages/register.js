@@ -18,7 +18,7 @@ export default function Home() {
 
     try {
       // Realizar la solicitud a la API para enviar los datos en formato JSON
-      const response = await fetch('http://localhost:5000/login', {
+      const response = await fetch('http://localhost:5000/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -63,10 +63,9 @@ export default function Home() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder='Contraseña'
             />
-            <button type='submit' className='btn'>Login</button>
+            <button type='submit' className='btn'>Send</button>
             <h1 className='success_message'>{message}</h1>
             <h1 className='error_message'>{error}</h1>
-            <button className='btn'>Register</button>
           </form>
         </div>
       </>

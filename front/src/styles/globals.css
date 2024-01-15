@@ -54,6 +54,14 @@
   background-color: #003080;
 }
 
+.success_message{
+  color: green;
+}
+
+.error_message{
+  color: red;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;

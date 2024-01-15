@@ -17,6 +17,13 @@ cors = CORS(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+@cross_origin
+@app.route('/login', methods=['POST'])
+def login_user():
+    username = request.json['username']
+    password = request.json['password']
+    #image_url = request.json['image_url']
+    # Add below a mew parameter for add to the database
 
 @cross_origin
 @app.route('/register', methods=['POST'])
