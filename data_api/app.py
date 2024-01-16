@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from flask_login import LoginManager
+from flask_jwt import JWT, jwt_required, current_identity
 
 #Import SQL database models from models.py and the database itself from database.py
 from models import User

@@ -16,6 +16,19 @@ services:
     volumes:
       - my-db:/var/lib/mysql
 
+  nextjs:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - ./front:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - NODE_ENV=development
+
 # Names our volume
 volumes:
   my-db:

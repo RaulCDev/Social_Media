@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function Home() {
   const [username, setName] = useState('');
@@ -53,6 +54,7 @@ export default function Home() {
         <p className='title'>x?</p>
         <div className='main_text'>
           <form onSubmit={handleSubmit} className='form'>
+            <h1>Log-In actualiza 23456</h1>
             <input
               type='text'
               onChange={(e) => setName(e.target.value)}
@@ -66,7 +68,7 @@ export default function Home() {
             <button type='submit' className='btn'>Login</button>
             <h1 className='success_message'>{message}</h1>
             <h1 className='error_message'>{error}</h1>
-            <button className='btn'>Register</button>
+            <Link href="/register" className='btn'>Register</Link>
           </form>
         </div>
       </>
