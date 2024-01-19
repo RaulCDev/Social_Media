@@ -54,7 +54,7 @@ export default function Home() {
         <p className='title'>x?</p>
         <div className='main_text'>
           <form onSubmit={handleSubmit} className='form'>
-            <h1>Log-In actualiza 23456</h1>
+            <h1>Log-In</h1>
             <input
               type='text'
               onChange={(e) => setName(e.target.value)}

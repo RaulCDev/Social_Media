@@ -1,21 +1,15 @@
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function Home() {
   const [username, setName] = useState('');
   const [password, setPassword] = useState('');
-  const [password2, setPassword2] = useState('');
   const [message, setMessage] = useState('');
   const [error, setErrorMessage] = useState('');
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (password !== password2) {
-      setErrorMessage('Passwords do not match');
-      setMessage('');
-      return;
-    }
 
     // Construir el objeto JSON con los datos del formulario
     const data = {
@@ -25,7 +19,7 @@ export default function Home() {
 
     try {
       // Realizar la solicitud a la API para enviar los datos en formato JSON
-      const response = await fetch('http://localhost:5000/register', {
+      const response = await fetch('http://localhost:5000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -38,10 +32,6 @@ export default function Home() {
       if (responseData.success == true) {
         setMessage(responseData.message);
         setErrorMessage('');
-        // Redirigir a 'home' después de un cierto tiempo (por ejemplo, 2 segundos)
-        setTimeout(() => {
-          window.location.href = 'home';
-        }, 2000);
       } else {
         setErrorMessage(responseData.message);
         setMessage('');
@@ -63,26 +53,7 @@ export default function Home() {
         </div>
         <p className='title'>x?</p>
         <div className='main_text'>
-          <form onSubmit={handleSubmit} className='form'>
-            <input
-              type='text'
-              onChange={(e) => setName(e.target.value)}
-              placeholder='Name'
-            />
-            <input
-              type='password'
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder='Password'
-            />
-            <input
-              type='password'
-              onChange={(e) => setPassword2(e.target.value)}
-              placeholder='Confirm Password'
-            />
-            <button type='submit' className='btn'>Send</button>
-            <h1 className='success_message'>{message}</h1>
-            <h1 className='error_message'>{error}</h1>
-          </form>
+            <p>Hola buenas</p>
         </div>
       </>
     );
