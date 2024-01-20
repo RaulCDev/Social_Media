@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 import jwt
+from datetime import datetime, timedelta, timezone
 
 #Import SQL database models from models.py and the database itself from database.py
 from models import User
@@ -46,10 +47,21 @@ def jwt_required(fn):
 
     return wrapper
 
+def create_token(identity):
+    expires_delta = timedelta(minutes=15)  # Establece la duración de expiración del token
+    expires = datetime.now(timezone.utc) + expires_delta
+
+    payload = {
+        "identity": identity,
+        "exp": expires,
+    }
+    token = jwt.encode(payload, SECRET_KEY, algorithm=JWT_ALGORITHM)
+    return token
+
 # Define una función para obtener el usuario según su nombre de usuario
 def authenticate(username, password):
     user = User.query.filter_by(username=username).first()
-    if user and check_password_hash(user.password, password):
+    if user and user.password == password:  # Comparación de contraseñas en texto plano
         return user
 
 @cross_origin
@@ -63,8 +75,7 @@ def login_user():
 
     if user:
         # Genera el JWT para el usuario autenticado
-        access_token = jwt.jwt_encode_callback(user)
-        return jsonify({'access_token': access_token.decode('utf-8')})
+        return jsonify({'succes': True,'access_token': create_token(user.username)})
 
     return jsonify({'message': 'Error de autenticación', 'success': False}), 40
 
@@ -95,7 +106,7 @@ def register_user():
 
 @cross_origin
 @app.route('/prueba', methods=['POST'])
-def register_user():
+def name():
 
     return jsonify({"message": "Entro papi", "success": True})
 

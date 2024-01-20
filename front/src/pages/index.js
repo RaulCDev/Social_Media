@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 export default function Home() {
@@ -6,7 +7,7 @@ export default function Home() {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setErrorMessage] = useState('');
-
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,11 +30,17 @@ export default function Home() {
 
       // Manejar la respuesta de la API según tus necesidades
       const responseData = await response.json();
-      if (responseData.success == true) {
-        setMessage(responseData.message);
-        setErrorMessage('');
+      if (responseData.succes == true) {
+        // Guardar el token en el almacenamiento local
+        if (responseData && responseData.access_token) {
+          localStorage.setItem('token', responseData.access_token);
+          console.log('Token guardado correctamente');
+          router.push('/home');
+        } else {
+          console.log('Error al obtener el token desde la respuesta del servidor');
+        }
       } else {
-        setErrorMessage(responseData.message);
+        console.log(responseData.message);
         setMessage('');
       }
     } catch (error) {
