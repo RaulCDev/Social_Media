@@ -21,6 +21,52 @@ app.config['JWT_EXPIRATION_DELTA'] = timedelta(days=1)
 SECRET_KEY = 'your-secret-key'
 JWT_ALGORITHM = 'HS256'
 
+@cross_origin
+@app.route('/login', methods=['POST'])
+def login_user():
+    email = request.json['email']
+    password = request.json['password']
+
+    # Autentica al usuario
+    user = authenticate(email, password)
+
+    if user:
+        # Genera el JWT para el usuario autenticado
+        return jsonify({'succes': True,'access_token': create_token(user.email)})
+
+    return jsonify({'message': 'Error de autenticación', 'success': False}), 40
+
+@cross_origin
+@app.route('/register', methods=['POST'])
+def register_user():
+    email = request.json['email']
+    username = request.json['username']
+    password = request.json['password']
+
+    # Search if the user already exists
+    existing_email = User.query.filter_by(email=email).first()
+
+    if existing_email:
+        # The user already exists
+        return jsonify({"message": "El correo ya esta registrado", "success": False})
+    else:
+        # Create a new instance of the User model
+        new_user = User(email=email, username=username, password=password)
+
+        # Save the new user in the database
+        db.session.add(new_user)
+        db.session.commit()
+
+        # Return a response with a success message
+        return jsonify({"message": "Usuario registrado exitosamente", "success": True})
+
+@cross_origin
+@app.route('/prueba', methods=['POST'])
+def name():
+
+    return jsonify({"message": "Entro papi", "success": True})
+
+
 def jwt_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
@@ -48,7 +94,7 @@ def jwt_required(fn):
     return wrapper
 
 def create_token(identity):
-    expires_delta = timedelta(minutes=15)  # Establece la duración de expiración del token
+    expires_delta = timedelta(minutes=60)  # Establece la duración de expiración del token
     expires = datetime.now(timezone.utc) + expires_delta
 
     payload = {
@@ -59,56 +105,10 @@ def create_token(identity):
     return token
 
 # Define una función para obtener el usuario según su nombre de usuario
-def authenticate(username, password):
-    user = User.query.filter_by(username=username).first()
+def authenticate(email, password):
+    user = User.query.filter_by(email=email).first()
     if user and user.password == password:  # Comparación de contraseñas en texto plano
         return user
-
-@cross_origin
-@app.route('/login', methods=['POST'])
-def login_user():
-    username = request.json['username']
-    password = request.json['password']
-
-    # Autentica al usuario
-    user = authenticate(username, password)
-
-    if user:
-        # Genera el JWT para el usuario autenticado
-        return jsonify({'succes': True,'access_token': create_token(user.username)})
-
-    return jsonify({'message': 'Error de autenticación', 'success': False}), 40
-
-@cross_origin
-@app.route('/register', methods=['POST'])
-def register_user():
-    username = request.json['username']
-    password = request.json['password']
-    #image_url = request.json['image_url']
-    # Add below a mew parameter for add to the database
-
-    # Search if the user already exists
-    existing_user = User.query.filter_by(username=username).first()
-
-    if existing_user:
-        # The user already exists
-        return jsonify({"message": "El usuario ya existe", "success": False})
-    else:
-        # Create a new instance of the User model
-        new_user = User(username=username, password=password)
-
-        # Save the new user in the database
-        db.session.add(new_user)
-        db.session.commit()
-
-        # Return a response with a success message
-        return jsonify({"message": "Usuario registrado exitosamente", "success": True})
-
-@cross_origin
-@app.route('/prueba', methods=['POST'])
-def name():
-
-    return jsonify({"message": "Entro papi", "success": True})
 
 
 if __name__ == '__main__':

@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 
 export default function Home() {
+  const [email, setEmail] = useState('');
   const [username, setName] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
@@ -19,6 +21,7 @@ export default function Home() {
 
     // Construir el objeto JSON con los datos del formulario
     const data = {
+      email: email,
       username: username,
       password: password,
     };
@@ -39,9 +42,7 @@ export default function Home() {
         setMessage(responseData.message);
         setErrorMessage('');
         // Redirigir a 'home' después de un cierto tiempo (por ejemplo, 2 segundos)
-        setTimeout(() => {
-          window.location.href = 'home';
-        }, 2000);
+        router.push('/home');
       } else {
         setErrorMessage(responseData.message);
         setMessage('');
@@ -64,6 +65,11 @@ export default function Home() {
         <p className='title'>x?</p>
         <div className='main_text'>
           <form onSubmit={handleSubmit} className='form'>
+            <input
+              type='text'
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder='Email'
+            />
             <input
               type='text'
               onChange={(e) => setName(e.target.value)}

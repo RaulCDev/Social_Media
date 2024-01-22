@@ -38,7 +38,7 @@
 }
 
 .btn{
-  background-color: #007bff;
+  background-color: #a6ff00;
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -46,16 +46,16 @@
   cursor: pointer;
 }
 
-p{
-  color: #fff;
-}
-
 .btn:hover {
-  background-color: #0056b3;
+  background-color: #628b00; /* Cambia el color de fondo al pasar el ratón por encima */
 }
 
 .btn:active {
-  background-color: #003080;
+  background-color: #00803c;
+}
+
+p{
+  color: #fff;
 }
 
 .success_message{

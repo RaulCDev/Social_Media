@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 export default function Home() {
-  const [username, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setErrorMessage] = useState('');
@@ -14,7 +14,7 @@ export default function Home() {
 
     // Construir el objeto JSON con los datos del formulario
     const data = {
-      username: username,
+      email: email,
       password: password,
     };
 
@@ -35,7 +35,7 @@ export default function Home() {
         if (responseData && responseData.access_token) {
           localStorage.setItem('token', responseData.access_token);
           console.log('Token guardado correctamente');
-          router.push('/home');
+          router.push('/index');
         } else {
           console.log('Error al obtener el token desde la respuesta del servidor');
         }
@@ -64,13 +64,13 @@ export default function Home() {
             <h1>Log-In</h1>
             <input
               type='text'
-              onChange={(e) => setName(e.target.value)}
-              placeholder='Nombre'
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder='Email'
             />
             <input
               type='password'
               onChange={(e) => setPassword(e.target.value)}
-              placeholder='Contraseña'
+              placeholder='Password'
             />
             <button type='submit' className='btn'>Login</button>
             <h1 className='success_message'>{message}</h1>
