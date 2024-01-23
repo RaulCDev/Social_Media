@@ -9,6 +9,25 @@ export default function Home() {
   const [error, setErrorMessage] = useState('');
   const router = useRouter();
 
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:5000/github-login');
+      const data = await response.json();
+      const url = data.url;
+      const newWindow = window.open(url, '_blank', 'width=500,height=600');
+      if (newWindow) {
+        newWindow.onmessage = (e) => {
+          // Capturar el JWT enviado desde la ventana emergente
+          const jwt = e.data.jwt;
+          // Almacenar el token JWT en el localStorage
+          localStorage.setItem('token', jwt);
+        };
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -35,7 +54,7 @@ export default function Home() {
         if (responseData && responseData.access_token) {
           localStorage.setItem('token', responseData.access_token);
           console.log('Token guardado correctamente');
-          router.push('/index');
+          router.push('/home');
         } else {
           console.log('Error al obtener el token desde la respuesta del servidor');
         }
@@ -73,6 +92,7 @@ export default function Home() {
               placeholder='Password'
             />
             <button type='submit' className='btn'>Login</button>
+            <button onClick={handleLogin} className='btn'>Log in with Github</button>
             <h1 className='success_message'>{message}</h1>
             <h1 className='error_message'>{error}</h1>
             <Link href="/register" className='btn'>Register</Link>
