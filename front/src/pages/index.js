@@ -11,18 +11,9 @@ export default function Home() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:5000/github-login');
-      const data = await response.json();
-      const url = data.url;
-      const newWindow = window.open(url, '_blank', 'width=500,height=600');
-      if (newWindow) {
-        newWindow.onmessage = (e) => {
-          // Capturar el JWT enviado desde la ventana emergente
-          const jwt = e.data.jwt;
-          // Almacenar el token JWT en el localStorage
-          localStorage.setItem('token', jwt);
-        };
-      }
+      const client_id="c52a2b6341f080de4773"
+      const url = "https://github.com/login/oauth/authorize?client_id=" + client_id;
+      window.location.href = url;
     } catch (error) {
       console.error('Error:', error);
     }

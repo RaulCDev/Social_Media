@@ -4,6 +4,7 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from flask_dance.contrib.github import make_github_blueprint, github
+import requests
 
 #Import SQL database models from models.py and the database itself from database.py
 from models import User
@@ -23,9 +24,8 @@ app.config['JWT_EXPIRATION_DELTA'] = timedelta(days=1)
 SECRET_KEY = 'your-secret-key'
 JWT_ALGORITHM = 'HS256'
 
-# Set up Github OAuth blueprint
-github_bp = make_github_blueprint(client_id="c52a2b6341f080de4773", client_secret="b3ff0aec8649b12d0d026d7a332abdf416010133")
-app.register_blueprint(github_bp, url_prefix="/github_callback")
+Client_id = "c52a2b6341f080de4773"
+Client_secret="b3ff0aec8649b12d0d026d7a332abdf416010133"
 
 #Function to check if the token is valid
 def jwt_required(fn):
@@ -54,25 +54,18 @@ def jwt_required(fn):
 
     return wrapper
 
-# Route for Github login
 @cross_origin
-@app.route("/github-login")
-def github_login():
-    if not github.authorized:
-        return jsonify({"url": url_for("github.login")})
-    return "You are already logged in with Github"
-
-@cross_origin
-@app.route('/github_callback')
+@app.route('/github_callback', methods=['POST'])
 def github_callback():
-    if github.authorized:
-        resp = github.get("/user/emails")
-        assert resp.ok, resp.text
-        emails = resp.json()
-        # Aquí puedes generar el token JWT y devolverlo en la respuesta
-        jwt = create_token(emails)
-        return {"jwt": jwt}
-    return jsonify({'message': 'Do not have acces to Github', 'success': False}), 40
+    data = {
+        'client_id': Client_id,
+        'client_secret': Client_secret,
+        'code': request.json['code']
+    }
+    token_response = requests.post('https://github.com/login/oauth/access_token', data=data)
+    token_data = token_response.text
+    print(token_data)
+    return jsonify({'token': token_data, 'success': True})
 
 @cross_origin
 @app.route('/login', methods=['POST'])
