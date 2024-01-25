@@ -3,7 +3,7 @@ from flask_cors import CORS, cross_origin
 import jwt
 from datetime import datetime, timedelta, timezone
 from functools import wraps
-from flask_dance.contrib.github import make_github_blueprint, github
+from github import Github
 import requests
 
 #Import SQL database models from models.py and the database itself from database.py
@@ -63,9 +63,13 @@ def github_callback():
         'code': request.json['code']
     }
     token_response = requests.post('https://github.com/login/oauth/access_token', data=data)
-    token_data = token_response.text
-    print(token_data)
-    return jsonify({'token': token_data, 'success': True})
+    access_token = token_response.text.split('=')[1].split('&')[0]  # Obtener el valor de access_token del texto de la respuesta
+    github_client = Github(access_token)
+    user = github_client.get_user()
+    print(user)
+    emails = user.get_emails()
+    user_emails = [email.email for email in emails]
+    return jsonify({'succes': True,'access_token': create_token(user_emails)})
 
 @cross_origin
 @app.route('/login', methods=['POST'])
