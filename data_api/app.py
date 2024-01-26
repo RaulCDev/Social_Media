@@ -66,10 +66,9 @@ def github_callback():
     access_token = token_response.text.split('=')[1].split('&')[0]  # Obtener el valor de access_token del texto de la respuesta
     github_client = Github(access_token)
     user = github_client.get_user()
-    print(user)
     emails = user.get_emails()
-    user_emails = [email.email for email in emails]
-    return jsonify({'succes': True,'access_token': create_token(user_emails)})
+    for email in emails:
+        return jsonify({'succes': True,'access_token': create_token(email.email)})
 
 @cross_origin
 @app.route('/login', methods=['POST'])

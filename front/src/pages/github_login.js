@@ -20,9 +20,11 @@ const GithubLogin = () => {
       })
       .then(response => response.json())
       .then(data => {
-        setToken(data.token)
+        setToken(data.access_token)
         // Almacenar el token JWT en el localStorage
-        localStorage.setItem('token', data.token);
+        console.log(data.access_token)
+        localStorage.setItem('token', data.access_token);
+        router.push('/home');
       })
       .catch(error => {
         console.error('Error:', error);

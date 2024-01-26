@@ -11,8 +11,9 @@ export default function Home() {
 
   const handleLogin = async () => {
     try {
-      const client_id="c52a2b6341f080de4773"
-      const url = "https://github.com/login/oauth/authorize?client_id=" + client_id;
+      const client_id = "c52a2b6341f080de4773";
+      const scope = "user:email"; // Agrega el alcance para acceder al correo electrónico del usuario
+      const url = "https://github.com/login/oauth/authorize?client_id=" + client_id + "&scope=" + scope;
       window.location.href = url;
     } catch (error) {
       console.error('Error:', error);
