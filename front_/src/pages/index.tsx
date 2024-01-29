@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Image from 'next/image';
 
-export default function Home() {
+const Home: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -20,7 +21,15 @@ export default function Home() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Construir el objeto JSON con los datos del formulario
@@ -41,7 +50,7 @@ export default function Home() {
 
       // Manejar la respuesta de la API según tus necesidades
       const responseData = await response.json();
-      if (responseData.succes == true) {
+      if (responseData.succes === true) {
         // Guardar el token en el almacenamiento local
         if (responseData && responseData.access_token) {
           localStorage.setItem('token', responseData.access_token);
@@ -57,39 +66,42 @@ export default function Home() {
     } catch (error) {
       console.log('Error al realizar la solicitud a la API:', error);
       setErrorMessage('Error al realizar la solicitud a la API');
-    };
-  }
-    return (
-      <>
-        <div className='icons'>
-          <a href="https://github.com/RaulCDev">
-            <img src="github.svg" alt="logo_github"/>
-          </a>
-          <a href="https://www.linkedin.com/in/ra%C3%BAl-conde-rodr%C3%ADguez/">
-            <img src="linkedin.svg" alt="logo_linkedin"/>
-          </a>
-        </div>
-        <p className='title'>x?</p>
-        <div className='main_text'>
-          <form onSubmit={handleSubmit} className='form'>
-            <h1>Log-In</h1>
-            <input
-              type='text'
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder='Email'
-            />
-            <input
-              type='password'
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder='Password'
-            />
-            <button type='submit' className='btn'>Login</button>
-            <button onClick={handleLogin} className='btn'>Log in with Github</button>
-            <h1 className='success_message'>{message}</h1>
-            <h1 className='error_message'>{error}</h1>
-            <Link href="/register" className='btn'>Register</Link>
-          </form>
-        </div>
-      </>
-    );
-}
+    }
+  };
+
+  return (
+  <>
+    <div className='icons'>
+      <a href="https://github.com/RaulCDev">
+        <Image src="github.svg" alt="logo_github"/>
+      </a>
+      <a href="https://www.linkedin.com/in/ra%C3%BAl-conde-rodr%C3%ADguez/">
+        <Image src="linkedin.svg" alt="logo_linkedin"/>
+      </a>
+    </div>
+    <p className='title'>x?</p>
+    <div className='main_text'>
+      <form onSubmit={handleSubmit} className='form'>
+        <h1>Log-In</h1>
+        <input
+          type='text'
+          onChange={handleEmailChange}
+          placeholder='Email'
+        />
+        <input
+          type='password'
+          onChange={handlePasswordChange}
+          placeholder='Password'
+        />
+        <button type='submit' className='btn'>Login</button>
+        <button onClick={handleLogin} className='btn'>Log in with Github</button>
+        <h1 className='success_message'>{message}</h1>
+        <h1 className='error_message'>{error}</h1>
+        <Link href="/register" className='btn'>Register</Link>
+      </form>
+    </div>
+  </>
+);
+};
+
+export default Home;

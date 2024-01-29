@@ -120,12 +120,12 @@ def name():
 
 #Create a token JWT whit the user identity
 def create_token(identity):
-    expires_delta = timedelta(minutes=60)  # Establece la duración de expiración del token
-    expires = datetime.now(timezone.utc) + expires_delta
+    #expires_delta = timedelta(minutes=60)  # Establece la duración de expiración del token
+    #expires = datetime.now(timezone.utc) + expires_delta
 
     payload = {
         "identity": identity,
-        "exp": expires,
+        #"exp": expires,
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm=JWT_ALGORITHM)
     return token

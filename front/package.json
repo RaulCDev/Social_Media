@@ -9,10 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@nextui-org/react": "^2.2.9",
     "@tailwindcss/nesting": "^0.0.0-insiders.565cd3e",
     "autoprefixer": "10.4.16",
     "eslint": "8.56.0",
     "eslint-config-next": "14.0.4",
+    "framer-motion": "^11.0.3",
     "next": "^14.0.4",
     "next-compose-plugins": "^2.2.1",
     "postcss": "8.4.32",
