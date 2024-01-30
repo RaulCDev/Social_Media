@@ -1,0 +1,94 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+.icons {
+  display: flex;
+  gap: 20px;
+  float: right;
+  margin-top: 0px;
+  margin-right: 10px;
+}
+.icons img{
+  width: 30px;
+  height: 30px;
+}
+.title{
+  font-size: 25px;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.main_text{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  position: absolute;
+  top: 25%;
+  left: 40%;
+  color: black;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 auto; /* Establece el margen automático en los lados izquierdo y derecho */
+}
+
+.btn{
+  background-color: #a6ff00;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #628b00; /* Cambia el color de fondo al pasar el ratón por encima */
+}
+
+.btn:active {
+  background-color: #00803c;
+}
+
+p{
+  color: #fff;
+}
+
+.success_message{
+  color: green;
+}
+
+.error_message{
+  color: rgb(255, 0, 157);
+}
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 245, 245, 245;
+    --background-start-rgb: 25, 25, 25;
+    --background-end-rgb: 25, 25, 25;
+  }
+  h1{
+    color:white;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}

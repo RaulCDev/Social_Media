@@ -73,10 +73,10 @@ const Home: React.FC = () => {
   <>
     <div className='icons'>
       <a href="https://github.com/RaulCDev">
-        <Image src="github.svg" alt="logo_github"/>
+        <Image src="github.svg" alt="logo_github" width="512" height="512"/>
       </a>
       <a href="https://www.linkedin.com/in/ra%C3%BAl-conde-rodr%C3%ADguez/">
-        <Image src="linkedin.svg" alt="logo_linkedin"/>
+        <Image src="linkedin.svg" alt="logo_linkedin" width="512" height="512"/>
       </a>
     </div>
     <p className='title'>x?</p>
