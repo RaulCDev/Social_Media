@@ -1,16 +1,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Account_Card from '../components/Account_Card';
 
 export default function Home() {
-  const handleTokenButtonClick = () => {
-    // Buscar si existe el archivo
-    if (localStorage.getItem('token')) {
-      const token = localStorage.getItem('token');
-      console.log('Token encontrado en localStorage:', token);
-    } else {
-      console.log('No se encontró el token en localStorage');
-    }
-  }
   return (
     <React.Fragment>
       <div className='icons'>
@@ -25,7 +17,7 @@ export default function Home() {
       <p className='title'>x?</p>
       <div className='main_text'>
         <p>Hola buenas</p>
-        <button onClick={handleTokenButtonClick}>Token</button>
+        <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Hola" />
       </div>
     </React.Fragment>
   );

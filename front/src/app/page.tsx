@@ -1,13 +1,17 @@
+"use client";
 import React, { useState, ChangeEvent } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import {Button} from '@nextui-org/button';
+import {Input} from "@nextui-org/react";
 
 const Home: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setErrorMessage] = useState('');
+  const [isEmailValid, setIsEmailValid] = useState(false);
   const router = useRouter();
 
   const handleLogin = async () => {
@@ -51,6 +55,7 @@ const Home: React.FC = () => {
       // Manejar la respuesta de la API según tus necesidades
       const responseData = await response.json();
       if (responseData.succes === true) {
+        setIsEmailValid(false);
         // Guardar el token en el almacenamiento local
         if (responseData && responseData.access_token) {
           localStorage.setItem('token', responseData.access_token);
@@ -61,10 +66,12 @@ const Home: React.FC = () => {
         }
       } else {
         console.log(responseData.message);
-        setMessage('');
+        setIsEmailValid(true);
+        setErrorMessage('No existe esa cuenta');
       }
     } catch (error) {
       console.log('Error al realizar la solicitud a la API:', error);
+      setIsEmailValid(true);
       setErrorMessage('Error al realizar la solicitud a la API');
     }
   };
@@ -83,20 +90,22 @@ const Home: React.FC = () => {
     <div className='main_text'>
       <form onSubmit={handleSubmit} className='form'>
         <h1>Log-In</h1>
-        <input
-          type='text'
+        <Input
+          type="email"
+          label="Email"
           onChange={handleEmailChange}
-          placeholder='Email'
+          isInvalid={isEmailValid}
+          errorMessage={error}
         />
-        <input
+        <Input
           type='password'
+          label="Password"
           onChange={handlePasswordChange}
-          placeholder='Password'
+          isInvalid={isEmailValid}
+          errorMessage={error}
         />
-        <button type='submit' className='btn'>Login</button>
-        <button onClick={handleLogin} className='btn'>Log in with Github</button>
-        <h1 className='success_message'>{message}</h1>
-        <h1 className='error_message'>{error}</h1>
+        <Button type='submit' className="max-w-xs">Login</Button>
+        <Button onClick={handleLogin} className="max-w-xs">Log in with Github</Button>
         <Link href="/register" className='btn'>Register</Link>
       </form>
     </div>

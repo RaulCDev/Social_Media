@@ -1,12 +1,15 @@
-import { useRouter } from 'next/router';
+"use client";
+import { usePathname, useSearchParams, useRouter} from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const GithubLogin = () => {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const [token, setToken] = useState('');
 
   useEffect(() => {
-    const code = router.query.code;
+    const code = searchParams.get("code");
 
     if (code) {
       // Realizar la solicitud al backend con el código
@@ -29,7 +32,7 @@ const GithubLogin = () => {
         console.error('Error:', error);
       });
     }
-  }, [router.query.code]);
+  }, [pathname, searchParams]);
 
   return (
     <div>

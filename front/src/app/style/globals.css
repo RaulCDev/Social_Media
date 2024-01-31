@@ -54,41 +54,6 @@
   background-color: #00803c;
 }
 
-p{
+p, h1{
   color: #fff;
-}
-
-.success_message{
-  color: green;
-}
-
-.error_message{
-  color: rgb(255, 0, 157);
-}
-
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 245, 245, 245;
-    --background-start-rgb: 25, 25, 25;
-    --background-end-rgb: 25, 25, 25;
-  }
-  h1{
-    color:white;
-  }
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
 }

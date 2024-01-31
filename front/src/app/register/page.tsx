@@ -1,23 +1,24 @@
-import React, { useState } from 'react';
-import { useRouter } from 'next/router';
+"use client";
+import React, { useState, ChangeEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import {Button} from '@nextui-org/button';
+import {Input} from "@nextui-org/react";
 
 export default function Home() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setErrorMessage] = useState('');
+  const [isEmailValid, setIsEmailValid] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async () => {
-    try {
-      const client_id = "c52a2b6341f080de4773";
-      const scope = "user:email"; // Agrega el alcance para acceder al correo electrónico del usuario
-      const url = "https://github.com/login/oauth/authorize?client_id=" + client_id + "&scope=" + scope;
-      window.location.href = url;
-    } catch (error) {
-      console.error('Error:', error);
-    }
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
   };
 
   const handleSubmit = async (e) => {
@@ -72,22 +73,22 @@ export default function Home() {
       <p className='title'>x?</p>
       <div className='main_text'>
         <form onSubmit={handleSubmit} className='form'>
-          <h1>Log-In</h1>
-          <input
-            type='text'
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder='Email'
+          <h1>Register</h1>
+          <Input
+            type="email"
+            label="Email"
+            onChange={handleEmailChange}
+            isInvalid={isEmailValid}
+            errorMessage={error}
           />
-          <input
+          <Input
             type='password'
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder='Password'
+            label="Password"
+            onChange={handlePasswordChange}
+            isInvalid={isEmailValid}
+            errorMessage={error}
           />
-          <button type='submit' className='btn'>Login</button>
-          <button onClick={handleLogin} className='btn'>Log in with Github</button>
-          <h1 className='success_message'>{message}</h1>
-          <h1 className='error_message'>{error}</h1>
-          <Link href="/register" className='btn'>Register</Link>
+          <Button type='submit' className="max-w-xs">Register</Button>
         </form>
       </div>
     </React.Fragment>
