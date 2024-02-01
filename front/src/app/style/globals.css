@@ -8,6 +8,7 @@
   float: right;
   margin-top: 0px;
   margin-right: 10px;
+  justifySelf: flex-end;
 }
 .icons img{
   width: 30px;
@@ -17,16 +18,11 @@
   font-size: 25px;
   margin-top: 10px;
   margin-left: 10px;
+  display: inline;
 }
 
 .main_text{
-  display: flex;
-  justify-content: center;
-  align-items: center;
   font-size: 40px;
-  position: absolute;
-  top: 25%;
-  left: 40%;
   color: black;
 }
 

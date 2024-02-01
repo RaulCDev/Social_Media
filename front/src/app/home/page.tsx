@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Account_Card from '../components/Account_Card';
+import WritePost from '../components/Write-Post';
+import PostTipes from '../components/PostTipes';
+import Icons from '../components/Icons';
 
 export default function Home() {
   return (
     <React.Fragment>
-      <div className='icons'>
-        <a href="https://www.linkedin.com/in/ra%C3%BAl-conde-rodr%C3%ADguez/">
-          <img src="linkedin.svg" alt="logo_linkedin"/>
-        </a>
-        <a href="https://github.com/RaulCDev">
-          <img src="github.svg" alt="logo_github"/>
-        </a>
-        <img src="./user.svg" className='icons'/>
-      </div>
-      <p className='title'>x?</p>
-      <div className='main_text'>
-        <p>Hola buenas</p>
-        <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Hola" />
+      <div className="content-center flex min-h-screen flex-col items-center justify-between style={{ display: inline }}">
+        <div className='max-w-[600px] w-full mx-auto border-l border-r border-white/20 min-h-screen'>
+          <PostTipes />
+          <WritePost userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Post"/>
+          <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Hola" />
+          <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Mucho Texto Mucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho Texto" />
+          <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Manolo?" />
+        </div>
+        <Icons />
+        <p className='title'>x?</p>
       </div>
     </React.Fragment>
   );

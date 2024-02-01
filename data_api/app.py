@@ -81,7 +81,7 @@ def login_user():
 
     if user:
         # Genera el JWT para el usuario autenticado
-        return jsonify({'succes': True,'access_token': create_token(user.email)})
+        return jsonify({'succes': True, 'access_token': create_token(user.email)})
 
     return jsonify({'message': 'Error de autenticación', 'success': False}), 40
 

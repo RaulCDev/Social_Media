@@ -16,7 +16,7 @@ services:
     volumes:
       - my-db:/var/lib/mysql
 
-  nextjs:
+  front:
     build:
       context: ./front
       dockerfile: Dockerfile
