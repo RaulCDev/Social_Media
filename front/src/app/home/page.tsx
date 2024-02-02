@@ -4,6 +4,7 @@ import Account_Card from '../components/Account_Card';
 import WritePost from '../components/Write-Post';
 import PostTipes from '../components/PostTipes';
 import Icons from '../components/Icons';
+import LeftSide from '../components/LeftSide';
 
 export default function Home() {
   return (
@@ -15,9 +16,11 @@ export default function Home() {
           <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Hola" />
           <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Mucho Texto Mucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho Texto" />
           <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Manolo?" />
+          <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Mucho Texto Mucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho Texto" />
+          <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Mucho Texto Mucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho Texto" />
         </div>
         <Icons />
-        <p className='title'>x?</p>
+        <LeftSide />
       </div>
     </React.Fragment>
   );
