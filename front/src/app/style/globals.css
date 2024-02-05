@@ -5,15 +5,17 @@
 .icons {
   display: flex;
   gap: 10px;
-  float: right;
   margin-top: 0px;
   margin-right: 5px;
-  justifySelf: flex-end;
+  justify-content: flex-start; /* Ajustamos el contenido al extremo izquierdo */
+  align-items: center; /* Centramos verticalmente los íconos */
+  margin-bottom: 8px;
 }
 
 .try{
   display: flex;
   align-items: center;
+  margin-bottom: 8px;
 }
 
 .icons img{
