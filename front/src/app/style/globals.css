@@ -18,6 +18,70 @@
   margin-bottom: 8px;
 }
 
+.myLinks {
+  width: 2rem;
+  height: 2rem;
+}
+
+.popover {
+  position: absolute;
+  bottom: calc(50% + 10px); /* Sitúa la ventana emergente justo debajo del botón */
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.popover.open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease;
+}
+
+.popover-container {
+  position: relative; /* Asegura que la posición absoluta sea relativa a este contenedor */
+}
+
+.popover-content {
+  animation: slide-up 0.3s forwards;
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+
+.iconButton {
+  width: 40px; /* Tamaño fijo */
+  height: 40px; /* Tamaño fijo */
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 50%; /* Hace que el botón sea redondo */
+  display: flex; /* Utiliza flexbox */
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+  transition: box-shadow 0.3s ease; /* Transición suave para la sombra */
+}
+
+.iconButton:hover {
+  background-color: #00803c;
+}
+
+.iconButton:active {
+  background-color: #02ad52;
+}
+
 .icons img{
   width: 30px;
   height: 30px;
