@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardBody, Avatar, CardFooter } from '@nextui-org/react'
 import Link from 'next/link'
 import { IconSettings ,IconExternalLink ,IconVip ,IconCashBanknote ,IconBrandLinkedin, IconBrandGithub, IconDots, IconBrandX, IconDotsCircleHorizontal ,IconUser ,IconHome, IconSearch, IconBell, IconMail, IconNotes, IconBookmark, IconUsers } from '@tabler/icons-react'
@@ -17,14 +17,32 @@ export default function LeftSide ({
     content: string
   }) {
 
-    const [popoverOpen, setPopoverOpen] = useState(false);
-    const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
-    const handleTogglePopover = (event: React.MouseEvent<HTMLButtonElement>) => {
-      const rect = event.currentTarget.getBoundingClientRect();
-      setButtonPosition({ top: rect.bottom, left: rect.left });
-      setPopoverOpen(!popoverOpen);
+    useEffect(() => {
+      // Lógica para cerrar el dropdown al hacer clic fuera de él
+      const handleClickOutside = (event: MouseEvent) => {
+        // Verificación de si el clic fue fuera del dropdown y si está abierto
+        if (dropdownOpen) {
+          // Cerrar el dropdown
+          setDropdownOpen(false);
+        }
+      };
+
+      // Agregar event listener al montar el componente
+      document.addEventListener('mousedown', handleClickOutside);
+
+      // Limpiar el event listener al desmontar el componente
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, [dropdownOpen]); // Se ejecutará cada vez que dropdownOpen cambie de valor
+
+    const handleDropdown = () => {
+      // Cambiar el estado de dropdownOpen al hacer clic en el botón
+      setDropdownOpen(!dropdownOpen);
     };
+
 
     const buttons = [
       { icon: <IconHome className='w-8 h-8' />, text: 'Home' },
@@ -42,11 +60,11 @@ export default function LeftSide ({
       { icon: <IconCashBanknote className='w-8 h-8' />, text: 'Monetizacion' },
       { icon: <IconVip className='w-8 h-8' />, text: 'Premium' },
       { icon: <IconExternalLink  className='w-8 h-8' />, text: 'Anuncios' },
-      { icon: <IconSettings className='w-8 h-8' />, text: 'Configuracion y privacidad' },
+      { icon: <IconSettings className='w-8 h-8' />, text: 'Configuracion' },
     ]
 
     return (
-        <div className="fixed top-0 left-0 ml-3 mt-3 z-10">
+        <div className="fixed top-0 left-3 ml-3 mt-3 z-10">
           <div className="icons">
             <button className="iconButton">
               <IconBrandX className='myLinks' />
@@ -70,20 +88,22 @@ export default function LeftSide ({
             </Button>
           ))}
           {/* Botón de "Más opciones" */}
-          <Button onClick={handleTogglePopover} className='try' radius="full" variant="light">
+          <Button onClick={handleDropdown} className='try' radius="full" variant="light">
             <IconDotsCircleHorizontal className='w-8 h-8' />
             <span>Mas opciones</span>
           </Button>
-          {/* Ventana emergente */}
-          {popoverOpen && (
-            <div className="popover" style={{ top: buttonPosition.top, left: buttonPosition.left }}>
-              {/* Opciones */}
-              {altButtons.map((button, index) => (
-                <Button key={index} className='try' radius="full" variant="light">
-                  {button.icon}
-                   <span>{button.text}</span>
-                </Button>
-              ))}
+          {/* Contenido del dropdown */}
+          {/* Dropdown */}
+          {dropdownOpen && (
+            <div className="dropdown" id="dropdown">
+              <div className="dropdown-content">
+                {altButtons.map((button, index) => (
+                  <Button key={index} className='try' radius="full" variant="light">
+                    {button.icon}
+                    <span>{button.text}</span>
+                  </Button>
+                ))}
+              </div>
             </div>
           )}
           <Button className='bg-green-500' radius="full">
