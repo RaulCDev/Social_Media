@@ -16,7 +16,7 @@ export default function WritePost ({
   }) {
     return (
       <Card className="shadow-none bg-transparent hover:bg-slate-800 transition border-b rounded-none cursor-pointer border-white/20">
-        <CardHeader className="justify-between  flex items-center">
+        <CardHeader className="cardHeader justify-between  flex items-center">
           <div className="flex gap-x-2">
             <Link href={`/${userName}`}>
               <Avatar radius="full" size="md" src={avatarUrl} />

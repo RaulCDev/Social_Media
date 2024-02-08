@@ -16,7 +16,7 @@ export default function Account_Card ({
   }) {
     return (
       <Card className="shadow-none bg-transparent hover:bg-slate-800 transition border-b rounded-none cursor-pointer border-white/20">
-        <CardHeader className="justify-between">
+        <CardHeader className="cardHeader">
           <div className="flex gap-x-2">
             <Link href={`/${userName}`}>
               <Avatar radius="full" size="md" src={avatarUrl} />
@@ -26,7 +26,6 @@ export default function Account_Card ({
               <h5 className="text-small tracking-tight text-default-400">@{userName}</h5>
             </div>
           </div>
-
         </CardHeader>
         <CardBody className="px-3 py-0 text-xs text-white bg-transparent">
           <p>

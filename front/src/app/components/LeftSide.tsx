@@ -66,19 +66,19 @@ export default function LeftSide ({
     return (
         <div className="fixed top-0 left-3 ml-3 mt-3 z-10">
           <div className="icons">
-            <button className="iconButton">
+            <Button radius="full" variant="light">
               <IconBrandX className='myLinks' />
-            </button>
-            <button className="iconButton">
+            </Button>
+            <Button className="iconButton">
               <a href="https://www.linkedin.com/in/ra%C3%BAl-conde-rodr%C3%ADguez/" target="_blank" rel="noopener noreferrer">
                 <IconBrandLinkedin className='myLinks' />
               </a>
-            </button>
-            <button className="iconButton">
+            </Button>
+            <Button className="iconButton">
               <a href="https://github.com/RaulCDev" target="_blank" rel="noopener noreferrer">
                 <IconBrandGithub className='myLinks' />
               </a>
-            </button>
+            </Button>
           </div>
           {/* Botones */}
           {buttons.map((button, index) => (
@@ -92,7 +92,8 @@ export default function LeftSide ({
             <IconDotsCircleHorizontal className='w-8 h-8' />
             <span>Mas opciones</span>
           </Button>
-          {/* Contenido del dropdown */}
+          {/* Fondo transparente */}
+          {dropdownOpen && <div className="overlay" />}
           {/* Dropdown */}
           {dropdownOpen && (
             <div className="dropdown" id="dropdown">

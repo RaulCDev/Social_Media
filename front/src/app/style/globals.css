@@ -7,15 +7,26 @@
   gap: 10px;
   margin-top: 0px;
   margin-right: 5px;
-  justify-content: flex-start; /* Ajustamos el contenido al extremo izquierdo */
+  justify-content: flex-start;
   align-items: center; /* Centramos verticalmente los íconos */
   margin-bottom: 8px;
 }
 
 .try{
   display: flex;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   margin-bottom: 8px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
+  z-index: 10; /* Asegúrate de que esté por encima del resto del contenido */
 }
 
 .myLinks {
@@ -32,7 +43,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   overflow: hidden;
-  z-index: 1;
+  z-index: 20;
 }
 
 .dropdown-content {
@@ -59,6 +70,10 @@
   }
 }
 
+.cardHeader{
+  position: relative;
+  z-index: 0;
+}
 
 .iconButton {
   width: 40px; /* Tamaño fijo */
