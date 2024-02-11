@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardBody, Avatar, CardFooter } from '@nextui-org/react'
-import Link from 'next/link'
+import { Avatar } from '@nextui-org/react'
 import { IconSettings ,IconExternalLink ,IconVip ,IconCashBanknote ,IconBrandLinkedin, IconBrandGithub, IconDots, IconBrandX, IconDotsCircleHorizontal ,IconUser ,IconHome, IconSearch, IconBell, IconMail, IconNotes, IconBookmark, IconUsers } from '@tabler/icons-react'
 import {Button} from '@nextui-org/button';
 

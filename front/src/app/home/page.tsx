@@ -5,6 +5,7 @@ import WritePost from '../components/Write-Post';
 import PostTipes from '../components/PostTipes';
 import Icons from '../components/Icons';
 import LeftSide from '../components/LeftSide';
+import RightSide from '../components/RightSide';
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
           <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Mucho Texto Mucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho Texto" />
           <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Mucho Texto Mucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho Texto" />
         </div>
+        <RightSide />
       </div>
     </React.Fragment>
   );
