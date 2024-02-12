@@ -64,20 +64,20 @@ export default function LeftSide ({
 
     return (
         <div className="fixed top-0 left-3 ml-3 mt-3 z-10">
-          <div className="icons">
-            <Button radius="full" variant="light">
+          <div className="flex space-x-2">
+            <button className="iconButton">
               <IconBrandX className='myLinks' />
-            </Button>
-            <Button className="iconButton">
+            </button>
+            <button className="iconButton">
               <a href="https://www.linkedin.com/in/ra%C3%BAl-conde-rodr%C3%ADguez/" target="_blank" rel="noopener noreferrer">
                 <IconBrandLinkedin className='myLinks' />
               </a>
-            </Button>
-            <Button className="iconButton">
+            </button>
+            <button className="iconButton">
               <a href="https://github.com/RaulCDev" target="_blank" rel="noopener noreferrer">
                 <IconBrandGithub className='myLinks' />
               </a>
-            </Button>
+            </button>
           </div>
           {/* Botones */}
           {buttons.map((button, index) => (
