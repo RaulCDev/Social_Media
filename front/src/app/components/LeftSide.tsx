@@ -44,27 +44,27 @@ export default function LeftSide ({
 
 
     const buttons = [
-      { icon: <IconHome className='w-8 h-8' />, text: 'Home' },
-      { icon: <IconSearch className='w-8 h-8' />, text: 'Search' },
-      { icon: <IconBell className='w-8 h-8' />, text: 'Notificaciones' },
-      { icon: <IconMail className='w-8 h-8' />, text: 'Mensajes' },
-      { icon: <IconNotes className='w-8 h-8' />, text: 'Lists' },
-      { icon: <IconBrandX className='w-8 h-8' />, text: 'Premium' },
-      { icon: <IconUser className='w-8 h-8' />, text: 'Perfil' },
+      { icon: <IconHome className='w-8 h-8 leftButtonssvg' />, text: 'Home' },
+      { icon: <IconSearch className='w-8 h-8 leftButtonssvg' />, text: 'Search' },
+      { icon: <IconBell className='w-8 h-8 leftButtonssvg' />, text: 'Notificaciones' },
+      { icon: <IconMail className='w-8 h-8 leftButtonssvg' />, text: 'Mensajes' },
+      { icon: <IconNotes className='w-8 h-8 leftButtonssvg' />, text: 'Lists' },
+      { icon: <IconBrandX className='w-8 h-8 leftButtonssvg' />, text: 'Premium' },
+      { icon: <IconUser className='w-8 h-8 leftButtonssvg' />, text: 'Perfil' },
     ];
 
     const altButtons = [
-      { icon: <IconBookmark className='w-8 h-8' />, text: 'Guardado' },
-      { icon: <IconUsers className='w-8 h-8' />, text: 'Comunidades' },
-      { icon: <IconCashBanknote className='w-8 h-8' />, text: 'Monetizacion' },
-      { icon: <IconVip className='w-8 h-8' />, text: 'Premium' },
-      { icon: <IconExternalLink  className='w-8 h-8' />, text: 'Anuncios' },
-      { icon: <IconSettings className='w-8 h-8' />, text: 'Configuracion' },
+      { icon: <IconBookmark className='w-8 h-8 leftButtonssvg' />, text: 'Guardado' },
+      { icon: <IconUsers className='w-8 h-8 leftButtonssvg' />, text: 'Comunidades' },
+      { icon: <IconCashBanknote className='w-8 h-8 leftButtonssvg' />, text: 'Monetizacion' },
+      { icon: <IconVip className='w-8 h-8 leftButtonssvg' />, text: 'Premium' },
+      { icon: <IconExternalLink  className='w-8 h-8 leftButtonssvg' />, text: 'Anuncios' },
+      { icon: <IconSettings className='w-8 h-8 leftButtonssvg' />, text: 'Configuracion' },
     ]
 
     return (
-        <div className="fixed top-0 left-3 ml-3 mt-3 z-10">
-          <div className="flex space-x-2">
+        <div className="fixed top-0 left-5 ml-3 mt-3 z-10">
+          <div className="flex">
             <button className="iconButton">
               <IconBrandX className='myLinks' />
             </button>
@@ -81,16 +81,16 @@ export default function LeftSide ({
           </div>
           {/* Botones */}
           {buttons.map((button, index) => (
-            <Button key={index} className='try' radius="full" variant="light">
+            <button key={index} className='leftButtons rounded-full'>
               {button.icon}
               <span>{button.text}</span>
-            </Button>
+            </button>
           ))}
           {/* Botón de "Más opciones" */}
-          <Button onClick={handleDropdown} className='try' radius="full" variant="light">
-            <IconDotsCircleHorizontal className='w-8 h-8' />
-            <span>Mas opciones</span>
-          </Button>
+          <button onClick={handleDropdown} className='leftButtons rounded-full'>
+            <IconDotsCircleHorizontal className='w-8 h-8 leftButtonssvg' />
+            <p>Mas opciones</p>
+          </button>
           {/* Fondo transparente */}
           {dropdownOpen && <div className="overlay" />}
           {/* Dropdown */}
@@ -98,10 +98,10 @@ export default function LeftSide ({
             <div className="dropdown" id="dropdown">
               <div className="dropdown-content">
                 {altButtons.map((button, index) => (
-                  <Button key={index} className='try' radius="full" variant="light">
+                  <button key={index} className='leftButtons rounded-full'>
                     {button.icon}
                     <span>{button.text}</span>
-                  </Button>
+                  </button>
                 ))}
               </div>
             </div>
