@@ -46,20 +46,20 @@ export default function LeftSide ({
     const buttons = [
       { icon: <IconHome className='w-8 h-8 leftButtonssvg' />, text: 'Home' },
       { icon: <IconSearch className='w-8 h-8 leftButtonssvg' />, text: 'Search' },
-      { icon: <IconBell className='w-8 h-8 leftButtonssvg' />, text: 'Notificaciones' },
-      { icon: <IconMail className='w-8 h-8 leftButtonssvg' />, text: 'Mensajes' },
+      { icon: <IconBell className='w-8 h-8 leftButtonssvg' />, text: 'Notifications' },
+      { icon: <IconMail className='w-8 h-8 leftButtonssvg' />, text: 'Messages' },
       { icon: <IconNotes className='w-8 h-8 leftButtonssvg' />, text: 'Lists' },
       { icon: <IconBrandX className='w-8 h-8 leftButtonssvg' />, text: 'Premium' },
-      { icon: <IconUser className='w-8 h-8 leftButtonssvg' />, text: 'Perfil' },
+      { icon: <IconUser className='w-8 h-8 leftButtonssvg' />, text: 'Profile' },
     ];
 
     const altButtons = [
-      { icon: <IconBookmark className='w-8 h-8 leftButtonssvg' />, text: 'Guardado' },
-      { icon: <IconUsers className='w-8 h-8 leftButtonssvg' />, text: 'Comunidades' },
-      { icon: <IconCashBanknote className='w-8 h-8 leftButtonssvg' />, text: 'Monetizacion' },
-      { icon: <IconVip className='w-8 h-8 leftButtonssvg' />, text: 'Premium' },
-      { icon: <IconExternalLink  className='w-8 h-8 leftButtonssvg' />, text: 'Anuncios' },
-      { icon: <IconSettings className='w-8 h-8 leftButtonssvg' />, text: 'Configuracion' },
+      { icon: <IconBookmark className='w-8 h-8 leftButtonssvg' />, text: 'Bookmarks' },
+      { icon: <IconUsers className='w-8 h-8 leftButtonssvg' />, text: 'Communities' },
+      { icon: <IconCashBanknote className='w-8 h-8 leftButtonssvg' />, text: 'MOnetization' },
+      { icon: <IconVip className='w-8 h-8 leftButtonssvg' />, text: 'Pro' },
+      { icon: <IconExternalLink  className='w-8 h-8 leftButtonssvg' />, text: 'Ads' },
+      { icon: <IconSettings className='w-8 h-8 leftButtonssvg' />, text: 'Settings and privacy' },
     ]
 
     return (
@@ -89,7 +89,7 @@ export default function LeftSide ({
           {/* Botón de "Más opciones" */}
           <button onClick={handleDropdown} className='leftButtons rounded-full'>
             <IconDotsCircleHorizontal className='leftButtonssvg' />
-            <span className="buttontext">Mas opciones</span>
+            <span className="buttontext">More</span>
           </button>
           {/* Fondo transparente */}
           {dropdownOpen && <div className="overlay" />}
@@ -106,17 +106,17 @@ export default function LeftSide ({
               </div>
             </div>
           )}
-          <Button className='bg-green-500' radius="full">
+          <button className='leftPostButton rounded-full'>
             Post
-          </Button>
-          <Button className="flex gap-x-2" radius="full" variant="light">
+          </button>
+          <button className="leftButtons container-flex rounded-full">
             <Avatar radius="full" size="md" src={avatarUrl} />
             <div className="flex flex-col gap-1 items-start justify-center">
               <h4 className="text-small font-semibold leading-none text-default-600">{userFullName}</h4>
               <h5 className="text-small tracking-tight text-default-400">@{userName}</h5>
             </div>
             <IconDots className='w-8 h-8' />
-          </Button>
+          </button>
         </div>
     )
   }

@@ -18,6 +18,7 @@
   left: 6px;
   margin-left: 20px;
   z-index: 10;
+  height: 100vh;
 }
 
 .leftButtons{
@@ -35,6 +36,22 @@
 
 .leftButtons:hover {
   background-color: rgb(50, 50, 50);
+}
+
+.leftPostButton{
+  background-color: rgb(1, 147, 89);
+  display: flex;
+  padding: 10px 80px 10px 80px;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.container-flex {
+  position: fixed;
+  bottom: 10px;
+  margin-top: 10px;
+  display: flex;
+  align-items: flex-end;
 }
 
 .buttontext{
