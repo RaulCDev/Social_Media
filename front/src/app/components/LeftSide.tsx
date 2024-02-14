@@ -63,7 +63,7 @@ export default function LeftSide ({
     ]
 
     return (
-        <div className="fixed top-0 left-5 ml-3 mt-3 z-10">
+        <div className="leftSide">
           <div className="flex">
             <button className="iconButton">
               <IconBrandX className='myLinks' />
@@ -83,13 +83,13 @@ export default function LeftSide ({
           {buttons.map((button, index) => (
             <button key={index} className='leftButtons rounded-full'>
               {button.icon}
-              <span>{button.text}</span>
+              <span className="buttontext">{button.text}</span>
             </button>
           ))}
           {/* Botón de "Más opciones" */}
           <button onClick={handleDropdown} className='leftButtons rounded-full'>
-            <IconDotsCircleHorizontal className='w-8 h-8 leftButtonssvg' />
-            <p>Mas opciones</p>
+            <IconDotsCircleHorizontal className='leftButtonssvg' />
+            <span className="buttontext">Mas opciones</span>
           </button>
           {/* Fondo transparente */}
           {dropdownOpen && <div className="overlay" />}
@@ -100,7 +100,7 @@ export default function LeftSide ({
                 {altButtons.map((button, index) => (
                   <button key={index} className='leftButtons rounded-full'>
                     {button.icon}
-                    <span>{button.text}</span>
+                    <span className="buttontext">{button.text}</span>
                   </button>
                 ))}
               </div>

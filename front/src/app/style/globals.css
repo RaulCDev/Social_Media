@@ -12,20 +12,34 @@
   margin-bottom: 8px;
 }
 
+.leftSide{
+  position: fixed;
+  top: 0;
+  left: 6px;
+  margin-left: 20px;
+  z-index: 10;
+}
+
 .leftButtons{
   display: flex;
-  padding: 5px 8px 5px 5px;
-  font-size: 15px;
+  padding: 8px 10px 8px 8px;
   align-items: center;
   transition: background-color 0.3s ease;
 }
 
 .leftButtonssvg {
-  margin-top: -5px; /* Ajusta la posición vertical del icono */
+  margin-top: -5px;
+  width: 30px;
+  height: 30px;
 }
 
 .leftButtons:hover {
-  background-color: rgb(66, 66, 66);
+  background-color: rgb(50, 50, 50);
+}
+
+.buttontext{
+  margin-left: 15px;
+  font-size: 18px;
 }
 
 .overlay {
@@ -34,8 +48,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
-  z-index: 10; /* Asegúrate de que esté por encima del resto del contenido */
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
 }
 
 .myLinks {
@@ -85,16 +99,17 @@
 }
 
 .iconButton {
-  width: 40px; /* Tamaño fijo */
-  height: 40px; /* Tamaño fijo */
+  width: 50px;
+  height: 50px;
+  margin-bottom: 5px;
   border: none;
   background: none;
   cursor: pointer;
-  border-radius: 50%; /* Hace que el botón sea redondo */
-  display: flex; /* Utiliza flexbox */
-  justify-content: center; /* Centra horizontalmente */
-  align-items: center; /* Centra verticalmente */
-  transition: box-shadow 0.3s ease; /* Transición suave para la sombra */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: box-shadow 0.3s ease;
 }
 
 .iconButton:hover {
