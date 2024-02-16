@@ -15,10 +15,10 @@ export default function RightSide() {
                         <IconSearch className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                       }></Input>
             </div>
-            <Card className='w-[340px]'>
-                <h1>Subscribe to Premium</h1>
-                <p>Subscribe to unlock new features and if eligible, receive a share of ads revenue.</p>
-                <Button className="inline-flex gap-x-2 bg-green-500" radius="full" variant="light">Follow</Button>
+            <Card className='w-[320px] p-4'>
+                <p className='font-bold font-light'>Subscribe to Premium</p>
+                <p className='font-light text-xs'>Subscribe to unlock new features and if eligible, receive a share of ads revenue.</p>
+                <button className="leftButtons min-w-min min-h-min bg-green-600 rounded-full">Follow</button>
             </Card>
             <Card className='w-[340px]'>
                 <h1>Who to follow</h1>
