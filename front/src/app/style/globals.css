@@ -158,7 +158,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin: 0 auto; /* Establece el margen automático en los lados izquierdo y derecho */
+  margin: 0 auto;
 }
 
 .btn{
@@ -171,7 +171,7 @@
 }
 
 .btn:hover {
-  background-color: #628b00; /* Cambia el color de fondo al pasar el ratón por encima */
+  background-color: #628b00;
 }
 
 .btn:active {

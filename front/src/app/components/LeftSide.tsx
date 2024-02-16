@@ -44,22 +44,22 @@ export default function LeftSide ({
 
 
     const buttons = [
-      { icon: <IconHome className='w-8 h-8 leftButtonssvg' />, text: 'Home' },
-      { icon: <IconSearch className='w-8 h-8 leftButtonssvg' />, text: 'Search' },
-      { icon: <IconBell className='w-8 h-8 leftButtonssvg' />, text: 'Notifications' },
-      { icon: <IconMail className='w-8 h-8 leftButtonssvg' />, text: 'Messages' },
-      { icon: <IconNotes className='w-8 h-8 leftButtonssvg' />, text: 'Lists' },
-      { icon: <IconBrandX className='w-8 h-8 leftButtonssvg' />, text: 'Premium' },
-      { icon: <IconUser className='w-8 h-8 leftButtonssvg' />, text: 'Profile' },
+      { icon: <IconHome className='leftButtonssvg' />, text: 'Home' },
+      { icon: <IconSearch className='leftButtonssvg' />, text: 'Search' },
+      { icon: <IconBell className='leftButtonssvg' />, text: 'Notifications' },
+      { icon: <IconMail className='leftButtonssvg' />, text: 'Messages' },
+      { icon: <IconNotes className='leftButtonssvg' />, text: 'Lists' },
+      { icon: <IconBrandX className='leftButtonssvg' />, text: 'Premium' },
+      { icon: <IconUser className='leftButtonssvg' />, text: 'Profile' },
     ];
 
     const altButtons = [
-      { icon: <IconBookmark className='w-8 h-8 leftButtonssvg' />, text: 'Bookmarks' },
-      { icon: <IconUsers className='w-8 h-8 leftButtonssvg' />, text: 'Communities' },
-      { icon: <IconCashBanknote className='w-8 h-8 leftButtonssvg' />, text: 'MOnetization' },
-      { icon: <IconVip className='w-8 h-8 leftButtonssvg' />, text: 'Pro' },
-      { icon: <IconExternalLink  className='w-8 h-8 leftButtonssvg' />, text: 'Ads' },
-      { icon: <IconSettings className='w-8 h-8 leftButtonssvg' />, text: 'Settings and privacy' },
+      { icon: <IconBookmark className='leftButtonssvg' />, text: 'Bookmarks' },
+      { icon: <IconUsers className='leftButtonssvg' />, text: 'Communities' },
+      { icon: <IconCashBanknote className='leftButtonssvg' />, text: 'MOnetization' },
+      { icon: <IconVip className='leftButtonssvg' />, text: 'Pro' },
+      { icon: <IconExternalLink  className='leftButtonssvg' />, text: 'Ads' },
+      { icon: <IconSettings className='leftButtonssvg' />, text: 'Settings and privacy' },
     ]
 
     return (
@@ -106,16 +106,14 @@ export default function LeftSide ({
               </div>
             </div>
           )}
-          <button className='leftPostButton rounded-full'>
-            Post
-          </button>
+          <button className='leftPostButton rounded-full'>Post</button>
           <button className="leftButtons container-flex rounded-full">
             <Avatar radius="full" size="md" src={avatarUrl} />
-            <div className="flex flex-col gap-1 items-start justify-center">
+            <div className="flex flex-col gap-1 items-start justify-center ml-2">
               <h4 className="text-small font-semibold leading-none text-default-600">{userFullName}</h4>
               <h5 className="text-small tracking-tight text-default-400">@{userName}</h5>
             </div>
-            <IconDots className='w-8 h-8' />
+            <IconDots className='leftButtonssvg ml-20' />
           </button>
         </div>
     )
