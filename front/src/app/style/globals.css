@@ -12,6 +12,23 @@
   margin-bottom: 8px;
 }
 
+.bigTextRight{
+  font-weight: bold;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+.smallTextRight{
+  font-weight: lighter;
+  font-size: 0.875rem;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
 .leftSide{
   position: fixed;
   top: 0;

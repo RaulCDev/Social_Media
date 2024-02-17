@@ -15,10 +15,10 @@ export default function RightSide() {
                         <IconSearch className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                       }></Input>
             </div>
-            <Card className='w-[320px] p-4'>
-                <p className='font-bold font-light'>Subscribe to Premium</p>
-                <p className='font-light text-xs'>Subscribe to unlock new features and if eligible, receive a share of ads revenue.</p>
-                <button className="leftButtons min-w-min min-h-min bg-green-600 rounded-full">Follow</button>
+            <Card className='w-[320px] mt-2 mb-2'>
+                <p className='bigTextRight'>Subscribe to Premium</p>
+                <p className='smallTextRight'>Subscribe to unlock new features and if eligible, receive a share of ads revenue.</p>
+                <button className="bg-green-600 rounded-full p-2">Subscribe</button>
             </Card>
             <Card className='w-[340px]'>
                 <h1>Who to follow</h1>
@@ -41,8 +41,8 @@ export default function RightSide() {
                 <Button className="flex gap-x-2" variant="light">
                     <Avatar radius="full" size="md" src="https://github.com/RaulCDev.png" />
                     <div className="flex flex-col gap-1 items-start justify-center">
-                        <h4 className="text-small font-semibold leading-none text-default-600">Nombre</h4>
-                        <h5 className="text-small tracking-tight text-default-400">@Nombre</h5>
+                        <h4 className="text-sm font-semibold leading-none text-default-600">Nombre</h4>
+                        <h5 className="text-sm tracking-tight text-default-400">@Nombre</h5>
                     </div>
                     <Button className="flex gap-x-2 bg-green-500" radius="full" variant="light">Follow</Button>
                 </Button>
