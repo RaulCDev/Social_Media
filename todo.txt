@@ -1,4 +1,7 @@
--Add the right part of the page
+
+-DO THE ARCHITECTURE CORRECT
+
+
 -The upper part of the post part need to be transparent when the posts move
 -Look for a way to have infinite scrolling in posts
 -Correct the position of the buttons and his content in the left part
@@ -8,3 +11,5 @@
 
 FINISHED
 =====================================
+
+-Add the right part of the page

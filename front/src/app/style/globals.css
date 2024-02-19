@@ -12,6 +12,13 @@
   margin-bottom: 8px;
 }
 
+.midContainer{
+  width: 600px;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  min-height: 100vh;
+}
+
 .bigTextRight{
   font-weight: bold;
   padding-top: 10px;
@@ -30,7 +37,8 @@
 }
 
 .leftSide{
-  position: fixed;
+  width: 25%;
+  height: 100%;
   top: 0;
   left: 6px;
   margin-left: 20px;

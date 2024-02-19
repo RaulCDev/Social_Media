@@ -8,7 +8,7 @@ export default function RightSide() {
     const [value, setValue] = React.useState("");
 
     return (
-        <div className="fixed top-0 right-0 mr-3 mt-3 z-10">
+        <div className="top-0 right-0 mr-3 mt-3 z-10">
             <div>
                 <Input className="max-w-[340px]" value={value} placeholder="Buscar" variant="bordered" labelPlacement="outside"
                       startContent={
