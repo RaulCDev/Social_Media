@@ -9,7 +9,7 @@ import RightSide from '../components/RightSide';
 export default function Home() {
   return (
     <React.Fragment>
-      <div className="flex justify-between">
+      <div className="flex justify-content">
         <LeftSide  userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Hola"/>
         <div className='midContainer'>
           <PostTipes />

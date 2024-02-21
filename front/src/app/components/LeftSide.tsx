@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { Avatar } from '@nextui-org/react'
 import { IconSettings ,IconExternalLink ,IconVip ,IconCashBanknote ,IconBrandLinkedin, IconBrandGithub, IconDots, IconBrandX, IconDotsCircleHorizontal ,IconUser ,IconHome, IconSearch, IconBell, IconMail, IconNotes, IconBookmark, IconUsers } from '@tabler/icons-react'
-import {Button} from '@nextui-org/button';
 
 export default function LeftSide ({
     userFullName,
@@ -79,21 +78,17 @@ export default function LeftSide ({
               </a>
             </button>
           </div>
-          {/* Botones */}
           {buttons.map((button, index) => (
             <button key={index} className='leftButtons rounded-full'>
               {button.icon}
               <span className="buttontext">{button.text}</span>
             </button>
           ))}
-          {/* Botón de "Más opciones" */}
           <button onClick={handleDropdown} className='leftButtons rounded-full'>
             <IconDotsCircleHorizontal className='leftButtonssvg' />
             <span className="buttontext">More</span>
           </button>
-          {/* Fondo transparente */}
           {dropdownOpen && <div className="overlay" />}
-          {/* Dropdown */}
           {dropdownOpen && (
             <div className="dropdown" id="dropdown">
               <div className="dropdown-content">

@@ -1,6 +1,6 @@
 
 -DO THE ARCHITECTURE CORRECT
-
+    -The left part is a 'header' element the rest is 'main'
 
 -The upper part of the post part need to be transparent when the posts move
 -Look for a way to have infinite scrolling in posts
