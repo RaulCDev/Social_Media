@@ -63,53 +63,55 @@ export default function LeftSide ({
 
     return (
         <div className="leftSide">
-          <div className="flex">
-            <button className="iconButton">
-              <IconBrandX className='myLinks' />
+          <div className='justify-end'>
+            <div className="flex">
+              <button className="iconButton">
+                <IconBrandX className='myLinks' />
+              </button>
+              <button className="iconButton">
+                <a href="https://www.linkedin.com/in/ra%C3%BAl-conde-rodr%C3%ADguez/" target="_blank" rel="noopener noreferrer">
+                  <IconBrandLinkedin className='myLinks' />
+                </a>
+              </button>
+              <button className="iconButton">
+                <a href="https://github.com/RaulCDev" target="_blank" rel="noopener noreferrer">
+                  <IconBrandGithub className='myLinks' />
+                </a>
+              </button>
+            </div>
+            {buttons.map((button, index) => (
+              <button key={index} className='leftButtons rounded-full'>
+                {button.icon}
+                <span className="buttontext">{button.text}</span>
+              </button>
+            ))}
+            <button onClick={handleDropdown} className='leftButtons rounded-full'>
+              <IconDotsCircleHorizontal className='leftButtonssvg' />
+              <span className="buttontext">More</span>
             </button>
-            <button className="iconButton">
-              <a href="https://www.linkedin.com/in/ra%C3%BAl-conde-rodr%C3%ADguez/" target="_blank" rel="noopener noreferrer">
-                <IconBrandLinkedin className='myLinks' />
-              </a>
-            </button>
-            <button className="iconButton">
-              <a href="https://github.com/RaulCDev" target="_blank" rel="noopener noreferrer">
-                <IconBrandGithub className='myLinks' />
-              </a>
+            {dropdownOpen && <div className="overlay" />}
+            {dropdownOpen && (
+              <div className="dropdown" id="dropdown">
+                <div className="dropdown-content">
+                  {altButtons.map((button, index) => (
+                    <button key={index} className='leftButtons rounded-full'>
+                      {button.icon}
+                      <span className="buttontext">{button.text}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            <button className='leftPostButton rounded-full'>Post</button>
+            <button className="leftButtons container-flex rounded-full">
+              <Avatar radius="full" size="md" src={avatarUrl} />
+              <div className="flex flex-col gap-1 items-start justify-center ml-2">
+                <h4 className="text-small font-semibold leading-none text-default-600">{userFullName}</h4>
+                <h5 className="text-small tracking-tight text-default-400">@{userName}</h5>
+              </div>
+              <IconDots className='leftButtonssvg ml-20' />
             </button>
           </div>
-          {buttons.map((button, index) => (
-            <button key={index} className='leftButtons rounded-full'>
-              {button.icon}
-              <span className="buttontext">{button.text}</span>
-            </button>
-          ))}
-          <button onClick={handleDropdown} className='leftButtons rounded-full'>
-            <IconDotsCircleHorizontal className='leftButtonssvg' />
-            <span className="buttontext">More</span>
-          </button>
-          {dropdownOpen && <div className="overlay" />}
-          {dropdownOpen && (
-            <div className="dropdown" id="dropdown">
-              <div className="dropdown-content">
-                {altButtons.map((button, index) => (
-                  <button key={index} className='leftButtons rounded-full'>
-                    {button.icon}
-                    <span className="buttontext">{button.text}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          <button className='leftPostButton rounded-full'>Post</button>
-          <button className="leftButtons container-flex rounded-full">
-            <Avatar radius="full" size="md" src={avatarUrl} />
-            <div className="flex flex-col gap-1 items-start justify-center ml-2">
-              <h4 className="text-small font-semibold leading-none text-default-600">{userFullName}</h4>
-              <h5 className="text-small tracking-tight text-default-400">@{userName}</h5>
-            </div>
-            <IconDots className='leftButtonssvg ml-20' />
-          </button>
         </div>
     )
   }

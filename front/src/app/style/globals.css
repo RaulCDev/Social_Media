@@ -3,7 +3,6 @@
 @import 'tailwindcss/utilities';
 
 .icons {
-  display: flex;
   gap: 10px;
   margin-top: 0px;
   margin-right: 5px;
@@ -13,36 +12,23 @@
 }
 
 .midContainer{
-  width: 556px;
+  display: flex;
+  flex-direction: column;
+  width: 600px;
   border-left: 1px solid rgba(255, 255, 255, 0.2);
   border-right: 1px solid rgba(255, 255, 255, 0.2);
   min-height: 100vh;
 }
 
-.bigTextRight{
-  font-weight: bold;
-  padding-top: 10px;
-  padding-right: 10px;
-  padding-bottom: 10px;
-  padding-top: 10px;
-}
-
-.smallTextRight{
-  font-weight: lighter;
-  font-size: 0.875rem;
-  padding-top: 10px;
-  padding-right: 10px;
-  padding-bottom: 10px;
-  padding-top: 10px;
-}
-
 .leftSide{
-  height: 100%;
-  width: 556px;
+  display: flex;
+  justify-content: right;
+  margin-left: 5px;
+  height: 100vh;
+  width: 12vw;
   top: 0;
   right: 0;
   z-index: 10;
-  height: 100vh;
 }
 
 .leftButtons{
@@ -70,8 +56,24 @@
   transition: background-color 0.3s ease;
 }
 
+.bigTextRight{
+  font-weight: bold;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+.smallTextRight{
+  font-weight: lighter;
+  font-size: 0.875rem;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
 .container-flex {
-  position: fixed;
   bottom: 10px;
   margin-top: 10px;
   display: flex;
