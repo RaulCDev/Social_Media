@@ -9,8 +9,8 @@ export default function RightSide() {
 
     return (
         <div className="rightSide">
-            <div className='searchBar pb-5'>
-                <Input className="max-w-[340px] bg-black" value={value} placeholder="Buscar" variant="bordered" labelPlacement="outside"
+            <div className='searchBar pb-2 relative'>
+                <Input className="max-w-[340px] bg-black pb-1" value={value} placeholder="Buscar" variant="bordered" labelPlacement="outside"
                       startContent={
                         <IconSearch className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                       }></Input>
