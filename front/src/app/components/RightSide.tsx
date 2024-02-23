@@ -8,9 +8,9 @@ export default function RightSide() {
     const [value, setValue] = React.useState("");
 
     return (
-        <div className="top-0 right-0 mr-3 mt-3 z-10">
-            <div>
-                <Input className="max-w-[340px]" value={value} placeholder="Buscar" variant="bordered" labelPlacement="outside"
+        <div className="rightSide">
+            <div className='searchBar pb-5'>
+                <Input className="max-w-[340px] bg-black" value={value} placeholder="Buscar" variant="bordered" labelPlacement="outside"
                       startContent={
                         <IconSearch className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                       }></Input>
@@ -50,6 +50,46 @@ export default function RightSide() {
             </Card>
             <Card>
                 <h1>Somewhere trends</h1>
+                <button>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                            <h5 className="text-small tracking-tight text-default-400">1 . Football . Trending</h5>
+                            <IconDots className='w-4 h-4 text-green-500' />
+                        </div>
+                        <div className="flex items-center gap-2"><h1>Granada</h1></div>
+                        <div className="flex items-center gap-2"><h5 className="text-small tracking-tight text-default-400">35.4K posts</h5></div>
+                    </div>
+                </button>
+                <button>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                            <h5 className="text-small tracking-tight text-default-400">1 . Football . Trending</h5>
+                            <IconDots className='w-4 h-4 text-green-500' />
+                        </div>
+                        <div className="flex items-center gap-2"><h1>Granada</h1></div>
+                        <div className="flex items-center gap-2"><h5 className="text-small tracking-tight text-default-400">35.4K posts</h5></div>
+                    </div>
+                </button>
+                <button>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                            <h5 className="text-small tracking-tight text-default-400">1 . Football . Trending</h5>
+                            <IconDots className='w-4 h-4 text-green-500' />
+                        </div>
+                        <div className="flex items-center gap-2"><h1>Granada</h1></div>
+                        <div className="flex items-center gap-2"><h5 className="text-small tracking-tight text-default-400">35.4K posts</h5></div>
+                    </div>
+                </button>
+                <button>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                            <h5 className="text-small tracking-tight text-default-400">1 . Football . Trending</h5>
+                            <IconDots className='w-4 h-4 text-green-500' />
+                        </div>
+                        <div className="flex items-center gap-2"><h1>Granada</h1></div>
+                        <div className="flex items-center gap-2"><h5 className="text-small tracking-tight text-default-400">35.4K posts</h5></div>
+                    </div>
+                </button>
                 <button>
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2">

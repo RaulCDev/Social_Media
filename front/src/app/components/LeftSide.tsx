@@ -50,11 +50,11 @@ export default function LeftSide ({
       { icon: <IconNotes className='leftButtonssvg' />, text: 'Lists' },
       { icon: <IconBrandX className='leftButtonssvg' />, text: 'Premium' },
       { icon: <IconUser className='leftButtonssvg' />, text: 'Profile' },
+      { icon: <IconBookmark className='leftButtonssvg' />, text: 'Bookmarks' },
+      { icon: <IconUsers className='leftButtonssvg' />, text: 'Communities' },
     ];
 
     const altButtons = [
-      { icon: <IconBookmark className='leftButtonssvg' />, text: 'Bookmarks' },
-      { icon: <IconUsers className='leftButtonssvg' />, text: 'Communities' },
       { icon: <IconCashBanknote className='leftButtonssvg' />, text: 'MOnetization' },
       { icon: <IconVip className='leftButtonssvg' />, text: 'Pro' },
       { icon: <IconExternalLink  className='leftButtonssvg' />, text: 'Ads' },
