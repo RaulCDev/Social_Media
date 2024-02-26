@@ -5,6 +5,25 @@ import { Input, Card, Button } from '@nextui-org/react';
 import { IconDots, IconSearch } from '@tabler/icons-react'
 
 export default function RightSide() {
+
+    useEffect(() => {
+        const handleScroll = () => {
+          const rightContent = document.getElementById('rightContent');
+          const hightContenedor = rightContent.offsetHeight + 250;
+          const scrollUser = window.scrollY + window.innerHeight;
+          if (scrollUser >= hightContenedor) {
+            rightContent.style.position = 'fixed';
+          } else {
+            rightContent.style.position = 'relative';
+          }
+        };
+        window.addEventListener('scroll', handleScroll);
+        // Clean up the event listener when the component is unmounted
+        return () => {
+          window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
     return (
         <div className="rightSide">
             <div className='searchBar'>
@@ -13,7 +32,7 @@ export default function RightSide() {
                         <IconSearch className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                       }></Input>
             </div>
-            <div className='overflow-hidden'>
+            <div className='rightContent' id='rightContent'>
                 <Card className='w-[320px] mt-2 mb-2'>
                     <div className='rightBoxes'>
                         <p className='bigTextRight'>Subscribe to Premium</p>
@@ -24,31 +43,31 @@ export default function RightSide() {
                 <Card className='w-[340px]'>
                     <div className='rightBoxes'>
                         <h1>Who to follow</h1>
-                        <Button className="flex gap-x-2" variant="light">
+                        <button className="rightProfileUser">
                             <Avatar radius="full" size="md" src="https://github.com/RaulCDev.png" />
                             <div className="flex flex-col gap-1 items-start justify-center">
                                 <h4 className="text-small font-semibold leading-none text-default-600">Nombre</h4>
                                 <h5 className="text-small tracking-tight text-default-400">@Nombre</h5>
                             </div>
                             <Button className="flex gap-x-2 bg-green-500" radius="full" variant="light">Follow</Button>
-                        </Button>
-                        <Button className="flex gap-x-2" variant="light">
+                        </button>
+                        <button className="rightProfileUser">
                             <Avatar radius="full" size="md" src="https://github.com/RaulCDev.png" />
                             <div className="flex flex-col gap-1 items-start justify-center">
                                 <h4 className="text-small font-semibold leading-none text-default-600">Nombre</h4>
                                 <h5 className="text-small tracking-tight text-default-400">@Nombre</h5>
                             </div>
                             <Button className="flex gap-x-2 bg-green-500" radius="full" variant="light">Follow</Button>
-                        </Button>
-                        <Button className="flex gap-x-2" variant="light">
+                        </button>
+                        <button className="rightProfileUser">
                             <Avatar radius="full" size="md" src="https://github.com/RaulCDev.png" />
                             <div className="flex flex-col gap-1 items-start justify-center">
                                 <h4 className="text-sm font-semibold leading-none text-default-600">Nombre</h4>
                                 <h5 className="text-sm tracking-tight text-default-400">@Nombre</h5>
                             </div>
                             <Button className="flex gap-x-2 bg-green-500" radius="full" variant="light">Follow</Button>
-                        </Button>
-                        <Button>Show More</Button>
+                        </button>
+                        <button>Show More</button>
                     </div>
                 </Card>
                 <Card>

@@ -51,15 +51,6 @@
   height: 30px;
 }
 
-.overflow-hidden {
-  overflow-y: hidden;
-}
-
-.non-scrollable-content {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
 .leftButtons:hover {
   background-color: rgb(50, 50, 50);
 }
@@ -92,7 +83,6 @@
   right: 0px;
   margin-left: 1.75rem;
   z-index: 10;
-
 }
 
 .searchBar{
@@ -121,10 +111,28 @@
 .rightBoxes{
   display: flex;
   flex-direction: column;
+  align-items: start;
   padding-left: 15px;
   padding-right: 15px;
   padding-top: 10px;
   padding-bottom: 10px;
+}
+
+.rightContent{
+  position: relative;
+}
+
+.rightProfileUser{
+  display: inline-flex;
+  column-gap: 0.5rem;
+  width: 100%;
+  padding: 0%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.rightProfileUser:hover {
+  background-color: #525252;
 }
 
 .rightLastTitle{

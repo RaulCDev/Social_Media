@@ -11,7 +11,7 @@ export default function Home() {
     <React.Fragment>
       <div className="flex justify-center">
           <LeftSide  userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Hola"/>
-          <main className=''>
+          <main className='flex'>
             <div className='midContainer'>
               <PostTipes />
               <WritePost userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Post"/>
