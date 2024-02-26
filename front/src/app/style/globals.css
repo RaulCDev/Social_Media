@@ -71,32 +71,38 @@
   top: 0px;
   right: 0px;
   margin-left: 1.75rem;
-  margin-top: 0.25rem;
   z-index: 10;
 
 }
 
 .searchBar{
   position: sticky;
+  padding: 0%;
+  margin: 0px;
   top: 0;
   z-index: 1;
 }
 
 .bigTextRight{
   font-weight: bold;
-  padding-top: 10px;
+  font-size: larger;
+  padding-top: 8px;
   padding-right: 10px;
   padding-bottom: 10px;
-  padding-top: 10px;
 }
 
 .smallTextRight{
-  font-weight: lighter;
+  font-weight: normal;
   font-size: 0.875rem;
-  padding-top: 10px;
   padding-right: 10px;
   padding-bottom: 10px;
+}
+
+.firstRightBox{
+  padding-left: 15px;
+  padding-right: 15px;
   padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .container-flex {

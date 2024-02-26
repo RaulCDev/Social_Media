@@ -9,16 +9,18 @@ export default function RightSide() {
 
     return (
         <div className="rightSide">
-            <div className='searchBar pb-2 relative'>
-                <Input className="max-w-[340px] bg-black pb-1" value={value} placeholder="Buscar" variant="bordered" labelPlacement="outside"
+            <div className='searchBar'>
+                <Input className="max-w-[340px] bg-black pb-1 pt-1" value={value} placeholder="Buscar" variant="bordered" labelPlacement="outside"
                       startContent={
                         <IconSearch className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                       }></Input>
             </div>
             <Card className='w-[320px] mt-2 mb-2'>
-                <p className='bigTextRight'>Subscribe to Premium</p>
-                <p className='smallTextRight'>Subscribe to unlock new features and if eligible, receive a share of ads revenue.</p>
-                <button className="bg-green-600 rounded-full p-2">Subscribe</button>
+                <div className='firstRightBox'>
+                    <p className='bigTextRight'>Subscribe to Premium</p>
+                    <p className='smallTextRight'>Subscribe to unlock new features and if eligible, receive a share of ads revenue.</p>
+                    <button className="bg-green-600 rounded-full p-1.5 pl-3 pr-3 font-bold">Subscribe</button>
+                </div>
             </Card>
             <Card className='w-[340px]'>
                 <h1>Who to follow</h1>
