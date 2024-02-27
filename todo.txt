@@ -1,7 +1,10 @@
+<<<<<<< HEAD
 - MAKE THE RIGHT PART CORRECT
   - NEED TO KNOW IF THE WINDOW MOVES UP OR DOWN
   - 
 
+=======
+>>>>>>> 32ed37c63902179d4dedc5b423139d7e9d1df860
 
 -DO THE ARCHITECTURE CORRECT
     -The left part is a 'header' element the rest is 'main'

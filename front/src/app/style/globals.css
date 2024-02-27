@@ -119,7 +119,11 @@
 }
 
 .rightContent{
+<<<<<<< HEAD
   position: sticky;
+=======
+  position: relative;
+>>>>>>> 32ed37c63902179d4dedc5b423139d7e9d1df860
 }
 
 .rightProfileUser{

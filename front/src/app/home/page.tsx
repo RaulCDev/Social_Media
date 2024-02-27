@@ -29,6 +29,7 @@ export default function Home() {
               <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Mucho Texto Mucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho Texto" />
               <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Mucho Texto Mucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho Texto" />
               <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Mucho Texto Mucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho Texto" />
+<<<<<<< HEAD
               <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Hola" />
               <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Mucho Texto Mucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho Texto" />
               <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Manolo?" />
@@ -71,6 +72,8 @@ export default function Home() {
               <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Mucho Texto Mucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho Texto" />
               <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Mucho Texto Mucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho Texto" />
               <Account_Card userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Mucho Texto Mucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho TextoMucho Texto" />
+=======
+>>>>>>> 32ed37c63902179d4dedc5b423139d7e9d1df860
             </div>
             <RightSide />
           </main>
