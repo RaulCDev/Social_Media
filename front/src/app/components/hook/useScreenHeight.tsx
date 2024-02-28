@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 
-const useWindowScroll = () => {
+const useWindowScroll = (contentRef: React.RefObject<HTMLDivElement>) => {
   const windowRef = useRef<Window>(null);
   const lastScrollYRef = useRef(0);
 
@@ -10,9 +10,13 @@ const useWindowScroll = () => {
     const handleScroll = () => {
       const currentScrollY = windowRef.current.scrollY;
       if (currentScrollY > lastScrollYRef.current) {
-        console.log('El usuario está scrolleando hacia abajo');
+        // Down
+        contentRef.current.style.top = '-500px';
+        contentRef.current.style.bottom = '0px';
       } else {
-        console.log('El usuario está scrolleando hacia arriba');
+        // Up
+        contentRef.current.style.top = '0px';
+        contentRef.current.style.bottom = '-500px';
       }
       lastScrollYRef.current = currentScrollY;
     };

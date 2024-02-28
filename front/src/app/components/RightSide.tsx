@@ -7,7 +7,9 @@ import { useIntersection } from 'react-use';
 import useWindowScroll from './hook/useScreenHeight';
 
 export default function RightSide() {
-    useWindowScroll();
+    const rightContentRef = useRef<HTMLDivElement>(null);
+
+    useWindowScroll(rightContentRef);
 
     return (
         <div className="rightSide">
@@ -18,7 +20,7 @@ export default function RightSide() {
                       }></Input>
             </div>
             <div id="marginRight"></div>
-            <div className='rightContent' style={{ bottom: '-500px' }}>
+            <div className='rightContent' ref={rightContentRef} style={{ bottom: '-500px' }}>
                 <Card className='w-[320px] mt-2 mb-2'>
                     <div className='rightBoxes'>
                         <p className='bigTextRight'>Subscribe to Premium</p>
