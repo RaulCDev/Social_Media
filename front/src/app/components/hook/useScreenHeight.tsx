@@ -11,12 +11,16 @@ const useWindowScroll = (contentRef: React.RefObject<HTMLDivElement>) => {
       const currentScrollY = windowRef.current.scrollY;
       if (currentScrollY > lastScrollYRef.current) {
         // Down
+        console.log(window.scrollY);
         contentRef.current.style.top = '-500px';
-        contentRef.current.style.bottom = '0px';
+        contentRef.current.style.removeProperty('bottom');
+        contentRef.current.style.setProperty('margin-top', '1px');
       } else {
         // Up
-        contentRef.current.style.top = '0px';
-        contentRef.current.style.bottom = '-500px';
+        console.log(window.scrollY);
+        contentRef.current.style.bottom = '-300px';
+        contentRef.current.style.removeProperty('top');
+        contentRef.current.style.setProperty('margin-top', `${currentScrollY}px`);
       }
       lastScrollYRef.current = currentScrollY;
     };
