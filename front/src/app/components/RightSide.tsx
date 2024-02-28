@@ -4,42 +4,11 @@ import { Avatar } from '@nextui-org/react'
 import { Input, Card, Button } from '@nextui-org/react';
 import { IconDots, IconSearch } from '@tabler/icons-react'
 import { useIntersection } from 'react-use';
+import useWindowScroll from './hook/useScreenHeight';
 
 export default function RightSide() {
-    const ref = useRef();
-    const [entry, setEntry] = useIntersection(ref, options);
+    useWindowScroll();
 
-    useEffect(() => {
-        if (entry?.isIntersecting) {
-          // La entrada está visible en el viewport
-          const currentHeight = entry.boundingClientRect.height;
-          rightContent.style.bottom = '-719';
-          rightContent.style.top = '';
-        } else {
-          // La entrada no está visible en el viewport
-          const currentHeight = entry?.boundingClientRect?.height;
-          rightContent.style.top = '-719';
-          rightContent.style.bottom = '';
-        }
-      }, [entry]);
-
-    const useIntersectionObserver = (options) => {
-        const rightContentRef = useRef(null);
-        const [entry, setEntry] = useIntersection(rightMarginRight, options);
-        useEffect(() => {
-            const screenHeight = window.innerHeight;
-            const rightContent = rightContentRef.current;
-            const rightContentMargin = rightMarginRight.current;
-            if (entry?.isIntersecting) {
-
-
-            } else {
-                const currentHeight = entry.boundingClientRect.height;
-
-            }
-        }, [entry]);
-        return rightContentRef;
-      };
     return (
         <div className="rightSide">
             <div className='searchBar'>
@@ -49,7 +18,7 @@ export default function RightSide() {
                       }></Input>
             </div>
             <div id="marginRight"></div>
-            <div className='rightContent' ref={rightContentRef} style={{ bottom: '-500px' }}>
+            <div className='rightContent' style={{ bottom: '-500px' }}>
                 <Card className='w-[320px] mt-2 mb-2'>
                     <div className='rightBoxes'>
                         <p className='bigTextRight'>Subscribe to Premium</p>

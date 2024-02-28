@@ -15,12 +15,8 @@
     "framer-motion": "^11.0.3",
     "next": "14.1.0",
     "react": "^18",
-<<<<<<< HEAD
     "react-dom": "^18",
     "react-use": "^17.5.0"
-=======
-    "react-dom": "^18"
->>>>>>> 32ed37c63902179d4dedc5b423139d7e9d1df860
   },
   "devDependencies": {
     "@types/node": "^20",
