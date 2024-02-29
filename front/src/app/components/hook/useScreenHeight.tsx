@@ -1,6 +1,8 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState  } from 'react';
 
-const useWindowScroll = (contentRef: React.RefObject<HTMLDivElement>) => {
+const useWindowScroll = (contentRef: React.RefObject<HTMLDivElement>, rightMarginRef: React.RefObject<HTMLDivElement>) => {
+  const [diference, setDiference] = useState(0);
+
   const windowRef = useRef<Window>(null);
   const lastScrollYRef = useRef(0);
 
@@ -9,22 +11,28 @@ const useWindowScroll = (contentRef: React.RefObject<HTMLDivElement>) => {
 
     const handleScroll = () => {
       const currentScrollY = windowRef.current.scrollY;
-      if (currentScrollY > lastScrollYRef.current) {
+      if(currentScrollY > lastScrollYRef.current) {
         // Down
-        console.log(window.scrollY);
+        if(diference < 500){
+          setDiference((diference) => diference + (currentScrollY - lastScrollYRef.current));
+          console.log(diference);
+        }
         contentRef.current.style.top = '-500px';
         contentRef.current.style.removeProperty('bottom');
-        contentRef.current.style.setProperty('margin-top', '1px');
+        rightMarginRef.current.style.setProperty('margin-top', '15px');
       } else {
         // Up
-        console.log(window.scrollY);
-        contentRef.current.style.bottom = '-300px';
         contentRef.current.style.removeProperty('top');
-        contentRef.current.style.setProperty('margin-top', `${currentScrollY}px`);
+        rightMarginRef.current.style.setProperty('margin-top', `${currentScrollY - diference}px`);
+        if(diference  > 0){
+          contentRef.current.style.bottom = '-500px - ';
+          setDiference((diference) => diference - (currentScrollY - lastScrollYRef.current));
+          console.log(diference);
+        }
       }
+
       lastScrollYRef.current = currentScrollY;
     };
-
     windowRef.current.addEventListener('scroll', handleScroll);
 
     return () => {

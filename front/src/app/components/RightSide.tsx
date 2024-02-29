@@ -8,8 +8,9 @@ import useWindowScroll from './hook/useScreenHeight';
 
 export default function RightSide() {
     const rightContentRef = useRef<HTMLDivElement>(null);
+    const rightMarginRef = useRef<HTMLDivElement>(null);
 
-    useWindowScroll(rightContentRef);
+    useWindowScroll(rightContentRef, rightMarginRef);
 
     return (
         <div className="rightSide">
@@ -19,7 +20,7 @@ export default function RightSide() {
                         <IconSearch className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                       }></Input>
             </div>
-            <div id="marginRight"></div>
+            <div id="marginRight" ref={rightMarginRef}></div>
             <div className='rightContent' ref={rightContentRef} style={{ bottom: '-500px' }}>
                 <Card className='w-[320px] mt-2 mb-2'>
                     <div className='rightBoxes'>

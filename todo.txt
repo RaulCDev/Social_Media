@@ -1,17 +1,14 @@
-<<<<<<< HEAD
 - MAKE THE RIGHT PART CORRECT
-  - NEED TO KNOW IF THE WINDOW MOVES UP OR DOWN
-  - 
+  - FINISH THE MOVEMENT
+  - CORRET THE IMPUT "SEARCH"
+  - FINISH THE CSS CARDS
 
-=======
->>>>>>> 32ed37c63902179d4dedc5b423139d7e9d1df860
 
 -DO THE ARCHITECTURE CORRECT
     -The left part is a 'header' element the rest is 'main'
 
 -The upper part of the post part need to be transparent when the posts move
 -Look for a way to have infinite scrolling in posts
--Correct the position of the buttons and his content in the left part
 -Add likes to the posts, and save it in the user data in the database
 -Add comments to the pots, see if it is better to have only one comment or to be able to contain comments within each other.
 
@@ -20,3 +17,4 @@ FINISHED
 =====================================
 
 -Add the right part of the page
+-Correct the position of the buttons and his content in the left part
