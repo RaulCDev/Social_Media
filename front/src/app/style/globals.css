@@ -135,8 +135,19 @@
   background-color: #525252;
 }
 
+.rightTrends{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rightTrends:hover {
+  background-color: #525252;
+}
+
 .rightLastTitle{
   padding-bottom: 1.5rem;
+  font-size: 25px;
 }
 
 .container-flex {

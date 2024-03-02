@@ -1,8 +1,8 @@
 - MAKE THE RIGHT PART CORRECT
   - FINISH THE MOVEMENT
   - CORRET THE IMPUT "SEARCH"
-  - FINISH THE CSS CARDS
 
+- Finish the CSS of the right part
 
 -DO THE ARCHITECTURE CORRECT
     -The left part is a 'header' element the rest is 'main'
@@ -14,7 +14,7 @@
 
 
 FINISHED
-=====================================
+=============================================================================================
 
 -Add the right part of the page
 -Correct the position of the buttons and his content in the left part
