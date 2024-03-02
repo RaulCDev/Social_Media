@@ -7,8 +7,19 @@
   margin-top: 0px;
   margin-right: 5px;
   justify-content: flex-start;
-  align-items: center;
   margin-bottom: 8px;
+}
+
+.loginIcons{
+  display: flex;
+  color: #fff;
+}
+
+.bigLoginContainer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 .midContainer{
@@ -138,7 +149,6 @@
 .rightTrends{
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
 }
 
 .rightTrends:hover {
@@ -265,20 +275,20 @@
 }
 
 .btn{
-  background-color: #a6ff00;
+  background-color: #01a199;
   color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 10px 20px;
+  padding: 5px 20px;
   cursor: pointer;
 }
 
 .btn:hover {
-  background-color: #628b00;
+  background-color: #00358b;
 }
 
 .btn:active {
-  background-color: #00803c;
+  background-color: #5d0070;
 }
 
 p, h1{

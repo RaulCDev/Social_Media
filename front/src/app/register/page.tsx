@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {Button} from '@nextui-org/button';
 import {Input} from "@nextui-org/react";
+import { IconBrandLinkedin, IconBrandGithub, IconBrandX } from '@tabler/icons-react'
 
 export default function Home() {
   const [email, setEmail] = useState('');
@@ -62,34 +63,43 @@ export default function Home() {
   }
   return (
     <React.Fragment>
-      <div className='icons'>
-        <a href="https://github.com/RaulCDev">
-          <img src="github.svg" alt="logo_github"/>
-        </a>
-        <a href="https://www.linkedin.com/in/ra%C3%BAl-conde-rodr%C3%ADguez/">
-          <img src="linkedin.svg" alt="logo_linkedin"/>
-        </a>
-      </div>
-      <p className='title'>x?</p>
-      <div className='main_text'>
-        <form onSubmit={handleSubmit} className='form'>
-          <h1>Register</h1>
-          <Input
-            type="email"
-            label="Email"
-            onChange={handleEmailChange}
-            isInvalid={isEmailValid}
-            errorMessage={error}
-          />
-          <Input
-            type='password'
-            label="Password"
-            onChange={handlePasswordChange}
-            isInvalid={isEmailValid}
-            errorMessage={error}
-          />
-          <Button type='submit' className="max-w-xs">Register</Button>
-        </form>
+      <div className='bigLoginContainer'>
+        <div className='main_text'>
+          <div className="loginIcons">
+            <button className="iconButton">
+              <IconBrandX className='myLinks' />
+            </button>
+            <button className="iconButton">
+              <a href="https://www.linkedin.com/in/ra%C3%BAl-conde-rodr%C3%ADguez/" target="_blank" rel="noopener noreferrer">
+                <IconBrandLinkedin className='myLinks' />
+              </a>
+            </button>
+            <button className="iconButton">
+              <a href="https://github.com/RaulCDev" target="_blank" rel="noopener noreferrer">
+                <IconBrandGithub className='myLinks' />
+              </a>
+            </button>
+          </div>
+          <form onSubmit={handleSubmit} className='form'>
+            <h1>Register</h1>
+            <Input
+              type="email"
+              label="Email"
+              onChange={handleEmailChange}
+              isInvalid={isEmailValid}
+              errorMessage={error}
+            />
+            <Input
+              type='password'
+              label="Password"
+              onChange={handlePasswordChange}
+              isInvalid={isEmailValid}
+              errorMessage={error}
+            />
+            <Button type='submit' className="max-w-xs">Register</Button>
+            <Link href="/" className='btn'>Login</Link>
+          </form>
+        </div>
       </div>
     </React.Fragment>
   );

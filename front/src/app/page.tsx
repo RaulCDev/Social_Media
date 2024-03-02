@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {Button} from '@nextui-org/button';
 import {Input} from "@nextui-org/react";
+import { IconBrandLinkedin, IconBrandGithub, IconBrandX } from '@tabler/icons-react'
 
 const Home: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -78,16 +79,23 @@ const Home: React.FC = () => {
 
   return (
   <>
-    <div className='icons'>
-      <a href="https://github.com/RaulCDev">
-        <Image src="github.svg" alt="logo_github" width="512" height="512"/>
-      </a>
-      <a href="https://www.linkedin.com/in/ra%C3%BAl-conde-rodr%C3%ADguez/">
-        <Image src="linkedin.svg" alt="logo_linkedin" width="512" height="512"/>
-      </a>
-    </div>
-    <p className='title'>x?</p>
+  <div className='bigLoginContainer'>
     <div className='main_text'>
+      <div className="loginIcons">
+        <button className="iconButton">
+          <IconBrandX className='myLinks' />
+        </button>
+        <button className="iconButton">
+          <a href="https://www.linkedin.com/in/ra%C3%BAl-conde-rodr%C3%ADguez/" target="_blank" rel="noopener noreferrer">
+            <IconBrandLinkedin className='myLinks' />
+          </a>
+        </button>
+        <button className="iconButton">
+          <a href="https://github.com/RaulCDev" target="_blank" rel="noopener noreferrer">
+            <IconBrandGithub className='myLinks' />
+          </a>
+        </button>
+      </div>
       <form onSubmit={handleSubmit} className='form'>
         <h1>Log-In</h1>
         <Input
@@ -105,10 +113,11 @@ const Home: React.FC = () => {
           errorMessage={error}
         />
         <Button type='submit' className="max-w-xs">Login</Button>
-        <Button onClick={handleLogin} className="max-w-xs">Log in with Github</Button>
+        <Button onClick={handleLogin} className="max-w-xs">Log in with <IconBrandGithub/></Button>
         <Link href="/register" className='btn'>Register</Link>
       </form>
     </div>
+  </div>
   </>
 );
 };

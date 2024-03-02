@@ -38,7 +38,7 @@ export default function RightSide() {
                                 <h4 className="text-small font-semibold leading-none text-default-600">Nombre</h4>
                                 <h5 className="text-small tracking-tight text-default-400">@Nombre</h5>
                             </div>
-                            <Button className="flex gap-x-2 bg-green-500" radius="full" variant="light">Follow</Button>
+                            <Button className="flex gap-x-2 bg-green-500 flex-end" radius="full" variant="light">Follow</Button>
                         </button>
                         <button className="rightProfileUser">
                             <Avatar radius="full" size="md" src="https://github.com/RaulCDev.png" />
@@ -62,7 +62,7 @@ export default function RightSide() {
                 <Card className='w-[350px] mt-3'>
                     <div className='rightBoxes'>
                         <h1 className='bigTextRight'>Somewhere trends</h1>
-                        <button className='w-full'>
+                        <button className='w-full pb-5'>
                             <div className="rightTrends">
                                 <div className="flex items-center gap-2">
                                     <h5 className="text-small tracking-tight text-default-400">1 . Football . Trending</h5>
@@ -72,90 +72,90 @@ export default function RightSide() {
                                 <div className="flex items-center gap-2"><h5 className="text-small tracking-tight text-default-400">35.4K posts</h5></div>
                             </div>
                         </button>
-                        <button className='w-full'>
+                        <button className='w-full pb-5'>
                             <div className="rightTrends">
                                 <div className="flex items-center gap-2">
-                                    <h5 className="text-small tracking-tight text-default-400">1 . Football . Trending</h5>
+                                    <h5 className="text-small tracking-tight text-default-400">1 · Football · Trending</h5>
                                     <IconDots className='w-4 h-4 text-green-500' />
                                 </div>
                                 <div className="flex items-center gap-2"><h1>Granada</h1></div>
                                 <div className="flex items-center gap-2"><h5 className="text-small tracking-tight text-default-400">35.4K posts</h5></div>
                             </div>
                         </button>
-                        <button className='w-full'>
+                        <button className='w-full pb-5'>
                             <div className="rightTrends">
                                 <div className="flex items-center gap-2">
-                                    <h5 className="text-small tracking-tight text-default-400">1 . Football . Trending</h5>
+                                    <h5 className="text-small tracking-tight text-default-400">1 · Football · Trending</h5>
                                     <IconDots className='w-4 h-4 text-green-500' />
                                 </div>
                                 <div className="flex items-center gap-2"><h1>Granada</h1></div>
                                 <div className="flex items-center gap-2"><h5 className="text-small tracking-tight text-default-400">35.4K posts</h5></div>
                             </div>
                         </button>
-                        <button className='w-full'>
+                        <button className='w-full pb-5'>
                             <div className="rightTrends">
                                 <div className="flex items-center gap-2">
-                                    <h5 className="text-small tracking-tight text-default-400">1 . Football . Trending</h5>
+                                    <h5 className="text-small tracking-tight text-default-400">1 · Football · Trending</h5>
                                     <IconDots className='w-4 h-4 text-green-500' />
                                 </div>
                                 <div className="flex items-center gap-2"><h1>Granada</h1></div>
                                 <div className="flex items-center gap-2"><h5 className="text-small tracking-tight text-default-400">35.4K posts</h5></div>
                             </div>
                         </button>
-                        <button className='w-full'>
+                        <button className='w-full pb-5'>
                             <div className="rightTrends">
                                 <div className="flex items-center gap-2">
-                                    <h5 className="text-small tracking-tight text-default-400">1 . Football . Trending</h5>
+                                    <h5 className="text-small tracking-tight text-default-400">1 · Football · Trending</h5>
                                     <IconDots className='w-4 h-4 text-green-500' />
                                 </div>
                                 <div className="flex items-center gap-2"><h1>Granada</h1></div>
                                 <div className="flex items-center gap-2"><h5 className="text-small tracking-tight text-default-400">35.4K posts</h5></div>
                             </div>
                         </button>
-                        <button className='w-full'>
+                        <button className='w-full pb-5'>
                             <div className="rightTrends">
                                 <div className="flex items-center gap-2">
-                                    <h5 className="text-small tracking-tight text-default-400">1 . Football . Trending</h5>
+                                    <h5 className="text-small tracking-tight text-default-400">1 · Football · Trending</h5>
                                     <IconDots className='w-4 h-4 text-green-500' />
                                 </div>
                                 <div className="flex items-center gap-2"><h1>Granada</h1></div>
                                 <div className="flex items-center gap-2"><h5 className="text-small tracking-tight text-default-400">35.4K posts</h5></div>
                             </div>
                         </button>
-                        <button className='w-full'>
+                        <button className='w-full pb-5'>
                             <div className="rightTrends">
                                 <div className="flex items-center gap-2">
-                                    <h5 className="text-small tracking-tight text-default-400">1 . Football . Trending</h5>
+                                    <h5 className="text-small tracking-tight text-default-400">1 · Football · Trending</h5>
                                     <IconDots className='w-4 h-4 text-green-500' />
                                 </div>
                                 <div className="flex items-center gap-2"><h1>Granada</h1></div>
                                 <div className="flex items-center gap-2"><h5 className="text-small tracking-tight text-default-400">35.4K posts</h5></div>
                             </div>
                         </button>
-                        <button className='w-full'>
+                        <button className='w-full pb-5'>
                             <div className="rightTrends">
                                 <div className="flex items-center gap-2">
-                                    <h5 className="text-small tracking-tight text-default-400">1 . Football . Trending</h5>
+                                    <h5 className="text-small tracking-tight text-default-400">1 · Football · Trending</h5>
                                     <IconDots className='w-4 h-4 text-green-500' />
                                 </div>
                                 <div className="flex items-center gap-2"><h1>Granada</h1></div>
                                 <div className="flex items-center gap-2"><h5 className="text-small tracking-tight text-default-400">35.4K posts</h5></div>
                             </div>
                         </button>
-                        <button className='w-full'>
+                        <button className='w-full pb-5'>
                             <div className="rightTrends">
                                 <div className="flex items-center gap-2">
-                                    <h5 className="text-small tracking-tight text-default-400">1 . Football . Trending</h5>
+                                    <h5 className="text-small tracking-tight text-default-400">1 · Football · Trending</h5>
                                     <IconDots className='w-4 h-4 text-green-500' />
                                 </div>
                                 <div className="flex items-center gap-2"><h1>Granada</h1></div>
                                 <div className="flex items-center gap-2"><h5 className="text-small tracking-tight text-default-400">35.4K posts</h5></div>
                             </div>
                         </button>
-                        <button className='w-full'>
+                        <button className='w-full pb-5'>
                             <div className="rightTrends">
                                 <div className="flex items-center gap-2">
-                                    <h5 className="text-small tracking-tight text-default-400">1 . Football . Trending</h5>
+                                    <h5 className="text-small tracking-tight text-default-400">1 · Football · Trending</h5>
                                     <IconDots className='w-4 h-4 text-green-500' />
                                 </div>
                                 <div className="flex items-center gap-2"><h1>Granada</h1></div>
