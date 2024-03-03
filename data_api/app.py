@@ -12,7 +12,7 @@ from database import db
 
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://user:1234@localhost:3306/socialmedia'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://user:1234@localhost:3306/socialmedia'
 # Initialize the database
 db.init_app(app)
 
