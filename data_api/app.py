@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, url_for
+from flask import Flask, request, jsonify, url_for, make_response
 from flask_cors import CORS, cross_origin
 import jwt
 from datetime import datetime, timedelta, timezone
@@ -30,6 +30,7 @@ Client_secret="b3ff0aec8649b12d0d026d7a332abdf416010133"
 #Function to check if the token is valid
 def jwt_required(fn):
     @wraps(fn)
+
     def wrapper(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
         if not auth_header:
@@ -84,6 +85,20 @@ def login_user():
         return jsonify({'succes': True, 'access_token': create_token(user.email)})
 
     return jsonify({'message': 'Error de autenticación', 'success': False}), 40
+
+@app.route('/cards', methods=['POST'])
+def get_cards():
+    cards = [
+        {
+            'userFullName': 'John Doe',
+            'userName': 'johndoe',
+            'avatarUrl': 'https://github.com/RaulCDev.png',
+            'content': 'This is a sample card content.This is a sample card content.This is a sample card content.This is a sample card content.This is a sample card content.This is a sample card content.This is a sample card content.',
+        } for i in range(10)
+    ]
+    response = make_response(jsonify(cards))
+    print(response)
+    return response
 
 @cross_origin
 @app.route('/register', methods=['POST'])
