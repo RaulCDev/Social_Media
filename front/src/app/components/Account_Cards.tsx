@@ -46,7 +46,7 @@ export default function Account_Cards() {
   }, [])
 
   return (
-    <div className="flex">
+    <div>
         {cards.filter(Boolean).map((card, index) => (
             <React.Fragment key={index}>{card}</React.Fragment>
         ))}
