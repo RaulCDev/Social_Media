@@ -16,7 +16,13 @@ export default function Account_Cards() {
   const [cards, setCards] = useState<JSX.Element[]>(new Array(limit).fill(null))
 
   const fetchCards = async () => {
-    const response = await fetch(`http://localhost:5000/cards`)
+    const response = await fetch(`http://localhost:5000/cards`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({})
+    })
     const newCards = await response.json()
     return newCards
   }
@@ -31,7 +37,7 @@ export default function Account_Cards() {
         avatarUrl={cardData.avatarUrl}
         content={cardData.content}
       />
-      ));
+    ));
     setCards((prevCards) => [...prevCards, ...newCardsComponents])
   }
 
