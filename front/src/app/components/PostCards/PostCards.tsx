@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import Account_Card from '../components/Account_Card'
+import Account_Card from './PostCard'
 
 type Account_CardProps = {
   key: string

@@ -1,5 +1,8 @@
 # Todo list
 ---------------------------------
+## First to do
+  -Make the icons of the post buttons to interact whit them
+  -Add folders to order better components folder
 
 ## Front
   Right Part:
@@ -8,7 +11,6 @@
   -Correct the positions of the buttons in the account cards
 
   Center Part:
-  -
   -The upper part of the post part need to be transparent when the posts move
   -Look for a way to have infinite scrolling in posts
 
@@ -27,3 +29,7 @@
 
 -Add the right part of the page
 -Correct the position of the buttons and his content in the left part
+
+## Front
+
+## Back

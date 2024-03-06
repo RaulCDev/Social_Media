@@ -2,6 +2,7 @@ import React from 'react'
 import { Card, CardHeader, CardBody, Avatar, CardFooter } from '@nextui-org/react'
 import Link from 'next/link'
 import { IconHeart, IconMessageCircle, IconRepeat } from '@tabler/icons-react'
+import PostButtons from './Buttons/buttons'
 
 type Account_CardProps = {
   key: string
@@ -31,15 +32,7 @@ const Account_Card: React.FC<Account_CardProps> = ({ userFullName, userName, ava
         </p>
       </CardBody>
       <CardFooter className="gap-3">
-        <button>
-          <IconMessageCircle className='w-4 h-4' />
-        </button>
-        <button>
-          <IconHeart className='w-4 h-4' />
-        </button>
-        <button>
-          <IconRepeat className='w-4 h-4' />
-        </button>
+        <PostButtons />
       </CardFooter>
     </Card>
   )

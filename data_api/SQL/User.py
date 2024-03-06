@@ -1,4 +1,4 @@
-from data_api.SQL.database import db
+from SQL.database import db
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

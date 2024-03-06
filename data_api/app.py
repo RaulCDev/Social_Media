@@ -7,8 +7,8 @@ from github import Github
 import requests
 
 #Import SQL database models from models.py and the database itself from database.py
-from data_api.SQL.User import User
-from data_api.SQL.database import db
+from SQL.User import User
+from SQL.database import db
 
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta'

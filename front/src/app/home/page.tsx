@@ -1,12 +1,12 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Account_Card from '../components/Account_Card';
+import Account_Card from '../components/PostCards/PostCard';
 import WritePost from '../components/Write-Post';
 import PostTipes from '../components/PostTipes';
 import LeftSide from '../components/LeftSide';
 import RightSide from '../components/RightSide';
-import Account_Cards from '../components/Account_Cards';
+import Account_Cards from '../components/PostCards/PostCards';
 
 export default function Home() {
   return (

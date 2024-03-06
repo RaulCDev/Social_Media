@@ -10,6 +10,33 @@
   margin-bottom: 8px;
 }
 
+.postIcons{
+  margin: 0;
+  padding: 8px;
+}
+
+.postIcons:hover {
+  background-color: rgba(41, 106, 0, 0.5);
+}
+
+.postIcons:active {
+  background-color: rgba(41, 106, 0, 0.7);
+}
+
+.postIconsHeart{
+  margin: 0;
+  padding: 8px;
+}
+
+.postIconsHeart:hover {
+  background-color: rgba(125, 0, 27, 0.5);
+}
+
+.postIconsHeart:active {
+  background-color: rgba(112, 0, 24, 0.7);
+}
+
+
 .loginIcons{
   display: flex;
   color: #fff;
