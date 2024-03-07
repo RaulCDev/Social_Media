@@ -2,8 +2,7 @@
 ---------------------------------
 ## First to do
   -Make the icons of the post buttons to interact whit them
-  -Add folders to order better components folder
-
+    -
 ## Front
   Right Part:
   -Finish the movement
@@ -18,18 +17,13 @@
   -Correct the "More options" pop up
   -Add the user pop up when clicked
 
-
 ## Back
   -Add likes to the posts, and save it in the user data in the database
   -Add comments to the pots, see if it is better to have only one comment or to be able to contain comments within each other.
-
 
 ## FINISHED
 =============================================================================================
 
 -Add the right part of the page
 -Correct the position of the buttons and his content in the left part
-
-## Front
-
-## Back
+-Add folders to order better components folder

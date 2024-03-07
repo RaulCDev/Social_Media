@@ -9,6 +9,8 @@ import requests
 #Import SQL database models from models.py and the database itself from database.py
 from SQL.User import User
 from SQL.database import db
+from SQL.Post import Post
+from SQL.Like import Like
 
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta'
@@ -86,6 +88,7 @@ def login_user():
 
     return jsonify({'message': 'Error de autenticación', 'success': False}), 40
 
+@cross_origin
 @app.route('/cards', methods=['POST'])
 def get_cards():
     cards = [
@@ -99,6 +102,11 @@ def get_cards():
     response = make_response(jsonify(cards))
     print(response)
     return response
+
+@cross_origin
+@app.route('/like', methods=['POST'])
+def get_cards():
+    
 
 @cross_origin
 @app.route('/register', methods=['POST'])
@@ -123,13 +131,6 @@ def register_user():
 
         # Return a response with a success message
         return jsonify({"message": "Usuario registrado exitosamente", "success": True})
-
-@cross_origin
-@app.route('/prueba', methods=['POST'])
-@jwt_required
-def name():
-
-    return jsonify({"message": "Entro papi", "success": True})
 
 
 

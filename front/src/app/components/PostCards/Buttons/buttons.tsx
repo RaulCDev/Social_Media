@@ -1,7 +1,9 @@
-import React from "react";
-import { IconHeart, IconMessageCircle, IconRepeat } from '@tabler/icons-react'
+import React, { useState } from "react";
+import { IconHeart, IconMessageCircle, IconRepeat, IconHeartFilled } from '@tabler/icons-react'
 
 const PostButtons = () => {
+  const [isHeartFilled, setIsHeartFilled] = useState(false);
+
   return (
     <div className="flex space-x-2">
       <button className="postIcons rounded-full">
@@ -10,8 +12,8 @@ const PostButtons = () => {
       <button className="postIcons rounded-full">
         <IconRepeat className="w-4 h-4" />
       </button>
-      <button className="postIconsHeart rounded-full">
-        <IconHeart className="w-4 h-4" />
+      <button className="postIconsHeart rounded-full" onClick={() => setIsHeartFilled(!isHeartFilled)}>
+        {isHeartFilled ? <IconHeartFilled className="w-4 h-4" /> : <IconHeart className="w-4 h-4" />}
       </button>
     </div>
   );
