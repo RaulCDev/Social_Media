@@ -7,10 +7,8 @@ from github import Github
 import requests
 
 #Import SQL database models from models.py and the database itself from database.py
-from SQL.User import User
 from SQL.database import db
-from SQL.Post import Post
-from SQL.Like import Like
+from SQL.models import Post, Like, User
 
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta'
@@ -57,6 +55,47 @@ def jwt_required(fn):
 
     return wrapper
 
+def insert_predefined_data():
+    # Get the first user from the database
+    user = User.query.with_entities(User.id, User.email, User.username, User.accountname, User.avatarUrl).first()
+
+    # Create 10 predefined users
+    users = [
+        User(email='user1@example.com', username='user1', accountname='user1', avatarUrl='https://github.com/user1.png'),
+        User(email='user2@example.com', username='user2', accountname='user2', avatarUrl='https://github.com/user2.png'),
+        User(email='user3@example.com', username='user3', accountname='user3', avatarUrl='https://github.com/user3.png'),
+        User(email='user4@example.com', username='user4', accountname='user4', avatarUrl='https://github.com/user4.png'),
+        User(email='user5@example.com', username='user5', accountname='user5', avatarUrl='https://github.com/user5.png'),
+        User(email='user6@example.com', username='user6', accountname='user6', avatarUrl='https://github.com/user6.png'),
+        User(email='user7@example.com', username='user7', accountname='user7', avatarUrl='https://github.com/user7.png'),
+        User(email='user8@example.com', username='user8', accountname='user8', avatarUrl='https://github.com/user8.png'),
+        User(email='user9@example.com', username='user9', accountname='user9', avatarUrl='https://github.com/user9.png'),
+        User(email='user10@example.com', username='user10', accountname='user10', avatarUrl='https://github.com/user10.png'),
+    ]
+
+    # Add the users to the database
+    db.session.add_all(users)
+    db.session.commit()
+
+    posts = []
+    for user in users:
+        posts += [
+            Post(user=user, content='This is the first content'),
+            Post(user=user, content='This is the second content'),
+            Post(user=user, content='This is the third content'),
+            Post(user=user, content='This is the fourth content'),
+            Post(user=user, content='This is the fifth content'),
+            Post(user=user, content='This is the sixth content'),
+            Post(user=user, content='This is the seventh content'),
+            Post(user=user, content='This is the eighth  content'),
+            Post(user=user, content='This is the ninth content'),
+            Post(user=user, content='This is the tenth content')
+        ]
+
+    # Add the posts to the database
+    db.session.add_all(posts)
+    db.session.commit()
+
 @cross_origin
 @app.route('/github_callback', methods=['POST'])
 def github_callback():
@@ -72,21 +111,6 @@ def github_callback():
     emails = user.get_emails()
     for email in emails:
         return jsonify({'succes': True,'access_token': create_token(email.email)})
-
-@cross_origin
-@app.route('/login', methods=['POST'])
-def login_user():
-    email = request.json['email']
-    password = request.json['password']
-
-    # Autentica al usuario
-    user = authenticate(email, password)
-
-    if user:
-        # Genera el JWT para el usuario autenticado
-        return jsonify({'succes': True, 'access_token': create_token(user.email)})
-
-    return jsonify({'message': 'Error de autenticación', 'success': False}), 40
 
 @cross_origin
 @app.route('/cards', methods=['POST'])
@@ -105,8 +129,8 @@ def get_cards():
 
 @cross_origin
 @app.route('/like', methods=['POST'])
-def get_cards():
-    
+def give_like():
+    return "Mondongo";
 
 @cross_origin
 @app.route('/register', methods=['POST'])
@@ -146,14 +170,9 @@ def create_token(identity):
     token = jwt.encode(payload, SECRET_KEY, algorithm=JWT_ALGORITHM)
     return token
 
-# Check if the user exists, and the credentials are correct
-def authenticate(email, password):
-    user = User.query.filter_by(email=email).first()
-    if user and user.password == password:  # Comparación de contraseñas en texto plano
-        return user
-
-
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        # Insert predefined posts in the database
+        insert_predefined_data()
     app.run(debug=True)
