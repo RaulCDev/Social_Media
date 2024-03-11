@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Account_Card from '../components/PostCards/PostCard';
 import WritePost from '../components/Write-Post';
@@ -9,10 +9,31 @@ import RightSide from '../components/RightSide';
 import Account_Cards from '../components/PostCards/PostCards';
 
 export default function Home() {
+  const [user, setUser] = useState({});
+  // Get the token from local storage
+  const token = localStorage.getItem('token');
+
+  // Send a GET request to the /get_user/<token> endpoint with the token as a query parameter
+  useEffect(() => {
+    if (token) {
+      fetch(`/get_user_data/${token}`)
+        .then(response => response.json())
+        .then(data => {
+          // Save the user data in the state
+          setUser(data);
+          console.log(data);
+        })
+        .catch(error => {
+          // Handle any errors that occur during the request
+          console.error(error);
+        });
+    }
+  }, [token]);
+
   return (
     <>
       <div className="flex justify-center">
-          <LeftSide  userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Hola"/>
+          <LeftSide userFullName={user.email} userName={user.username} avatarUrl={user.accountname} content={user.avatarUrl}/>
           <main className='flex'>
             <div className='midContainer'>
               <PostTipes />

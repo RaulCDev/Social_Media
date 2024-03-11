@@ -114,6 +114,20 @@ def save_user(email, username, accountname, avatarUrl):
     return jsonify({'success': True})
 
 @cross_origin
+@app.route('/get_user_data/<token>', methods=['GET'])
+@jwt_required
+def get_user(token):
+    # Query the database for the user associated with the given token
+    user = User.query.filter_by(access_token=token).first()
+    # Return the user data in a JSON format
+    return jsonify({
+        'email': user.email,
+        'username': user.username,
+        'accountname': user.accountname,
+        'avatarUrl': user.avatarUrl
+    })
+
+@cross_origin
 @app.route('/github_callback', methods=['POST'])
 def github_callback():
     data = {
