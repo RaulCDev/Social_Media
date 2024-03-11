@@ -96,26 +96,7 @@ const Home: React.FC = () => {
           </a>
         </button>
       </div>
-      <form onSubmit={handleSubmit} className='form'>
-        <h1>Log-In</h1>
-        <Input
-          type="email"
-          label="Email"
-          onChange={handleEmailChange}
-          isInvalid={isEmailValid}
-          errorMessage={error}
-        />
-        <Input
-          type='password'
-          label="Password"
-          onChange={handlePasswordChange}
-          isInvalid={isEmailValid}
-          errorMessage={error}
-        />
-        <Button type='submit' className="max-w-xs">Login</Button>
-        <Button onClick={handleLogin} className="max-w-xs">Log in with <IconBrandGithub/></Button>
-        <Link href="/register" className='btn'>Register</Link>
-      </form>
+      <Button onClick={handleLogin} className="text-xl">LogIn with <IconBrandGithub/></Button>
     </div>
   </div>
   </>
