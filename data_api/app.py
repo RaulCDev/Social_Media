@@ -74,27 +74,28 @@ def insert_predefined_data():
     ]
 
     # Add the users to the database
-    db.session.add_all(users)
-    db.session.commit()
+    for user_data in users:
+        existing_user = User.query.filter_by(email=user_data.email).first()
+        if existing_user:
+            continue
 
-    posts = []
+        user = User(**user_data.__dict__)
+        db.session.add_all(user)
+        db.session.commit()
+
+    # Create 10 predefined posts for each user
+    users = User.query.all()
     for user in users:
-        posts += [
-            Post(user=user, content='This is the first content'),
-            Post(user=user, content='This is the second content'),
-            Post(user=user, content='This is the third content'),
-            Post(user=user, content='This is the fourth content'),
-            Post(user=user, content='This is the fifth content'),
-            Post(user=user, content='This is the sixth content'),
-            Post(user=user, content='This is the seventh content'),
-            Post(user=user, content='This is the eighth  content'),
-            Post(user=user, content='This is the ninth content'),
-            Post(user=user, content='This is the tenth content')
-        ]
+        posts = []
+        for i in range(10):
+            post_data = Post(user_id=user.id, content='This is the first content')
+            existing_post = Post.query.filter_by(user_id=user.id, content=post_data.content).first()
+            if existing_post:
+                continue
 
-    # Add the posts to the database
-    db.session.add_all(posts)
-    db.session.commit()
+            posts.append(post_data)
+            db.session.add(post_data)
+            db.session.commit()
 
 @cross_origin
 @app.route('/github_callback', methods=['POST'])
