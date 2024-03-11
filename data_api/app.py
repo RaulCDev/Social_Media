@@ -97,6 +97,22 @@ def insert_predefined_data():
             db.session.add(post_data)
             db.session.commit()
 
+def save_user(email, username, accountname, avatarUrl):
+    # Check if a user with the same email address already exists in the database
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        return jsonify({'message': 'User already registered'})
+
+    # Create a new Token object
+    user = User(email=email, username=username, accountname=accountname, avatarUrl=avatarUrl)
+
+    # Add the token to the database
+    db.session.add(user)
+    db.session.commit()
+
+    # Return a success message
+    return jsonify({'success': True})
+
 @cross_origin
 @app.route('/github_callback', methods=['POST'])
 def github_callback():
@@ -111,6 +127,10 @@ def github_callback():
     user = github_client.get_user()
     emails = user.get_emails()
     for email in emails:
+        email_value = email.email
+        username_value = user.login
+        avatarUrl_value = f"https://github.com/{user.login}.png"
+        save_user(email_value, username_value, username_value, avatarUrl_value)
         return jsonify({'succes': True,'access_token': create_token(email.email)})
 
 @cross_origin
@@ -156,8 +176,6 @@ def register_user():
 
         # Return a response with a success message
         return jsonify({"message": "Usuario registrado exitosamente", "success": True})
-
-
 
 #Create a token JWT whit the user identity
 def create_token(identity):
