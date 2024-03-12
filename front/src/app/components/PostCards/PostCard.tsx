@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { IconHeart, IconMessageCircle, IconRepeat } from '@tabler/icons-react'
 import PostButtons from './Buttons/buttons'
 
-type Account_CardProps = {
+type Post_CardProps = {
   key: string
   userFullName: string
   userName: string
@@ -12,7 +12,7 @@ type Account_CardProps = {
   content: string
 }
 
-const Account_Card: React.FC<Account_CardProps> = ({ userFullName, userName, avatarUrl, content }) => {
+const Post_Card: React.FC<Post_CardProps> = ({ userFullName, userName, avatarUrl, content }) => {
   return (
     <Card className="flex items-center shadow-none bg-transparent hover:bg-slate-800 transition border-b rounded-none cursor-pointer border-white/20">
       <CardHeader className="cardHeader">
@@ -38,4 +38,4 @@ const Account_Card: React.FC<Account_CardProps> = ({ userFullName, userName, ava
   )
 }
 
-export default Account_Card
+export default Post_Card

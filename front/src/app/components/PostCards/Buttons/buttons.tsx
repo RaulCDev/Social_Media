@@ -1,8 +1,21 @@
 import React, { useState } from "react";
 import { IconHeart, IconMessageCircle, IconRepeat, IconHeartFilled } from '@tabler/icons-react'
+import axios from "axios";
 
 const PostButtons = () => {
   const [isHeartFilled, setIsHeartFilled] = useState(false);
+
+  const handleLike = async () => {
+    try {
+      // Make a POST request to the Flask API endpoint to like the post
+      await axios.post(`http://127.0.0.1:5000/cards`);
+
+      // Update the local state to reflect the change
+      setIsHeartFilled(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="flex space-x-2">

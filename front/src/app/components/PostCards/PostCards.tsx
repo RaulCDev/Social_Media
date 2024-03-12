@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import Account_Card from './PostCard'
+import Post_Card from './PostCard'
 
-type Account_CardProps = {
+type Post_CardProps = {
   key: string
   userFullName: string
   userName: string
@@ -9,9 +9,9 @@ type Account_CardProps = {
   content: string
 }
 
-type Account_Card = React.ComponentType<Account_CardProps>
+type Post_Card = React.ComponentType<Post_CardProps>
 
-export default function Account_Cards() {
+export default function Post_Cards() {
   const limit = 10 // Número de tarjetas a cargar inicialmente
   const [cards, setCards] = useState<JSX.Element[]>(new Array(limit).fill(null))
 
@@ -30,7 +30,7 @@ export default function Account_Cards() {
   const loadMoreCards = async () => {
     const newCards = await fetchCards()
     const newCardsComponents = newCards.map((cardData: any) => (
-        <Account_Card
+        <Post_Card
         key={cardData.id}
         userFullName={cardData.userFullName}
         userName={cardData.userName}

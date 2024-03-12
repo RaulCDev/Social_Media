@@ -6,7 +6,7 @@ import WritePost from '../components/Write-Post';
 import PostTipes from '../components/PostTipes';
 import LeftSide from '../components/LeftSide';
 import RightSide from '../components/RightSide';
-import Account_Cards from '../components/PostCards/PostCards';
+import Post_Cards from '../components/PostCards/PostCards';
 
 export default function Home() {
   const [user, setUser] = useState({});
@@ -39,12 +39,12 @@ export default function Home() {
   return (
     <>
       <div className="flex justify-center">
-          <LeftSide userFullName={user.username} userName={user.username} avatarUrl={user.avatarUrl} content={"Mondongo"}/>
+          <LeftSide userFullName={user.username} userName={user.username} avatarUrl={user.avatarUrl}/>
           <main className='flex'>
             <div className='midContainer'>
               <PostTipes />
               <WritePost userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Post"/>
-              <Account_Cards/>
+              <Post_Cards/>
             </div>
             <RightSide />
           </main>

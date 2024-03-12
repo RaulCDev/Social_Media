@@ -1,8 +1,12 @@
 # Todo list
 ---------------------------------
 ## First to do
+  -SAVE THE AMOUNT OF VIEWS A POST HAVE
+    -CHANGE THE /CARDS IN THE API TO RESPONSE WHIT THE CARDS THAT ARE IN THE DB
+  -SAVE THE LIKES IN THE DATABASE
+    -SAVE THE SINGULAR LIKE OFF THE USER AND THE AMOUNT OG LIKES IN TOTAL THE POST HAVE
+
   -DENI THE ACCES TO THE /HOME ROUTE IF THE USER ISN'T LOGED
-  -MAKE SURE THAT THE LOGIN PART IS FINISHED
 
   -Add comments to the pots, see if it is better to have only one comment or to be able to contain comments within each other.
   -Make the icons of the post buttons to interact whit them

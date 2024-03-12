@@ -7,12 +7,10 @@ export default function LeftSide ({
     userFullName,
     userName,
     avatarUrl,
-    content
   }: {
     userFullName: string
     userName: string
     avatarUrl: string
-    content: string
   }) {
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
