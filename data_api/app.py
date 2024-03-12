@@ -17,6 +17,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://user:1234@localhost:330
 db.init_app(app)
 
 # Inicializa la extensión CORS
+CORS(app, resources={r'/*': {'origins': '*'}})
 cors = CORS(app)
 
 # Configura el tiempo de expiración del JWT
@@ -79,8 +80,14 @@ def insert_predefined_data():
         if existing_user:
             continue
 
-        user = User(**user_data.__dict__)
-        db.session.add_all(user)
+        user = User(
+            email=user_data.email,
+            username=user_data.username,
+            accountname=user_data.accountname,
+            avatarUrl=user_data.avatarUrl,
+            access_token=None,
+        )
+        db.session.add(user)
         db.session.commit()
 
     # Create 10 predefined posts for each user
@@ -97,14 +104,14 @@ def insert_predefined_data():
             db.session.add(post_data)
             db.session.commit()
 
-def save_user(email, username, accountname, avatarUrl):
+def save_user(email, username, accountname, avatarUrl, token):
     # Check if a user with the same email address already exists in the database
     existing_user = User.query.filter_by(email=email).first()
     if existing_user:
         return jsonify({'message': 'User already registered'})
 
     # Create a new Token object
-    user = User(email=email, username=username, accountname=accountname, avatarUrl=avatarUrl)
+    user = User(email=email, username=username, accountname=accountname, avatarUrl=avatarUrl, access_token=token)
 
     # Add the token to the database
     db.session.add(user)
@@ -113,10 +120,23 @@ def save_user(email, username, accountname, avatarUrl):
     # Return a success message
     return jsonify({'success': True})
 
+
 @cross_origin
-@app.route('/get_user_data/<token>', methods=['GET'])
+@app.route('/get_user_data', methods=['POST'])
 @jwt_required
-def get_user(token):
+def get_user():
+    # Get the token from the Authorization header
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        return jsonify({"message": "Missing authorization header"}), 401
+
+    try:
+        auth_scheme, token = auth_header.split()
+        if auth_scheme.lower() != "bearer":
+            return jsonify({"message": "Invalid authorization scheme"}), 401
+    except ValueError:
+        return jsonify({"message": "Invalid authorization header"}), 401
+
     # Query the database for the user associated with the given token
     user = User.query.filter_by(access_token=token).first()
     # Return the user data in a JSON format
@@ -144,8 +164,9 @@ def github_callback():
         email_value = email.email
         username_value = user.login
         avatarUrl_value = f"https://github.com/{user.login}.png"
-        save_user(email_value, username_value, username_value, avatarUrl_value)
-        return jsonify({'succes': True,'access_token': create_token(email.email)})
+        token = create_token(email.email)
+        save_user(email_value, username_value, username_value, avatarUrl_value, token)
+        return jsonify({'succes': True,'access_token': token})
 
 @cross_origin
 @app.route('/cards', methods=['POST'])

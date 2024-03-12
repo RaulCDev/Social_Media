@@ -7,6 +7,7 @@ class User(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     accountname = db.Column(db.String(50), unique=True, nullable=False)
     avatarUrl = db.Column(db.String(200), nullable=True)
+    access_token = db.Column(db.String(255), unique=True, nullable=True)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)

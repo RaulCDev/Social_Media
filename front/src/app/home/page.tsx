@@ -16,7 +16,13 @@ export default function Home() {
   // Send a GET request to the /get_user/<token> endpoint with the token as a query parameter
   useEffect(() => {
     if (token) {
-      fetch(`/get_user_data/${token}`)
+      fetch('http://localhost:5000/get_user_data', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
         .then(response => response.json())
         .then(data => {
           // Save the user data in the state
@@ -33,7 +39,7 @@ export default function Home() {
   return (
     <>
       <div className="flex justify-center">
-          <LeftSide userFullName={user.email} userName={user.username} avatarUrl={user.accountname} content={user.avatarUrl}/>
+          <LeftSide userFullName={user.username} userName={user.username} avatarUrl={user.avatarUrl} content={"Mondongo"}/>
           <main className='flex'>
             <div className='midContainer'>
               <PostTipes />
