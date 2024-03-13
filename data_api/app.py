@@ -186,31 +186,7 @@ def get_cards():
 @cross_origin
 @app.route('/like', methods=['POST'])
 def give_like():
-    return "Mondongo";
-
-@cross_origin
-@app.route('/register', methods=['POST'])
-def register_user():
-    email = request.json['email']
-    username = request.json['username']
-    password = request.json['password']
-
-    # Search if the user already exists
-    existing_email = User.query.filter_by(email=email).first()
-
-    if existing_email:
-        # The user already exists
-        return jsonify({"message": "El correo ya esta registrado", "success": False})
-    else:
-        # Create a new instance of the User model
-        new_user = User(email=email, username=username, password=password)
-
-        # Save the new user in the database
-        db.session.add(new_user)
-        db.session.commit()
-
-        # Return a response with a success message
-        return jsonify({"message": "Usuario registrado exitosamente", "success": True})
+    return "Mondongo"
 
 #Create a token JWT whit the user identity
 def create_token(identity):

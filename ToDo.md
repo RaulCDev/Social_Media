@@ -5,8 +5,9 @@
     -CHANGE THE /CARDS IN THE API TO RESPONSE WHIT THE CARDS THAT ARE IN THE DB
   -SAVE THE LIKES IN THE DATABASE
     -SAVE THE SINGULAR LIKE OFF THE USER AND THE AMOUNT OG LIKES IN TOTAL THE POST HAVE
+  -SHOW THE AMOUNT OF LIKES, COMMENTS, VIEWS AND RETWEETS
 
-  -DENI THE ACCES TO THE /HOME ROUTE IF THE USER ISN'T LOGED
+  -DENIES THE ACCESS TO THE /HOME ROUTE IF THE USER ISN'T LOGGED
 
   -Add comments to the pots, see if it is better to have only one comment or to be able to contain comments within each other.
   -Make the icons of the post buttons to interact whit them
@@ -17,7 +18,7 @@
 ## Front
   Right Part:
   -Finish the movement
-  -Do better the imput "Search" bar
+  -Do better the input "Search" bar
   -Correct the positions of the buttons in the account cards
 
   Center Part:
@@ -28,8 +29,8 @@
   -Correct the "More options" pop up
   -Add the user pop up when click
 
-## AÑADIR AL FINAL
-  Poder ver el perfil del usuario
+## ADD AT THE LAST
+  Be able to watch the users profile
 
 ## FINISHED
 =============================================================================================
