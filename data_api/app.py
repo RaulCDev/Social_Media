@@ -171,16 +171,32 @@ def github_callback():
 @cross_origin
 @app.route('/cards', methods=['POST'])
 def get_cards():
-    cards = [
-        {
-            'userFullName': 'John Doe',
-            'userName': 'johndoe',
-            'avatarUrl': 'https://github.com/RaulCDev.png',
-            'content': 'This is a sample card content.This is a sample card content.This is a sample card content.This is a sample card content.This is a sample card content.This is a sample card content.This is a sample card content.',
-        } for i in range(10)
-    ]
-    response = make_response(jsonify(cards))
-    print(response)
+    # Query the database for the 10 most recent cards
+    posts = Post.query.order_by(Post.timestamp.desc()).limit(10).all()
+
+    # Increment the view count for each post
+    for post in posts:
+        post.views_amount += 1
+        db.session.commit()
+
+    # Convert the query results to a list of dictionaries
+    posts_list = []
+    for post in posts:
+        posts_list.append({
+            'id': post.id,
+            'userFullName': post.user.accountname,
+            'userName': post.user.username,
+            'avatarUrl': post.user.avatarUrl,
+            'content': post.content,
+            'likes': post.likes_amount,
+            'views': post.views_amount,
+            'reposts': post.reposts_amount,
+            'comments': post.comments_amount,
+        })
+
+
+    # Convert the list of dictionaries to a JSON response
+    response = make_response(jsonify(posts_list))
     return response
 
 @cross_origin

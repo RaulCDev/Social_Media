@@ -15,6 +15,10 @@ class Post(db.Model):
     content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     user = db.relationship('User', backref=db.backref('user', lazy=True))
+    likes_amount = db.Column(db.Integer, default=0)
+    views_amount = db.Column(db.Integer, default=0)
+    reposts_amount = db.Column(db.Integer, default=0)
+    comments_amount = db.Column(db.Integer, default=0)
 
 class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)

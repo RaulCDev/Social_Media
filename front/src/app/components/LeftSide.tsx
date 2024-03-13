@@ -101,13 +101,13 @@ export default function LeftSide ({
               </div>
             )}
             <button className='leftPostButton rounded-full'>Post</button>
-            <button className="leftButtons container-flex rounded-full">
+            <button className="leftButtons container-flex rounded-full max-w-[250px]">
               <Avatar radius="full" size="md" src={avatarUrl} />
               <div className="flex flex-col gap-1 items-start justify-center ml-2">
                 <h4 className="text-small font-semibold leading-none text-default-600">{userFullName}</h4>
                 <h5 className="text-small tracking-tight text-default-400">@{userName}</h5>
               </div>
-              <IconDots className='leftButtonssvg ml-20' />
+              <IconDots className='leftButtonssvg ml-16' />
             </button>
           </div>
         </div>
