@@ -2,10 +2,11 @@ import React, { useState, forwardRef } from "react";
 import { IconHeart, IconMessageCircle, IconRepeat, IconHeartFilled, IconEye, IconBookmark, IconShare2 } from '@tabler/icons-react'
 
 type Post_ButtonsProps = {
-  key: string | number;
+  postId: string | number
+  views_amount: number
 }
 
-const Post_Buttons: React.FC<Post_ButtonsProps> = ({ key }) => {
+const Post_Buttons: React.FC<Post_ButtonsProps> = ({ postId, views_amount }) => {
   const [isHeartFilled, setIsHeartFilled] = useState(false);
 
   const handleLike = async () => {
@@ -19,7 +20,7 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ key }) => {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ key })
+          body: JSON.stringify({ postId })
         })
         const data = await response.json();
         console.log(data);
@@ -43,7 +44,7 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ key }) => {
         {isHeartFilled ? <IconHeartFilled className="w-4 h-4" /> : <IconHeart className="w-4 h-4" />}<span>0</span>
       </button>
       <button className="postIcons rounded-full flex items-center space-x-1">
-        <IconEye className="w-4 h-4" /><span>0</span>
+        <IconEye className="w-4 h-4" /><span>{views_amount}</span>
       </button>
       <div className="flex items-center ml-auto">
         <button className="postIcons rounded-full flex items-center space-x-1">

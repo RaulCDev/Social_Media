@@ -36,6 +36,10 @@ export default function Post_Cards() {
         userName={cardData.userName}
         avatarUrl={cardData.avatarUrl}
         content={cardData.content}
+        likes_amount={cardData.likes}
+        views_amount={cardData.views}
+        reposts_amount={cardData.reposts}
+        comments_amount={cardData.comments}
       />
     ));
     setCards((prevCards) => [...prevCards, ...newCardsComponents])
