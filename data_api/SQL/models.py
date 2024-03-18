@@ -25,5 +25,6 @@ class Like(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    user = db.relationship('User', backref=db.backref('liked_by', lazy=True))
+    user = db.relationship('User', backref=db.backref('liked_by', uselist=False))  # Cambiar uselist a False
     post = db.relationship('Post', backref=db.backref('liked', lazy=True))
+

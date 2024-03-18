@@ -1,19 +1,39 @@
-import React, { useState, forwardRef } from "react";
+import React, { useState } from "react";
 import { IconHeart, IconMessageCircle, IconRepeat, IconHeartFilled, IconEye, IconBookmark, IconShare2 } from '@tabler/icons-react'
 
 type Post_ButtonsProps = {
   id: number
   views_amount: number
+  likes_amount: number
+  reposts_amount: number
+  comments_amount: number
+  is_liked: boolean
 }
 
-const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount }) => {
-  const [isHeartFilled, setIsHeartFilled] = useState(false);
+const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amount, reposts_amount, comments_amount, is_liked}) => {
+  const [isHeartFilled, setIsHeartFilled] = useState(is_liked);
+  const [likesAmount, setLikesAmount] = useState(likes_amount);
+  const token = localStorage.getItem('token');
 
   const handleLike = async () => {
     try {
-      const token = localStorage.getItem('token');
-      // Make a POST request to the Flask API endpoint to like the post
-      if (token) {
+      if (isHeartFilled) {
+        const response = await fetch(`http://localhost:5000/unlike`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ postId: id })
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setIsHeartFilled(false);
+          setLikesAmount(prevLikesAmount => prevLikesAmount - 1);
+        } else {
+          console.error('Error removing like:', data.error);
+        }
+      } else {
         const response = await fetch(`http://localhost:5000/like`, {
           method: 'POST',
           headers: {
@@ -25,10 +45,9 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount }) => {
         const data = await response.json();
         if (data.message === 'Like saved successfully') {
           setIsHeartFilled(true);
+          setLikesAmount(prevLikesAmount => prevLikesAmount + 1); // Incrementar el número de likes en 1
         }
       }
-      // Update the local state to reflect the change
-      setIsHeartFilled(true);
     } catch (error) {
       console.error(error);
     }
@@ -37,13 +56,13 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount }) => {
   return (
     <div className="flex w-full">
       <button className="postIcons rounded-full flex items-center space-x-1">
-        <IconMessageCircle className="w-4 h-4" /><span>0</span>
+        <IconMessageCircle className="w-4 h-4" /><span>{comments_amount}</span>
       </button>
       <button className="postIcons rounded-full flex items-center space-x-1">
-        <IconRepeat className="w-4 h-4" /><span>0</span>
+        <IconRepeat className="w-4 h-4" /><span>{reposts_amount}</span>
       </button>
       <button className="postIconsHeart rounded-full flex items-center space-x-1" onClick={() => handleLike()}>
-        {isHeartFilled ? <IconHeartFilled className="w-4 h-4" /> : <IconHeart className="w-4 h-4" />}<span>0</span>
+        { isHeartFilled ? <IconHeartFilled className="w-4 h-4" /> : <IconHeart className="w-4 h-4" />}<span>{likesAmount}</span>
       </button>
       <button className="postIcons rounded-full flex items-center space-x-1">
         <IconEye className="w-4 h-4" /><span>{views_amount}</span>
@@ -60,4 +79,4 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount }) => {
   )
 }
 
-export default Post_Buttons
+export default Post_Buttons;

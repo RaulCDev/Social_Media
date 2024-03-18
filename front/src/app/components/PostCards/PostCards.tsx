@@ -14,15 +14,16 @@ type Post_CardComponent = React.ComponentType<Post_CardProps>
 export default function Post_Cards() {
   const limit = 10 // Número de tarjetas a cargar inicialmente
   const [cards, setCards] = useState<JSX.Element[]>(new Array(limit).fill(null))
+  const token = localStorage.getItem('token');
 
   const fetchCards = async () => {
     const response = await fetch(`http://localhost:5000/cards`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
       },
-      body: JSON.stringify({})
-    })
+  });
     const newCards = await response.json()
     return newCards
   }
@@ -41,6 +42,7 @@ export default function Post_Cards() {
           views_amount={cardData.views}
           reposts_amount={cardData.reposts}
           comments_amount={cardData.comments}
+          isLiked={cardData.isLiked}
         />
     ));
     setCards((prevCards) => [...prevCards, ...newCardsComponents])

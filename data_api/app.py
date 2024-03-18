@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 from functools import wraps
 from github import Github
 
+import requests
 #Import SQL database models from models.py and the database itself from database.py
 from SQL.database import db
 from SQL.models import Post, Like, User
@@ -174,6 +175,9 @@ def github_callback():
 @app.route('/cards', methods=['POST'])
 def get_cards():
     # Query the database for the 10 most recent cards
+    token = request.headers.get('Authorization').split(' ')[1]
+    user_id = get_current_user(token)
+
     posts = Post.query.order_by(Post.timestamp.desc()).limit(10).all()
 
     # Increment the view count for each post
@@ -184,6 +188,9 @@ def get_cards():
     # Convert the query results to a list of dictionaries
     posts_list = []
     for post in posts:
+        # Verificar si el usuario actual ha dado like a este post
+        is_liked = Like.query.filter_by(post_id=post.id, user_id=user_id).first() is not None
+
         posts_list.append({
             'id': post.id,
             'userFullName': post.user.accountname,
@@ -194,6 +201,7 @@ def get_cards():
             'views': post.views_amount,
             'reposts': post.reposts_amount,
             'comments': post.comments_amount,
+            'isLiked': is_liked  # Incluir si el post está likeado por el usuario actual
         })
 
     # Convert the list of dictionaries to a JSON response
@@ -218,8 +226,39 @@ def give_like():
     db.session.add(like)
     db.session.commit()
 
+    # Incrementar la cantidad de likes del post correspondiente
+    post = Post.query.get(post_id)
+    post.likes_amount += 1
+    db.session.commit()
+
      # Return a success responsew
     return jsonify({'message': 'Like saved successfully'})
+
+
+@cross_origin
+@app.route('/unlike', methods=['POST'])
+def remove_like():
+    request_data = request.get_json()
+    post_id = request_data.get('postId')
+
+    token = request.headers.get('Authorization').split(' ')[1]
+
+    user_id = get_current_user(token)
+
+    like = Like.query.filter_by(post_id=post_id, user_id=user_id).first()
+    if like:
+        db.session.delete(like)
+        db.session.commit()
+
+        post = Post.query.get(post_id)
+        if post.likes_amount > 0:
+            post.likes_amount -= 1
+            db.session.commit()
+
+        return jsonify({'message': 'Like removed successfully'})
+    else:
+        return jsonify({'error': 'Like not found'}), 404
+
 
 
 def get_current_user(token):
