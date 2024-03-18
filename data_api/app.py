@@ -4,7 +4,6 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from github import Github
-import requests
 
 #Import SQL database models from models.py and the database itself from database.py
 from SQL.database import db
@@ -28,10 +27,9 @@ JWT_ALGORITHM = 'HS256'
 Client_id = "c52a2b6341f080de4773"
 Client_secret="b3ff0aec8649b12d0d026d7a332abdf416010133"
 
-#Function to check if the token is valid
+
 def jwt_required(fn):
     @wraps(fn)
-
     def wrapper(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
         if not auth_header:
@@ -55,6 +53,7 @@ def jwt_required(fn):
         return fn(*args, **kwargs)
 
     return wrapper
+
 
 def insert_predefined_data():
     # Get the first user from the database
@@ -104,6 +103,7 @@ def insert_predefined_data():
             db.session.add(post_data)
             db.session.commit()
 
+
 def save_user(email, username, accountname, avatarUrl, token):
     # Check if a user with the same email address already exists in the database
     existing_user = User.query.filter_by(email=email).first()
@@ -147,6 +147,7 @@ def get_user():
         'avatarUrl': user.avatarUrl
     })
 
+
 @cross_origin
 @app.route('/github_callback', methods=['POST'])
 def github_callback():
@@ -167,6 +168,7 @@ def github_callback():
         token = create_token(email.email)
         save_user(email_value, username_value, username_value, avatarUrl_value, token)
         return jsonify({'succes': True,'access_token': token})
+
 
 @cross_origin
 @app.route('/cards', methods=['POST'])
@@ -194,15 +196,37 @@ def get_cards():
             'comments': post.comments_amount,
         })
 
-
     # Convert the list of dictionaries to a JSON response
     response = make_response(jsonify(posts_list))
     return response
 
+
 @cross_origin
 @app.route('/like', methods=['POST'])
 def give_like():
-    return "Mondongo"
+    # Get the post ID from the request body
+    request_data = request.get_json()
+    post_id = request_data.get('postId')
+
+    # Get the authentication token from the request headers
+    token = request.headers.get('Authorization').split(' ')[1]
+    # Get the current user from the authentication token
+    user_id = get_current_user(token)
+
+    # Create a new like object and save it to the database
+    like = Like(post_id=post_id, user_id=user_id)
+    db.session.add(like)
+    db.session.commit()
+
+     # Return a success responsew
+    return jsonify({'message': 'Like saved successfully'})
+
+
+def get_current_user(token):
+    # Query the User model to get the user object with the given token
+    user = User.query.filter_by(access_token=token).first()
+    return user.id
+
 
 #Create a token JWT whit the user identity
 def create_token(identity):
@@ -215,6 +239,7 @@ def create_token(identity):
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm=JWT_ALGORITHM)
     return token
+
 
 if __name__ == '__main__':
     with app.app_context():

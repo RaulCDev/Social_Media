@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react'
 import Post_Card from './PostCard'
 
 type Post_CardProps = {
-  key: string
+  id: number
   userFullName: string
   userName: string
   avatarUrl: string
   content: string
 }
 
-type Post_Card = React.ComponentType<Post_CardProps>
+type Post_CardComponent = React.ComponentType<Post_CardProps>
 
 export default function Post_Cards() {
   const limit = 10 // Número de tarjetas a cargar inicialmente
@@ -31,16 +31,17 @@ export default function Post_Cards() {
     const newCards = await fetchCards()
     const newCardsComponents = newCards.map((cardData: any) => (
         <Post_Card
-        key={cardData.id}
-        userFullName={cardData.userFullName}
-        userName={cardData.userName}
-        avatarUrl={cardData.avatarUrl}
-        content={cardData.content}
-        likes_amount={cardData.likes}
-        views_amount={cardData.views}
-        reposts_amount={cardData.reposts}
-        comments_amount={cardData.comments}
-      />
+          key={cardData.id}
+          id={cardData.id}
+          userFullName={cardData.userFullName}
+          userName={cardData.userName}
+          avatarUrl={cardData.avatarUrl}
+          content={cardData.content}
+          likes_amount={cardData.likes}
+          views_amount={cardData.views}
+          reposts_amount={cardData.reposts}
+          comments_amount={cardData.comments}
+        />
     ));
     setCards((prevCards) => [...prevCards, ...newCardsComponents])
   }
@@ -51,8 +52,8 @@ export default function Post_Cards() {
 
   return (
     <div>
-        {cards.filter(Boolean).map((card, index) => (
-            <React.Fragment key={index}>{card}</React.Fragment>
+        {cards.filter(Boolean).map((card) => (
+            <React.Fragment key={card.key}>{card}</React.Fragment>
         ))}
         <button onClick={loadMoreCards}>Cargar más tarjetas</button>
     </div>

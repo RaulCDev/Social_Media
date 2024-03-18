@@ -2,11 +2,11 @@ import React, { useState, forwardRef } from "react";
 import { IconHeart, IconMessageCircle, IconRepeat, IconHeartFilled, IconEye, IconBookmark, IconShare2 } from '@tabler/icons-react'
 
 type Post_ButtonsProps = {
-  postId: string | number
+  id: number
   views_amount: number
 }
 
-const Post_Buttons: React.FC<Post_ButtonsProps> = ({ postId, views_amount }) => {
+const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount }) => {
   const [isHeartFilled, setIsHeartFilled] = useState(false);
 
   const handleLike = async () => {
@@ -20,10 +20,12 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ postId, views_amount }) => 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ postId })
+          body: JSON.stringify({ postId: id })
         })
         const data = await response.json();
-        console.log(data);
+        if (data.message === 'Like saved successfully') {
+          setIsHeartFilled(true);
+        }
       }
       // Update the local state to reflect the change
       setIsHeartFilled(true);
@@ -40,7 +42,7 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ postId, views_amount }) => 
       <button className="postIcons rounded-full flex items-center space-x-1">
         <IconRepeat className="w-4 h-4" /><span>0</span>
       </button>
-      <button className="postIconsHeart rounded-full flex items-center space-x-1" onClick={() => setIsHeartFilled(!isHeartFilled)}>
+      <button className="postIconsHeart rounded-full flex items-center space-x-1" onClick={() => handleLike()}>
         {isHeartFilled ? <IconHeartFilled className="w-4 h-4" /> : <IconHeart className="w-4 h-4" />}<span>0</span>
       </button>
       <button className="postIcons rounded-full flex items-center space-x-1">
