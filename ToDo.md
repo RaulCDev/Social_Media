@@ -1,17 +1,15 @@
 # Todo list
 ---------------------------------
 ## First to do
-  -SAVE THE LIKES IN THE DATABASE
-    -SAVE THE SINGULAR LIKE OFF THE USER AND THE AMOUNT OF LIKES IN TOTAL THE POST HAVE
-  -SHOW THE AMOUNT OF LIKES, COMMENTS, VIEWS AND RETWEETS
+  -REQUEST THE TRENDS AND THE PROFILES TO FOLLOW TO THE API
+
+  -BE ABLE TO POST
+  -SAVE THE COMMENTS IN THE DATABASE
+    -SAVE THE SINGULAR COMMENTS OFF THE USER AND THE AMOUNT OF COMMENTS IN TOTAL THE POST HAVE
 
   -DENIES THE ACCESS TO THE /HOME ROUTE IF THE USER ISN'T LOGGED
 
   -Add comments to the pots, see if it is better to have only one comment or to be able to contain comments within each other.
-  -Make the icons of the post buttons to interact whit them
-    -Save the likes when clicked
-    -Save the reTweet when clicked
-    -When clicked in the comment button, can write(Do the function to save it after)
 
 ## Front
   Right Part:
@@ -32,6 +30,13 @@
 
 ## FINISHED
 =============================================================================================
+  -MAKE THE RIGHT PART DESIGN BETTER
+
+  -Make the icons of the post buttons to interact whit them
+    -Save the likes when clicked
+  -SAVE THE LIKES IN THE DATABASE
+    -SAVE THE SINGULAR LIKE OFF THE USER AND THE AMOUNT OF LIKES IN TOTAL THE POST HAVE
+
   -SAVE THE AMOUNT OF VIEWS A POST HAVE
     -SUM ONE MORE WHEN A POST IS CALLED FROM THE API
     -CHANGE THE /CARDS IN THE API TO RESPONSE WHIT THE CARDS THAT ARE IN THE DB

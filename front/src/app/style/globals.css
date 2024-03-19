@@ -137,6 +137,7 @@
   padding-top: 8px;
   padding-right: 10px;
   padding-bottom: 10px;
+  padding-left: 1rem;
 }
 
 .smallTextRight{
@@ -144,16 +145,45 @@
   font-size: 0.875rem;
   padding-right: 10px;
   padding-bottom: 10px;
+  padding-left: 1rem;
+}
+
+.followButton{
+  display: flex;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.375rem 0.75rem;
+  background-color: #ffffff;
+  color: black;
+  margin-left: auto;
+}
+
+.followButton:hover {
+  background-color: #d1cfcf;
+}
+
+.followButton:active {
+  background-color: #a5a5a5;
+}
+
+.threeDots{
+  margin-left: auto;
+  padding: 5px;
+}
+
+.threeDots:hover {
+  background-color: #2f94ca53;
+}
+
+.threeDots:active {
+  background-color: #3abaff53;
 }
 
 .rightBoxes{
   display: flex;
   flex-direction: column;
   align-items: start;
-  padding-left: 15px;
-  padding-right: 15px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+
 }
 
 .rightContent{
@@ -164,22 +194,27 @@
   display: inline-flex;
   column-gap: 0.5rem;
   width: 100%;
-  padding: 0%;
+  padding-left: 15px;
+  padding-right: 15px;
   padding-top: 10px;
   padding-bottom: 10px;
-}
-
-.rightProfileUser:hover {
-  background-color: #525252;
 }
 
 .rightTrends{
   display: flex;
   flex-direction: column;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
-.rightTrends:hover {
-  background-color: #525252;
+.trendContainer{
+  width: 100%;
+}
+
+.trendContainer:hover {
+  background-color: #424242;
 }
 
 .rightLastTitle{
