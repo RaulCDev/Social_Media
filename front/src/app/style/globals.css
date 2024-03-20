@@ -58,6 +58,16 @@
   min-height: 100vh;
 }
 
+.input {
+  resize: none;
+  overflow: hidden;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  font-size: 1.125rem;
+  width: 100%;
+}
+
 .leftSide{
   display: flex;
   position: sticky;
