@@ -260,6 +260,33 @@ def remove_like():
         return jsonify({'error': 'Like not found'}), 404
 
 
+@cross_origin
+@app.route('/trends', methods=['POST'])
+def send_trends():
+    trends_data = [
+        { "number": 1, "category": "Gaming", "name": "Escape From Tarkov", "posts": "157.6K" },
+        { "number": 2, "category": "", "name": "Happy Spring", "posts": "17.9K" },
+        { "number": 3, "category": "", "name": "Scotland", "posts": "69.2K" },
+        { "number": 4, "category": "Animation & Comics", "name": "Nickelodeon", "posts": "63.3K" },
+        { "number": 5, "category": "Gaming", "name": "Bungie", "posts": "4,326" },
+        { "number": 6, "category": "Technology", "name": "Nvidia", "posts": "78.2K" },
+        { "number": 7, "category": "", "name": "Kojima", "posts": "6,916" },
+        { "number": 8, "category": "", "name": "Japan", "posts": "28.3K" },
+        { "number": 9, "category": "Gaming", "name": "Steam", "posts": "109K" },
+        { "number": 10, "category": "Action & adventure films", "name": "James Bond", "posts": "28.7K" },
+    ]
+    return jsonify(trends_data)
+
+@cross_origin
+@app.route('/users_recomendation', methods=['POST'])
+def send_users_recomendation():
+    users_data = [
+        { "name": "user1", "username": "@user1", "src": "https://github.com/user1.png" },
+        { "name": "user2", "username": "@user2", "src": "https://github.com/user2.png" },
+        { "name": "user3", "username": "@user3", "src": "https://github.com/user3.png" },
+    ]
+    return jsonify(users_data)
+
 
 def get_current_user(token):
     # Query the User model to get the user object with the given token

@@ -9,27 +9,49 @@ import useWindowScroll from './hook/useScreenHeight';
 export default function RightSide() {
     const rightContentRef = useRef<HTMLDivElement>(null);
     const rightMarginRef = useRef<HTMLDivElement>(null);
+    const [trends, setTrends] = useState([]);
+    const [usersToFollow, setUsersToFollow] = useState([]);
+    const token = localStorage.getItem('token');
 
     useWindowScroll(rightContentRef, rightMarginRef);
 
-    const data = [
-        { number: 1, category: 'Gaming', name: 'Escape From Tarkov', posts: '157.6K' },
-        { number: 2, category: '', name: 'Happy Spring', posts: '17.9K' },
-        { number: 3, category: '', name: 'Scotland', posts: '69.2K' },
-        { number: 4, category: 'Animation & Comics', name: 'Nickelodeon', posts: '63.3K' },
-        { number: 5, category: 'Gaming', name: 'Bungie', posts: '4,326' },
-        { number: 6, category: 'Technology', name: 'Nvidia', posts: '78.2K' },
-        { number: 7, category: '', name: 'Kojima', posts: '6,916' },
-        { number: 8, category: '', name: 'Japan', posts: '28.3K' },
-        { number: 9, category: 'Gaming', name: 'Steam', posts: '109K' },
-        { number: 10, category: 'Action & adventure films', name: 'James Bond', posts: '28.7K' },
-    ];
+    useEffect(() => {
+        const fetchTrendsData = async () => {
+            try {
+                const response = await fetch(`http://localhost:5000/trends`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                });
+                const data = await response.json();
+                setTrends(data);
+            } catch (error) {
+                console.error('Error fetching trends data:', error);
+            }
+        };
 
-    const usersToFollow = [
-        { name: 'Nombre1', username: '@Nombre1', src: 'https://github.com/RaulCDev.png' },
-        { name: 'Nombre2', username: '@Nombre2', src: 'https://github.com/RaulCDev.png' },
-        { name: 'Nombre3', username: '@Nombre3', src: 'https://github.com/RaulCDev.png' },
-    ];
+        const fetchUsersToFollowData = async () => {
+            try {
+                const response = await fetch(`http://localhost:5000/users_recomendation`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                });
+                const data = await response.json();
+                setUsersToFollow(data);
+            } catch (error) {
+                console.error('Error fetching users to follow data:', error);
+            }
+        };
+
+        fetchTrendsData();
+        fetchUsersToFollowData();
+    }, []);
+
 
     return (
         <div className="rightSide">
@@ -54,16 +76,16 @@ export default function RightSide() {
                     <div className='rightBoxes'>
                         <h1 className='bigTextRight pl-4'>Who to follow</h1>
                         {usersToFollow.map((user, index) => (
-                        <div key={index} className='trendContainer'>
-                            <button key={index} className="rightProfileUser">
-                                <Avatar radius="full" size="md" src={user.src} />
-                                <div className="flex flex-col gap-1 items-start justify-center">
-                                <h4 className="text-small font-semibold leading-none text-default-600">{user.name}</h4>
-                                <h5 className="text-small tracking-tight text-default-400">{user.username}</h5>
-                                </div>
-                                <button className="followButton">Follow</button>
-                            </button>
-                        </div>
+                            <div key={index} className='trendContainer'>
+                                <button className="rightProfileUser">
+                                    <Avatar radius="full" size="md" src={user.src} />
+                                    <div className="flex flex-col gap-1 items-start justify-center">
+                                        <h4 className="text-small font-semibold leading-none text-default-600">{user.name}</h4>
+                                        <h5 className="text-small tracking-tight text-default-400">{user.username}</h5>
+                                    </div>
+                                    <button className="followButton">Follow</button>
+                                </button>
+                            </div>
                         ))}
                         <div className='trendContainer'>
                             <button className="rightProfileUser">Show More</button>
@@ -73,7 +95,7 @@ export default function RightSide() {
                 <Card className='w-[350px] mt-3'>
                     <div className='rightBoxes w-full'>
                         <h1 className='bigTextRight pl-4'>Somewhere trends</h1>
-                        {data.map(item => (
+                        {trends.map(item => (
                         <div key={item.number} className='trendContainer'>
                             <button className='w-full'>
                                 <div className="rightTrends">

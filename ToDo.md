@@ -1,21 +1,16 @@
 # Todo list
 ---------------------------------
 ## First to do
-  -REQUEST THE TRENDS AND THE PROFILES TO FOLLOW TO THE API
-
   -BE ABLE TO POST
   -SAVE THE COMMENTS IN THE DATABASE
     -SAVE THE SINGULAR COMMENTS OFF THE USER AND THE AMOUNT OF COMMENTS IN TOTAL THE POST HAVE
 
   -DENIES THE ACCESS TO THE /HOME ROUTE IF THE USER ISN'T LOGGED
 
-  -Add comments to the pots, see if it is better to have only one comment or to be able to contain comments within each other.
-
 ## Front
   Right Part:
   -Finish the movement
   -Do better the input "Search" bar
-  -Correct the positions of the buttons in the account cards
 
   Center Part:
   -The upper part of the post part need to be transparent when the posts move
@@ -30,6 +25,8 @@
 
 ## FINISHED
 =============================================================================================
+  -REQUEST THE TRENDS AND THE PROFILES TO FOLLOW TO THE API
+
   -MAKE THE RIGHT PART DESIGN BETTER
 
   -Make the icons of the post buttons to interact whit them

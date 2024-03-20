@@ -12,7 +12,7 @@ type Post_CardProps = {
 type Post_CardComponent = React.ComponentType<Post_CardProps>
 
 export default function Post_Cards() {
-  const limit = 10 // Número de tarjetas a cargar inicialmente
+  const limit = 10
   const [cards, setCards] = useState<JSX.Element[]>(new Array(limit).fill(null))
   const token = localStorage.getItem('token');
 
