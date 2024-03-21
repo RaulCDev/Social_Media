@@ -4,20 +4,47 @@ import Link from 'next/link';
 import { IconGif, IconPhoto, IconMoodSmile } from '@tabler/icons-react';
 
 export default function WritePost({
-  userFullName,
   userName,
   avatarUrl,
-  content,
 }: {
-  userFullName: string;
   userName: string;
   avatarUrl: string;
-  content: string;
 }) {
+  const [content, setContent] = useState('');
+  const token = localStorage.getItem('token');
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    event.target.style.height = "54px";
-    event.target.style.height = (event.target.scrollHeight) + "px";
+    const textarea = event.target;
+    textarea.style.height = '54px';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+    setContent(textarea.value);
+  };
+
+  const handlePostClick = () => {
+    const postData = {
+      content: content,
+    };
+
+    fetch('http://localhost:5000/post', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(postData),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error connecting to the API');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Server response:', data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
   };
 
   return (
@@ -47,7 +74,12 @@ export default function WritePost({
           </button>
         </div>
         <div className="ml-auto">
-          <button className="bg-green-600 hover:bg-green-700 active:bg-green-800 rounded-full pl-4 pr-4 pt-1 pb-1">Post</button>
+          <button
+            onClick={handlePostClick}
+            className="bg-green-600 hover:bg-green-700 active:bg-green-800 rounded-full pl-4 pr-4 pt-1 pb-1"
+          >
+            Post
+          </button>
         </div>
       </div>
     </Card>

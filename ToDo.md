@@ -1,9 +1,6 @@
 # Todo list
 ---------------------------------
 ## First to do
-  -COMPLETE THE MID PART (ADD THE "FOR YOU" AND "FOLLOWING")
-
-  -BE ABLE TO POST
   -SAVE THE COMMENTS IN THE DATABASE
     -SAVE THE SINGULAR COMMENTS OFF THE USER AND THE AMOUNT OF COMMENTS IN TOTAL THE POST HAVE
 
@@ -27,6 +24,10 @@
 
 ## FINISHED
 =============================================================================================
+  -BE ABLE TO POST
+  -COMPLETE THE MID PART (ADD THE "FOR YOU" AND "FOLLOWING")
+
+
   -REQUEST THE TRENDS AND THE PROFILES TO FOLLOW TO THE API
 
   -MAKE THE RIGHT PART DESIGN BETTER

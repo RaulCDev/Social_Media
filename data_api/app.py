@@ -288,6 +288,43 @@ def send_users_recomendation():
     return jsonify(users_data)
 
 
+@cross_origin
+@app.route('/post', methods=['POST'])
+def post():
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        return jsonify({"message": "Missing authorization header"}), 401
+
+    try:
+        auth_scheme, token = auth_header.split()
+        if auth_scheme.lower() != "bearer":
+            return jsonify({"message": "Invalid authorization scheme"}), 401
+    except ValueError:
+        return jsonify({"message": "Invalid authorization header"}), 401
+
+    try:
+        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        user_identity = decoded_token["identity"]
+    except jwt.ExpiredSignatureError:
+        return jsonify({"message": "Token has expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"message": "Invalid token"}), 401
+
+    user = User.query.filter_by(email=user_identity).first()
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    content = request.json.get('content')
+
+    new_post = Post(user_id=user.id, content=content)
+
+    db.session.add(new_post)
+    db.session.commit()
+
+    return jsonify({"message": "Post created successfully"})
+
+
+
 def get_current_user(token):
     # Query the User model to get the user object with the given token
     user = User.query.filter_by(access_token=token).first()
@@ -296,7 +333,7 @@ def get_current_user(token):
 
 #Create a token JWT whit the user identity
 def create_token(identity):
-    #expires_delta = timedelta(minutes=60)  # Establece la duración de expiración del token
+    #expires_delta = timedelta(minutes=60)
     #expires = datetime.now(timezone.utc) + expires_delta
 
     payload = {
