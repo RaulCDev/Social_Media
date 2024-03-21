@@ -56,7 +56,7 @@ export default function RightSide() {
     return (
         <div className="rightSide">
             <div className='searchBar'>
-                <Input className="max-w-[340px] bg-black pb-1 pt-1" placeholder="Buscar" variant="bordered" labelPlacement="outside"
+                <Input className="max-w-[350px] bg-black pb-1 pt-1" placeholder="Buscar" variant="bordered" labelPlacement="outside"
                     startContent={
                     <IconSearch className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                     }></Input>
