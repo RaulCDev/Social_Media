@@ -40,7 +40,6 @@ export default function Post_Cards() {
           content={cardData.content}
           likes_amount={cardData.likes}
           views_amount={cardData.views}
-          reposts_amount={cardData.reposts}
           comments_amount={cardData.comments}
           isLiked={cardData.isLiked}
         />

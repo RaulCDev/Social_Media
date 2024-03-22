@@ -180,15 +180,15 @@ def get_cards():
 
     posts = Post.query.order_by(Post.timestamp.desc()).limit(10).all()
 
-    # Increment the view count for each post
-    for post in posts:
-        post.views_amount += 1
-        db.session.commit()
-
     # Convert the query results to a list of dictionaries
     posts_list = []
     for post in posts:
-        # Verificar si el usuario actual ha dado like a este post
+        likes_amount = Like.query.filter_by(post_id=post.id).count()
+
+        views_amount = post.views_amount + 1
+
+        comments_amount = len(post.comments)
+
         is_liked = Like.query.filter_by(post_id=post.id, user_id=user_id).first() is not None
 
         posts_list.append({
@@ -197,16 +197,16 @@ def get_cards():
             'userName': post.user.username,
             'avatarUrl': post.user.avatarUrl,
             'content': post.content,
-            'likes': post.likes_amount,
-            'views': post.views_amount,
-            'reposts': post.reposts_amount,
-            'comments': post.comments_amount,
-            'isLiked': is_liked  # Incluir si el post está likeado por el usuario actual
+            'likes': likes_amount,
+            'views': views_amount,
+            'comments': comments_amount,
+            'isLiked': is_liked
         })
 
     # Convert the list of dictionaries to a JSON response
     response = make_response(jsonify(posts_list))
     return response
+
 
 
 @cross_origin

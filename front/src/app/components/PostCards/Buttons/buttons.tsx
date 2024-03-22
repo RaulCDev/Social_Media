@@ -5,12 +5,11 @@ type Post_ButtonsProps = {
   id: number
   views_amount: number
   likes_amount: number
-  reposts_amount: number
   comments_amount: number
   is_liked: boolean
 }
 
-const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amount, reposts_amount, comments_amount, is_liked}) => {
+const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amount, comments_amount, is_liked}) => {
   const [isHeartFilled, setIsHeartFilled] = useState(is_liked);
   const [likesAmount, setLikesAmount] = useState(likes_amount);
   const token = localStorage.getItem('token');
@@ -59,7 +58,7 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amo
         <IconMessageCircle className="w-4 h-4" /><span>{comments_amount}</span>
       </button>
       <button className="postIcons rounded-full flex items-center space-x-1">
-        <IconRepeat className="w-4 h-4" /><span>{reposts_amount}</span>
+        <IconRepeat className="w-4 h-4" /><span>0</span>
       </button>
       <button className="postIconsHeart rounded-full flex items-center space-x-1" onClick={() => handleLike()}>
         { isHeartFilled ? <IconHeartFilled className="w-4 h-4" /> : <IconHeart className="w-4 h-4" />}<span>{likesAmount}</span>

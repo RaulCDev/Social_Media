@@ -15,16 +15,30 @@ class Post(db.Model):
     content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     user = db.relationship('User', backref=db.backref('user', lazy=True))
-    likes_amount = db.Column(db.Integer, default=0)
     views_amount = db.Column(db.Integer, default=0)
-    reposts_amount = db.Column(db.Integer, default=0)
-    comments_amount = db.Column(db.Integer, default=0)
+
+    comments = db.relationship('Comment', backref='post', lazy=True)
+    likes = db.relationship('Like', backref='post', lazy=True)
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    parent_comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'))  # Columna de clave foránea para el comentario padre
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref=db.backref('user_comments', lazy=True))
+    responses = db.relationship('Comment',
+                                 backref=db.backref('parent_comment', remote_side=[id]),
+                                 primaryjoin="Comment.id == foreign(Comment.parent_comment_id)",
+                                 lazy=True)
+
+
 
 class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
+    comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    user = db.relationship('User', backref=db.backref('liked_by', uselist=False))  # Cambiar uselist a False
-    post = db.relationship('Post', backref=db.backref('liked', lazy=True))
-
+    user = db.relationship('User', backref=db.backref('likes', lazy=True))

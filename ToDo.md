@@ -12,7 +12,6 @@
   -Do better the input "Search" bar
 
   Center Part:
-  -The upper part of the post part need to be transparent when the posts move
   -Look for a way to have infinite scrolling in posts
 
   Left Part:
@@ -24,6 +23,9 @@
 
 ## FINISHED
 =============================================================================================
+  -CLEAR THE POST TEXT AREA WHEN THE POST IS POSTED
+  -ADD A TOAST WHEN THE BUTTON IS CLICKED WHIT THE INFO OF THE POST(IF IS POSTED OR NOT)
+
   -BE ABLE TO POST
   -COMPLETE THE MID PART (ADD THE "FOR YOU" AND "FOLLOWING")
 

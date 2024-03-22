@@ -13,12 +13,11 @@ type Post_CardProps = {
   content: string
   likes_amount: number
   views_amount: number
-  reposts_amount: number
   comments_amount: number
   isLiked: boolean
 }
 
-const Post_Card: React.FC<Post_CardProps> = ({ id, userFullName, userName, avatarUrl, content, views_amount, likes_amount, reposts_amount, comments_amount, isLiked}) => {
+const Post_Card: React.FC<Post_CardProps> = ({ id, userFullName, userName, avatarUrl, content, views_amount, likes_amount, comments_amount, isLiked}) => {
   return (
     <Card className="flex items-center shadow-none bg-transparent hover:bg-slate-800 transition border-b rounded-none cursor-pointer border-white/20">
       <CardHeader className="cardHeader">
@@ -38,7 +37,7 @@ const Post_Card: React.FC<Post_CardProps> = ({ id, userFullName, userName, avata
         </p>
       </CardBody>
       <CardFooter className="gap-3">
-        <PostButtons id={id} views_amount={views_amount} likes_amount={likes_amount} reposts_amount={reposts_amount} comments_amount={comments_amount} is_liked={isLiked}/>
+        <PostButtons id={id} views_amount={views_amount} likes_amount={likes_amount} comments_amount={comments_amount} is_liked={isLiked}/>
       </CardFooter>
     </Card>
   )
