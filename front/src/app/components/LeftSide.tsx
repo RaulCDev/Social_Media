@@ -16,23 +16,19 @@ export default function LeftSide ({
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
     useEffect(() => {
-      // Lógica para cerrar el dropdown al hacer clic fuera de él
       const handleClickOutside = (event: MouseEvent) => {
-        // Verificación de si el clic fue fuera del dropdown y si está abierto
+
         if (dropdownOpen) {
-          // Cerrar el dropdown
           setDropdownOpen(false);
         }
       };
 
-      // Agregar event listener al montar el componente
       document.addEventListener('mousedown', handleClickOutside);
 
-      // Limpiar el event listener al desmontar el componente
       return () => {
         document.removeEventListener('mousedown', handleClickOutside);
       };
-    }, [dropdownOpen]); // Se ejecutará cada vez que dropdownOpen cambie de valor
+    }, [dropdownOpen]);
 
     const handleDropdown = () => {
       // Cambiar el estado de dropdownOpen al hacer clic en el botón

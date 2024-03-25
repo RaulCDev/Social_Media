@@ -24,7 +24,7 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-    parent_comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'))  # Columna de clave foránea para el comentario padre
+    parent_comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
     content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     user = db.relationship('User', backref=db.backref('user_comments', lazy=True))

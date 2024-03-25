@@ -37,7 +37,7 @@ const Post_Card: React.FC<Post_CardProps> = ({ id, userFullName, userName, avata
         </p>
       </CardBody>
       <CardFooter className="gap-3">
-        <PostButtons id={id} views_amount={views_amount} likes_amount={likes_amount} comments_amount={comments_amount} is_liked={isLiked}/>
+        <PostButtons id={id} views_amount={views_amount} likes_amount={likes_amount} comments_amount={comments_amount} is_liked={isLiked} userFullName={userFullName} userName={userName} avatarUrl={avatarUrl}/>
       </CardFooter>
     </Card>
   )

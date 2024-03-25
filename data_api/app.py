@@ -8,7 +8,7 @@ from github import Github
 import requests
 #Import SQL database models from models.py and the database itself from database.py
 from SQL.database import db
-from SQL.models import Post, Like, User
+from SQL.models import Post, Like, User, Comment
 
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta'
@@ -169,6 +169,54 @@ def github_callback():
         token = create_token(email.email)
         save_user(email_value, username_value, username_value, avatarUrl_value, token)
         return jsonify({'succes': True,'access_token': token})
+
+
+@cross_origin
+@app.route('/comment', methods=['POST'])
+def comment():
+    data = request.json
+    postId = data.get('postId')
+    content = data.get('content')
+
+    if len(content) > 280:
+        return jsonify({'error': 'Comment content exceeds the character limit of 280'}), 400
+
+    # Verifica si el post con el postId proporcionado existe
+    post = Post.query.get(postId)
+    if not post:
+        return jsonify({'error': 'Post not found'}), 404
+
+    # Obtén el user_id del token de autenticación
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        return jsonify({"error": "Missing authorization header"}), 401
+
+    try:
+        auth_scheme, token = auth_header.split()
+        if auth_scheme.lower() != "bearer":
+            return jsonify({"error": "Invalid authorization scheme"}), 401
+    except ValueError:
+        return jsonify({"error": "Invalid authorization header"}), 401
+
+    try:
+        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        user_identity = decoded_token["identity"]
+    except jwt.ExpiredSignatureError:
+        return jsonify({"error": "Token has expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Invalid token"}), 401
+
+    user = User.query.filter_by(email=user_identity).first()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Crea un nuevo comentario con los datos proporcionados
+    comment = Comment(user_id=user.id, post_id=postId, content=content)
+    db.session.add(comment)
+    db.session.commit()
+
+    return jsonify({'message': 'Comment posted successfully'})
+
 
 
 @cross_origin

@@ -68,7 +68,7 @@ export default function WritePost({ userName, avatarUrl }: Props) {
           theme: "colored",
           transition: Bounce,
         });
-        setContent(''); // Vaciar el contenido del textarea
+        setContent('');
       })
       .catch((error) => {
         console.error('Error:', error);
