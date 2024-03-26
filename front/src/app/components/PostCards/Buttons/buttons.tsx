@@ -3,6 +3,7 @@ import { IconHeart, IconMessageCircle, IconRepeat, IconHeartFilled, IconEye, Ico
 import { Bounce, ToastContainer, toast } from 'react-toastify';
 import Link from 'next/link';
 import { Avatar } from '@nextui-org/react';
+import PostButtons from './Buttons/buttons'
 
 type Post_ButtonsProps = {
   id: number
