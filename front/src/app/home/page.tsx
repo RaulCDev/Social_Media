@@ -10,10 +10,8 @@ import Post_Cards from '../components/PostCards/PostCards';
 
 export default function Home() {
   const [user, setUser] = useState({});
-  // Get the token from local storage
   const token = localStorage.getItem('token');
 
-  // Send a GET request to the /get_user/<token> endpoint with the token as a query parameter
   useEffect(() => {
     if (token) {
       fetch('http://localhost:5000/get_user_data', {
@@ -25,12 +23,10 @@ export default function Home() {
       })
         .then(response => response.json())
         .then(data => {
-          // Save the user data in the state
           setUser(data);
           console.log(data);
         })
         .catch(error => {
-          // Handle any errors that occur during the request
           console.error(error);
         });
     }
@@ -39,11 +35,11 @@ export default function Home() {
   return (
     <>
       <div className="flex justify-center">
-          <LeftSide userFullName={user.username} userName={user.username} avatarUrl={user.avatarUrl}/>
+          <LeftSide userFullName={user.username} userName={user.username}/>
           <main className='flex'>
             <div className='midContainer'>
               <PostTipes />
-              <WritePost userFullName="Manolo" userName="manolo" avatarUrl="https://github.com/RaulCDev.png" content="Post"/>
+              <WritePost userName={user.username}/>
               <Post_Cards/>
             </div>
             <RightSide />

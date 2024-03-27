@@ -8,10 +8,9 @@ import 'react-toastify/dist/ReactToastify.css';
 
 interface Props {
   userName: string;
-  avatarUrl: string;
 }
 
-export default function WritePost({ userName, avatarUrl }: Props) {
+export default function WritePost({ userName }: Props) {
   const [content, setContent] = useState('');
   const [token, setToken] = useState<string | null>(null);
 
@@ -92,7 +91,7 @@ export default function WritePost({ userName, avatarUrl }: Props) {
         <div className="cardHeader justify-between flex items-center">
           <div className="flex gap-x-2 w-full">
             <Link href={`/${userName}`}>
-              <Avatar radius="full" size="md" src={avatarUrl} />
+              <Avatar radius="full" size="md" src={`https://github.com/${userName}.png`} />
             </Link>
             <textarea
               value={content}

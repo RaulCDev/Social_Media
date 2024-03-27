@@ -351,6 +351,11 @@
   background-color: rgb(66, 66, 66);
 }
 
+.postCountContainer {
+  display: flex;
+  flex-direction: column;
+}
+
 .icons img{
   width: 30px;
   height: 30px;
@@ -377,23 +382,6 @@
   flex-direction: column;
   gap: 10px;
   margin: 0 auto;
-}
-
-.btn{
-  background-color: #01a199;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 5px 20px;
-  cursor: pointer;
-}
-
-.btn:hover {
-  background-color: #00358b;
-}
-
-.btn:active {
-  background-color: #5d0070;
 }
 
 p, h1{

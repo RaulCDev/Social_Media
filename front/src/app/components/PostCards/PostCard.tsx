@@ -19,7 +19,7 @@ type Post_CardProps = {
 
 const Post_Card: React.FC<Post_CardProps> = ({ id, userFullName, userName, avatarUrl, content, views_amount, likes_amount, comments_amount, isLiked}) => {
   return (
-    <Link href={`/${userName}/post/${id}`}>
+    <Link href={`/${userName}/${id}`}>
         <Card className="flex items-center shadow-none bg-transparent hover:bg-slate-800 transition border-b rounded-none cursor-pointer border-white/20">
           <CardHeader className="cardHeader">
             <div className="flex gap-x-2">

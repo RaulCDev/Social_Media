@@ -8,7 +8,7 @@ from github import Github
 import requests
 #Import SQL database models from models.py and the database itself from database.py
 from SQL.database import db
-from SQL.models import Post, Like, User, Comment
+from SQL.models import Post, Like, User
 
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta'
@@ -158,7 +158,7 @@ def github_callback():
         'code': request.json['code']
     }
     token_response = requests.post('https://github.com/login/oauth/access_token', data=data)
-    access_token = token_response.text.split('=')[1].split('&')[0]  # Obtener el valor de access_token del texto de la respuesta
+    access_token = token_response.text.split('=')[1].split('&')[0]
     github_client = Github(access_token)
     user = github_client.get_user()
     emails = user.get_emails()
@@ -235,7 +235,7 @@ def get_cards():
 
         views_amount = post.views_amount + 1
 
-        comments_amount = len(post.comments)
+        comments_amount = Post.query.filter_by(father_id=post.id).count()
 
         is_liked = Like.query.filter_by(post_id=post.id, user_id=user_id).first() is not None
 
@@ -260,27 +260,75 @@ def get_cards():
 @cross_origin
 @app.route('/like', methods=['POST'])
 def give_like():
-    # Get the post ID from the request body
     request_data = request.get_json()
     post_id = request_data.get('postId')
 
-    # Get the authentication token from the request headers
     token = request.headers.get('Authorization').split(' ')[1]
-    # Get the current user from the authentication token
     user_id = get_current_user(token)
 
-    # Create a new like object and save it to the database
     like = Like(post_id=post_id, user_id=user_id)
     db.session.add(like)
     db.session.commit()
 
-    # Incrementar la cantidad de likes del post correspondiente
     post = Post.query.get(post_id)
     post.likes_amount += 1
     db.session.commit()
 
-     # Return a success responsew
     return jsonify({'message': 'Like saved successfully'})
+
+
+@cross_origin
+@app.route('/profileData', methods=['POST'])
+def profileData():
+    user_name = request.json.get('user_name')
+
+    if not user_name:
+        return jsonify({'error': 'That user does not exist'}), 400
+
+    # Busca el usuario por su nombre de usuario
+    user = User.query.filter_by(username=user_name).first()
+
+    if not user:
+        return jsonify({'error': 'That user does not exist'}), 400
+
+    # Cuenta la cantidad de posts asociados al usuario
+    post_count = Post.query.filter_by(user_id=user.id).count()
+
+    return jsonify({'post_count': post_count})
+
+
+@cross_origin
+@app.route('/postData', methods=['POST'])
+def postData():
+    data = request.json
+    user_name = data.get('user_name')
+    post_id = data.get('post_id')
+
+    if not user_name:
+        return jsonify({'error': 'Missing user name'}), 400
+    if not post_id:
+        return jsonify({'error': 'Missing post ID'}), 400
+
+    post = Post.query.filter_by(id=post_id).first()
+
+    if not post:
+        return jsonify({'error': 'Post not found'}), 404
+
+    if post.user.username != user_name:
+        return jsonify({'error': 'Post does not belong to the user'}), 403
+
+    comments = Post.query.filter_by(father_id=post_id).limit(20).all()
+
+    post_data = {
+        'id': post.id,
+        'userFullName': post.user.accountname,
+        'userName': post.user.username,
+        'avatarUrl': post.user.avatarUrl,
+        'content': post.content,
+        'comments': [{'userFullName': comment.user.accountname, 'content': comment.content} for comment in comments]
+    }
+
+    return jsonify(post_data)
 
 
 @cross_origin
