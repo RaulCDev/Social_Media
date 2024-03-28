@@ -220,13 +220,11 @@ def comment():
 @cross_origin
 @app.route('/cards', methods=['POST'])
 def get_cards():
-    # Query the database for the 10 most recent cards
     token = request.headers.get('Authorization').split(' ')[1]
     user_id = get_current_user(token)
 
-    posts = Post.query.order_by(Post.timestamp.desc()).limit(10).all()
+    posts = Post.query.filter(Post.father_id.is_(None)).order_by(Post.timestamp.desc()).limit(10).all()
 
-    # Convert the query results to a list of dictionaries
     posts_list = []
     for post in posts:
         likes_amount = Like.query.filter_by(post_id=post.id).count()
