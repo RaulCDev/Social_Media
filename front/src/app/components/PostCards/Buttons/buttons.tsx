@@ -144,12 +144,13 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amo
 
   return (
     <div className="flex w-full">
-      <button className='postIcons rounded-full flex items-center space-x-1' onClick={handleCommentButtonClick}>
+      <button className='postIcons rounded-full flex items-center space-x-1' onClick={e => { e.preventDefault(); handleCommentButtonClick();}}>
           <IconMessageCircle className='w-4 h-4' />
           <span>{comments_amount}</span>
       </button>
+      {isDropdownOpen && <div className="overlay" />}
       {isDropdownOpen && (
-        <div className="container-dropdown-comment">
+        <div className="container-dropdown-comment" onClick={e => { e.preventDefault();}} >
           <div className="dropdown-comment" ref={dropdownRef}>
             <div className="flex gap-x-2 w-full">
               <Link href={`/${userName}`}>

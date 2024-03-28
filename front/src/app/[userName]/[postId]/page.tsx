@@ -71,12 +71,12 @@ export default function Post({ params }: { params: { userName: string, postId : 
               key={index}
               id={comment.id}
               userFullName={comment.userFullName}
-              userName={comment.userName}
-              avatarUrl={comment.avatarUrl}
+              userName={comment.userFullName}
+              avatarUrl={comment.userFullName}
               content={comment.content}
               likes_amount={comment.likes}
               views_amount={comment.views}
-              comments_amount={comment.comments.length}
+              comments_amount={comment.comments_amount}
               isLiked={comment.isLiked}
             />
           ))}

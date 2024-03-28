@@ -175,18 +175,16 @@ def github_callback():
 @app.route('/comment', methods=['POST'])
 def comment():
     data = request.json
-    postId = data.get('postId')
+    post_id = data.get('postId')
     content = data.get('content')
 
     if len(content) > 280:
         return jsonify({'error': 'Comment content exceeds the character limit of 280'}), 400
 
-    # Verifica si el post con el postId proporcionado existe
-    post = Post.query.get(postId)
+    post = Post.query.get(post_id)
     if not post:
         return jsonify({'error': 'Post not found'}), 404
 
-    # Obtén el user_id del token de autenticación
     auth_header = request.headers.get("Authorization")
     if not auth_header:
         return jsonify({"error": "Missing authorization header"}), 401
@@ -210,12 +208,12 @@ def comment():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    # Crea un nuevo comentario con los datos proporcionados
-    comment = Comment(user_id=user.id, post_id=postId, content=content)
+    comment = Post(user_id=user.id, content=content, father_id=post_id)
     db.session.add(comment)
     db.session.commit()
 
     return jsonify({'message': 'Comment posted successfully'})
+
 
 
 
@@ -319,12 +317,15 @@ def postData():
 
     comments = Post.query.filter_by(father_id=post_id).limit(20).all()
 
+    comments_count = Post.query.filter_by(father_id=post_id).count()
+
     post_data = {
         'id': post.id,
         'userFullName': post.user.accountname,
         'userName': post.user.username,
         'avatarUrl': post.user.avatarUrl,
         'content': post.content,
+        'comments_amount': comments_count,
         'comments': [{'userFullName': comment.user.accountname, 'content': comment.content} for comment in comments]
     }
 
