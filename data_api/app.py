@@ -315,7 +315,26 @@ def postData():
 
     comments = Post.query.filter_by(father_id=post_id).limit(20).all()
 
-    comments_count = Post.query.filter_by(father_id=post_id).count()
+    post_likes_count = Like.query.filter_by(post_id=post.id).count()
+
+    post_comments_count = Post.query.filter_by(father_id=post_id).count()
+
+    comments = Post.query.filter_by(father_id=post_id).limit(20).all()
+
+    for comment in comments:
+        comment.views_amount += 1
+        db.session.commit()
+
+    comments_data = [{
+        'id': comment.id,
+        'userFullName': comment.user.accountname,
+        'userName': comment.user.username,
+        'avatarUrl': comment.user.avatarUrl,
+        'content': comment.content,
+        'likes_amount': Like.query.filter_by(post_id=comment.id).count(),
+        'views_amount': comment.views_amount,
+        'comments_amount': Post.query.filter_by(father_id=comment.id).count(),
+    } for comment in comments]
 
     post_data = {
         'id': post.id,
@@ -323,8 +342,10 @@ def postData():
         'userName': post.user.username,
         'avatarUrl': post.user.avatarUrl,
         'content': post.content,
-        'comments_amount': comments_count,
-        'comments': [{'userFullName': comment.user.accountname, 'content': comment.content} for comment in comments]
+        'likes_amount': post_likes_count,
+        'views_amount': post.views_amount,
+        'comments_amount': post_comments_count,
+        'comments': comments_data
     }
 
     return jsonify(post_data)

@@ -61,8 +61,8 @@ export default function Post({ params }: { params: { userName: string, postId : 
             userName={postData.userName}
             avatarUrl={postData.avatarUrl}
             content={postData.content}
-            likes_amount={postData.likes}
-            views_amount={postData.views}
+            likes_amount={postData.likes_amount}
+            views_amount={postData.views_amount}
             comments_amount={postData.comments.length}
             isLiked={postData.isLiked}
           />
@@ -74,8 +74,8 @@ export default function Post({ params }: { params: { userName: string, postId : 
               userName={comment.userFullName}
               avatarUrl={comment.userFullName}
               content={comment.content}
-              likes_amount={comment.likes}
-              views_amount={comment.views}
+              likes_amount={comment.likes_amount}
+              views_amount={comment.views_amount}
               comments_amount={comment.comments_amount}
               isLiked={comment.isLiked}
             />
