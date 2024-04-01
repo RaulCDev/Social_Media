@@ -5,7 +5,7 @@
     -SOMETHING LIKE THIS
           {router.pathname === '/ruta1' && <Componente1 />} {/* Ruta 1 */}
           {router.pathname === '/ruta2' && <Componente2 />} {/* Ruta 2 */}
-          
+
   -DENIES THE ACCESS TO THE /HOME ROUTE IF THE USER ISN'T LOGGED
 
 ## Front
