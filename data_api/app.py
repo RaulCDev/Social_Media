@@ -229,7 +229,8 @@ def get_cards():
     for post in posts:
         likes_amount = Like.query.filter_by(post_id=post.id).count()
 
-        views_amount = post.views_amount + 1
+        post.views_amount += 1
+        db.session.commit()
 
         comments_amount = Post.query.filter_by(father_id=post.id).count()
 
@@ -242,12 +243,11 @@ def get_cards():
             'avatarUrl': post.user.avatarUrl,
             'content': post.content,
             'likes': likes_amount,
-            'views': views_amount,
+            'views': post.views_amount,
             'comments': comments_amount,
             'isLiked': is_liked
         })
 
-    # Convert the list of dictionaries to a JSON response
     response = make_response(jsonify(posts_list))
     return response
 
