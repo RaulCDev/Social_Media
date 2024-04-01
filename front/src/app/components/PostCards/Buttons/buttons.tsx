@@ -52,7 +52,7 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amo
           body: JSON.stringify({ postId: id })
         })
         const data = await response.json();
-        if (data.message === 'Like saved successfully') {
+        if (response.ok) {
           setIsHeartFilled(true);
           setLikesAmount(prevLikesAmount => prevLikesAmount + 1);
         }
@@ -164,7 +164,7 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amo
               />
             </div>
             <div className="marginLeft sticky">
-              <button className="rounded-full bg-green-600 p-2 hover:bg-green-700 active:bg-green-800" onClick={handleCommentPost}>
+              <button className="rounded-full bg-green-600 p-2 hover:bg-green-700 active:bg-green-800" onClick={e => { e.preventDefault(); handleCommentPost();}}>
                 Reply
               </button>
             </div>
@@ -175,7 +175,7 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amo
       <button className="postIcons rounded-full flex items-center space-x-1">
         <IconRepeat className="w-4 h-4" /><span>0</span>
       </button>
-      <button className="postIconsHeart rounded-full flex items-center space-x-1" onClick={() => handleLike()}>
+      <button className="postIconsHeart rounded-full flex items-center space-x-1" onClick={e => { e.preventDefault(); handleLike();}}>
         { isHeartFilled ? <IconHeartFilled className="w-4 h-4" /> : <IconHeart className="w-4 h-4" />}<span>{likesAmount}</span>
       </button>
       <button className="postIcons rounded-full flex items-center space-x-1">

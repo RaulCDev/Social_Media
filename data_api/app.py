@@ -257,20 +257,22 @@ def get_cards():
 @app.route('/like', methods=['POST'])
 def give_like():
     request_data = request.get_json()
-    post_id = request_data.get('postId')
 
-    token = request.headers.get('Authorization').split(' ')[1]
-    user_id = get_current_user(token)
+    post_id = request_data.get('postId')
+    if post_id is None:
+        return jsonify({'error': 'Post ID is missing in the request data'}), 400
+
+    try:
+        token = request.headers.get('Authorization').split(' ')[1]
+        user_id = get_current_user(token)
+    except Exception as e:
+        return jsonify({'error': 'Failed to extract user ID from authorization token', 'details': str(e)}), 400
 
     like = Like(post_id=post_id, user_id=user_id)
     db.session.add(like)
     db.session.commit()
 
-    post = Post.query.get(post_id)
-    post.likes_amount += 1
-    db.session.commit()
-
-    return jsonify({'message': 'Like saved successfully'})
+    return jsonify({'message': 'Like saved successfully'}), 200
 
 
 @cross_origin
@@ -366,12 +368,7 @@ def remove_like():
         db.session.delete(like)
         db.session.commit()
 
-        post = Post.query.get(post_id)
-        if post.likes_amount > 0:
-            post.likes_amount -= 1
-            db.session.commit()
-
-        return jsonify({'message': 'Like removed successfully'})
+        return jsonify({'message': 'Like removed successfully'}), 200
     else:
         return jsonify({'error': 'Like not found'}), 404
 
