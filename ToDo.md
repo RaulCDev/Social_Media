@@ -1,10 +1,9 @@
 # Todo list
 ---------------------------------
 ## First to do
-  -NEED TO CHANGE THE STRUCTURE, USE THE /HOME AS A BASE, WHEN OPEN A POST ONLY CHANGE THE MIDDLE COMPONENT
-    -SOMETHING LIKE THIS
-          {router.pathname === '/ruta1' && <Componente1 />} {/* Ruta 1 */}
-          {router.pathname === '/ruta2' && <Componente2 />} {/* Ruta 2 */}
+  -WHEN DO A COMMENT, SEE THE POST YOU ARE COMMENTING IN
+
+  -BE ABLE TO SEE THE USER PROFILE
 
   -DENIES THE ACCESS TO THE /HOME ROUTE IF THE USER ISN'T LOGGED
 
@@ -25,6 +24,8 @@
 
 ## FINISHED
 =============================================================================================
+  -BE ABLE TO POST FROM THE LEFT BUTTON
+
   -SETTLE THE VIEWS COUNT
   -WHEN OPEN A POST THE AMOUNT OF VIEWS THE COMMENTS HAVE IS +2(IN THE MOMENT WRITING THIS ONLY HAVE 2 COMMENTS MAYBE IT IS)
   -WHEN OPEN A POST, NEED TO CHARGE THE DATA BETTER, ALREADY SHOWS "LOADING" AND IF YOU DELETE IT DONT WORK

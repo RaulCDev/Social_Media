@@ -150,8 +150,8 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amo
       </button>
       {isDropdownOpen && <div className="overlay" />}
       {isDropdownOpen && (
-        <div className="container-dropdown-comment" onClick={e => { e.preventDefault();}} >
-          <div className="dropdown-comment" ref={dropdownRef}>
+        <div className="container-dropdown-comment" onClick={e => { e.preventDefault();}} ref={dropdownRef}>
+          <div className="dropdown-comment">
             <div className="flex gap-x-2 w-full">
               <Link href={`/${userName}`}>
                 <Avatar radius="full" size="md" src={avatarUrl} />

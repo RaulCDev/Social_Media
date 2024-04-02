@@ -1,7 +1,9 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Avatar } from '@nextui-org/react'
 import { IconSettings ,IconExternalLink ,IconVip ,IconCashBanknote ,IconBrandLinkedin, IconBrandGithub, IconDots, IconBrandX, IconDotsCircleHorizontal ,IconUser ,IconHome, IconSearch, IconBell, IconMail, IconNotes, IconBookmark, IconUsers } from '@tabler/icons-react'
+import TextAreaPost from './TextArea-Post';
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function LeftSide ({
     userFullName,
@@ -12,27 +14,100 @@ export default function LeftSide ({
   }) {
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [isWriteTextOpen, setIsWriteTextOpen] = useState(false);
+    const [content, setContent] = useState('');
+    const token = localStorage.getItem('token');
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+
+    const handleWriteTextButtonClick = () => {
+      setIsWriteTextOpen(!isWriteTextOpen);
+    };
 
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
-
         if (dropdownOpen) {
           setDropdownOpen(false);
         }
       };
-
       document.addEventListener('mousedown', handleClickOutside);
-
       return () => {
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }, [dropdownOpen]);
 
     const handleDropdown = () => {
-      // Cambiar el estado de dropdownOpen al hacer clic en el botón
       setDropdownOpen(!dropdownOpen);
     };
 
+    const handlePostClick = (content: string) => {
+      const postData = {
+        content: content,
+      };
+
+      fetch('http://localhost:5000/post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(postData),
+      })
+      .then((response) => {
+        if (!response.ok) {
+          toast.error('Error connecting to the API', {
+            position: "bottom-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+          throw new Error('Error connecting to the API');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Server response:', data);
+        toast.success('Post created successfully', {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('Something went wrong', {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      });
+    };
+
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+          setIsWriteTextOpen(false);
+        }
+      };
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, []);
 
     const buttons = [
       { icon: <IconHome className='leftButtonssvg' />, text: 'Home' },
@@ -94,7 +169,13 @@ export default function LeftSide ({
                 </div>
               </div>
             )}
-            <button className='leftPostButton rounded-full'>Post</button>
+            <button className='leftPostButton rounded-full' onClick={handleWriteTextButtonClick}>Post</button>
+            {isWriteTextOpen && <div className="overlay" />}
+            {isWriteTextOpen && (
+              <div className="container-dropdown-comment" onClick={e => { e.preventDefault();}} ref={dropdownRef}>
+                <TextAreaPost userName='userName' avatarUrl={`https://github.com/${userName}.png`} handlePost={handlePostClick}/>
+              </div>
+            )}
             <button className="leftButtons container-flex rounded-full max-w-[250px]">
               <Avatar radius="full" size="md" src={`https://github.com/${userName}.png`} />
               <div className="flex flex-col gap-1 items-start justify-center ml-2">
@@ -105,5 +186,5 @@ export default function LeftSide ({
             </button>
           </div>
         </div>
-    )
+    );
   }

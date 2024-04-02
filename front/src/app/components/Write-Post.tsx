@@ -12,11 +12,7 @@ interface Props {
 
 export default function WritePost({ userName }: Props) {
   const [content, setContent] = useState('');
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    setToken(localStorage.getItem('token'));
-  }, []);
+  const token = localStorage.getItem('token');
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const textarea = event.target;

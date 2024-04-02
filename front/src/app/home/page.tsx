@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation'
 import Link from 'next/link';
 import Account_Card from '../components/PostCards/PostCard';
 import WritePost from '../components/Write-Post';
@@ -9,6 +10,7 @@ import RightSide from '../components/RightSide';
 import Post_Cards from '../components/PostCards/PostCards';
 
 export default function Home() {
+  const router = useRouter();
   const [user, setUser] = useState({});
   const token = localStorage.getItem('token');
 
