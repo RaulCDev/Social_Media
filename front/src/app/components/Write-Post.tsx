@@ -97,8 +97,8 @@ export default function WritePost({ userName }: Props) {
             />
           </div>
         </div>
-        <div className="cardFooter flex justify-end gap-3 border-t border-gray-600 pt-2">
-          <div className="flex justify-start ml-10">
+        <div className="flex justify-between gap-3 border-t border-gray-600 pt-2">
+          <div className="flex">
             <button className="mx-2">
               <IconPhoto className="w-5 h-5 text-green-600" />
             </button>

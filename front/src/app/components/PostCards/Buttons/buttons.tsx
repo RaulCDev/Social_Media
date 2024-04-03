@@ -3,7 +3,8 @@ import { IconHeart, IconMessageCircle, IconRepeat, IconHeartFilled, IconEye, Ico
 import { Bounce, ToastContainer, toast } from 'react-toastify';
 import Link from 'next/link';
 import { Avatar } from '@nextui-org/react';
-import PostButtons from './Buttons/buttons'
+import PostButtons from './buttons';
+import TextAreaPost from '../../TextArea-Post';
 
 type Post_ButtonsProps = {
   id: number
@@ -151,25 +152,7 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amo
       {isDropdownOpen && <div className="overlay" />}
       {isDropdownOpen && (
         <div className="container-dropdown-comment" onClick={e => { e.preventDefault();}} ref={dropdownRef}>
-          <div className="dropdown-comment">
-            <div className="flex gap-x-2 w-full">
-              <Link href={`/${userName}`}>
-                <Avatar radius="full" size="md" src={avatarUrl} />
-              </Link>
-              <textarea
-                value={content}
-                onChange={handleChange}
-                placeholder="What's your comment?"
-                className="input bg-gray-700"
-              />
-            </div>
-            <div className="marginLeft sticky">
-              <button className="rounded-full bg-green-600 p-2 hover:bg-green-700 active:bg-green-800" onClick={e => { e.preventDefault(); handleCommentPost();}}>
-                Reply
-              </button>
-            </div>
-            <ToastContainer />
-          </div>
+          <TextAreaPost userName='userName' avatarUrl={`https://github.com/${userName}.png`} handlePost={handleCommentPost} postId={id}/>
         </div>
       )}
       <button className="postIcons rounded-full flex items-center space-x-1">
