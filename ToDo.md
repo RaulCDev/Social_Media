@@ -1,7 +1,9 @@
 # Todo list
 ---------------------------------
 ## First to do
-  -WHEN DO A COMMENT, SEE THE POST YOU ARE COMMENTING IN
+  -ADJUST THE SIZE OF THE CARD WHEN IS A COMMENT
+
+  -WHEN POSTING A COMMENT OR A POST HAVE A DIFERENT MESSAGE(Whats your post/ Whats your comment)
 
   -BE ABLE TO SEE THE USER PROFILE
 
@@ -24,6 +26,7 @@
 
 ## FINISHED
 =============================================================================================
+  -WHEN DO A COMMENT, SEE THE POST YOU ARE COMMENTING IN
   -BE ABLE TO POST FROM THE LEFT BUTTON
 
   -SETTLE THE VIEWS COUNT

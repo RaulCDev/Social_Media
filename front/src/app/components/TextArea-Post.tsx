@@ -13,10 +13,11 @@ type TextAreaPostProps = {
 
 const TextAreaPost: React.FC<TextAreaPostProps> = ({ userName, avatarUrl, handlePost, postId }) => {
   const [content, setContent] = useState('');
+  const [data, setData] = useState([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const token = localStorage.getItem('token');
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const postContentRef = useRef<HTMLTextAreaElement>(null);
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const textarea = event.target;
@@ -52,6 +53,14 @@ const TextAreaPost: React.FC<TextAreaPostProps> = ({ userName, avatarUrl, handle
   }, []);
 
   useEffect(() => {
+    if (postContentRef.current) {
+      const textarea = postContentRef.current;
+      textarea.style.height = '54px';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, []);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
@@ -77,53 +86,39 @@ const TextAreaPost: React.FC<TextAreaPostProps> = ({ userName, avatarUrl, handle
       })
       .then((response) => {
         if (!response.ok) {
-          toast.error('Error connecting to the API', {
-            position: "bottom-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-          });
           throw new Error('Error connecting to the API');
         }
         return response.json();
       })
       .then((data) => {
+        setData(data);
         console.log('Server response:', data);
-        toast.success('Post created successfully', {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
       })
       .catch((error) => {
         console.error('Error:', error);
-        toast.error('Something went wrong', {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
       });
     }
-  }, [postId]);
+  }, [postId, token]);
 
   return (
-      <div className="dropdown-comment rounded-lg">
+      <div className="dropdown-comment rounded-lg border-b-2 border-gray-800" onClick={e => { e.preventDefault();}}>
         {postId && (
-          <div>Mondongo</div>
+          <div className="flex flex-row mb-5">
+            <Avatar radius="full" size="md" src={`https://github.com/${data.userName}.png`} className="mr-2" />
+            <div className="flex flex-col flex-grow pr-4">
+              <div className="flex items-center mb-2">
+                <h4 className="text-small font-semibold text-default-600">{data.userFullName}</h4>
+                <h5 className="text-small tracking-tight text-default-400 ml-2">@{data.userName}</h5>
+              </div>
+              <textarea
+                ref={postContentRef}
+                readOnly
+                value={data.content}
+                placeholder="What's your post?"
+                className="input bg-gray-700 h-28"
+              />
+            </div>
+          </div>
         )}
         <div className="flex gap-x-2 w-full">
           <Link href={`/${userName}`}>
@@ -155,7 +150,6 @@ const TextAreaPost: React.FC<TextAreaPostProps> = ({ userName, avatarUrl, handle
             </button>
           </div>
         </div>
-        <ToastContainer />
       </div>
   );
 };

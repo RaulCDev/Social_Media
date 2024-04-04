@@ -298,59 +298,25 @@ def profileData():
 @cross_origin
 @app.route('/postData', methods=['POST'])
 def postData():
-    data = request.json
-    user_name = data.get('user_name')
-    post_id = data.get('post_id')
+    postId = request.json
 
-    if not user_name:
-        return jsonify({'error': 'Missing user name'}), 400
-    if not post_id:
+    if not postId:
         return jsonify({'error': 'Missing post ID'}), 400
 
-    post = Post.query.filter_by(id=post_id).first()
+    post = Post.query.filter_by(id=postId).first()
 
     if not post:
         return jsonify({'error': 'Post not found'}), 404
 
-    if post.user.username != user_name:
-        return jsonify({'error': 'Post does not belong to the user'}), 403
-
-    comments = Post.query.filter_by(father_id=post_id).limit(20).all()
-
-    post_likes_count = Like.query.filter_by(post_id=post.id).count()
-
-    post_comments_count = Post.query.filter_by(father_id=post_id).count()
-
-    comments = Post.query.filter_by(father_id=post_id).limit(20).all()
-
-    for comment in comments:
-        comment.views_amount += 1
-        db.session.commit()
-
-    comments_data = [{
-        'id': comment.id,
-        'userFullName': comment.user.accountname,
-        'userName': comment.user.username,
-        'avatarUrl': comment.user.avatarUrl,
-        'content': comment.content,
-        'likes_amount': Like.query.filter_by(post_id=comment.id).count(),
-        'views_amount': comment.views_amount,
-        'comments_amount': Post.query.filter_by(father_id=comment.id).count(),
-    } for comment in comments]
-
-    post_data = {
+    postData = {
         'id': post.id,
         'userFullName': post.user.accountname,
         'userName': post.user.username,
         'avatarUrl': post.user.avatarUrl,
         'content': post.content,
-        'likes_amount': post_likes_count,
-        'views_amount': post.views_amount,
-        'comments_amount': post_comments_count,
-        'comments': comments_data
     }
 
-    return jsonify(post_data)
+    return jsonify(postData)
 
 
 @cross_origin
