@@ -1,8 +1,6 @@
 # Todo list
 ---------------------------------
 ## First to do
-  -WHEN POSTING A COMMENT OR A POST HAVE A DIFERENT MESSAGE(Whats your post/ Whats your comment)
-
   -BE ABLE TO SEE THE USER PROFILE
 
   -DENIES THE ACCESS TO THE /HOME ROUTE IF THE USER ISN'T LOGGED
@@ -31,6 +29,7 @@
 
 ## FINISHED
 =============================================================================================
+  -WHEN POSTING A COMMENT OR A POST HAVE A DIFERENT MESSAGE(Whats your post/ Whats your comment)
   -CORRECT THE DATA WHEN WATCHING A POST AND HIS COMMENTS
 
   -WHEN DO A COMMENT, SEE THE POST YOU ARE COMMENTING IN

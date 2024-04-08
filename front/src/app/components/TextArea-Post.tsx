@@ -128,7 +128,7 @@ const TextAreaPost: React.FC<TextAreaPostProps> = ({ userName, avatarUrl, handle
             ref={textareaRef}
             value={content}
             onChange={handleChange}
-            placeholder="What's your post?"
+            placeholder={postId ? "Post your reply" : "What is happening?"}
             className="input bg-gray-700"
           />
         </div>
