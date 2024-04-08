@@ -17,7 +17,7 @@ export default function Post({ params }: { params: { userName: string, postId : 
   useEffect(() => {
     const fetchPostData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/postData', {
+        const response = await fetch('http://localhost:5000/postCards', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ export default function Post({ params }: { params: { userName: string, postId : 
             content={postData.content}
             likes_amount={postData.likes_amount}
             views_amount={postData.views_amount}
-            comments_amount={postData.comments.length}
+            comments_amount={postData.comments_amount}
             isLiked={postData.isLiked}
           />
           {postData.comments.map((comment, index) => (

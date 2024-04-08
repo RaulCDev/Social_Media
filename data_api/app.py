@@ -283,16 +283,68 @@ def profileData():
     if not user_name:
         return jsonify({'error': 'That user does not exist'}), 400
 
-    # Busca el usuario por su nombre de usuario
     user = User.query.filter_by(username=user_name).first()
 
     if not user:
         return jsonify({'error': 'That user does not exist'}), 400
 
-    # Cuenta la cantidad de posts asociados al usuario
     post_count = Post.query.filter_by(user_id=user.id).count()
 
     return jsonify({'post_count': post_count})
+
+
+@cross_origin
+@app.route('/postCards', methods=['POST'])
+def postCards():
+    postId = request.json
+
+    if not postId:
+        return jsonify({'error': 'Missing post ID'}), 400
+
+    post_id = postId['post_id']
+
+    post = Post.query.filter_by(id=post_id).first()
+
+    if not post:
+        return jsonify({'error': 'Post not found'}), 404
+
+    comments = []
+
+    post_comments = Post.query.filter_by(father_id=post_id).all()
+    for comment in post_comments:
+        comment_data = {
+            'id': comment.id,
+            'userFullName': comment.user.accountname,
+            'userName': comment.user.username,
+            'avatarUrl': comment.user.avatarUrl,
+            'content': comment.content,
+            'likes_amount': comment.count_likes(),
+            'views_amount': comment.views_amount,
+            'comments_amount': comment.count_comments(),
+            'isLiked': comment.is_liked_by_user(comment.user_id)
+        }
+        comments.append(comment_data)
+
+
+    comments_amount = post.count_comments()
+    likes_amount = post.count_likes()
+    views_amount = post.views_amount
+    is_liked = post.is_liked_by_user(post.user_id)
+
+    postData = {
+        'id': post.id,
+        'userFullName': post.user.accountname,
+        'userName': post.user.username,
+        'avatarUrl': post.user.avatarUrl,
+        'content': post.content,
+        "comments_amount": comments_amount,
+        "likes_amount": likes_amount,
+        "views_amount": views_amount,
+        "isLiked": is_liked,
+        "comments": comments
+    }
+
+    return jsonify(postData)
 
 
 @cross_origin

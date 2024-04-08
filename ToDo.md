@@ -1,13 +1,18 @@
 # Todo list
 ---------------------------------
 ## First to do
-  -ADJUST THE SIZE OF THE CARD WHEN IS A COMMENT
-
   -WHEN POSTING A COMMENT OR A POST HAVE A DIFERENT MESSAGE(Whats your post/ Whats your comment)
 
   -BE ABLE TO SEE THE USER PROFILE
 
   -DENIES THE ACCESS TO THE /HOME ROUTE IF THE USER ISN'T LOGGED
+
+## PROBLEMS
+  -I can't adjust the size
+    -ADJUST THE SIZE OF THE CARD WHEN IS A COMMENT
+
+  -I can't do the slide of the rigth component perfect
+
 
 ## Front
   Right Part:
@@ -26,6 +31,8 @@
 
 ## FINISHED
 =============================================================================================
+  -CORRECT THE DATA WHEN WATCHING A POST AND HIS COMMENTS
+
   -WHEN DO A COMMENT, SEE THE POST YOU ARE COMMENTING IN
   -BE ABLE TO POST FROM THE LEFT BUTTON
 

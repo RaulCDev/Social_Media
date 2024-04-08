@@ -19,6 +19,15 @@ class Post(db.Model):
     father_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     father_post = db.relationship('Post', backref=db.backref('responses', lazy=True), remote_side=[id])
 
+    def count_likes(self):
+        return Like.query.filter_by(post_id=self.id).count()
+
+    def count_comments(self):
+        return Post.query.filter_by(father_id=self.id).count()
+
+    def is_liked_by_user(self, user_id):
+        return Like.query.filter_by(post_id=self.id, user_id=user_id).count() > 0
+
 
 class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
