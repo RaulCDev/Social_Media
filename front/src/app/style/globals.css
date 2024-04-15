@@ -59,6 +59,7 @@
 }
 
 .input {
+  height: auto !important;
   resize: none;
   overflow: hidden;
   background-color: transparent;

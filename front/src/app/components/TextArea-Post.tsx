@@ -115,7 +115,7 @@ const TextAreaPost: React.FC<TextAreaPostProps> = ({ userName, avatarUrl, handle
                 readOnly
                 value={data.content}
                 placeholder="What's your post?"
-                className="input bg-gray-700 h-28"
+                className="input bg-gray-700"
               />
             </div>
           </div>
