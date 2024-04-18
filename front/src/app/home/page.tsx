@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'
+import Router from 'next/router';
 import Link from 'next/link';
 import Account_Card from '../components/PostCards/PostCard';
 import WritePost from '../components/Write-Post';
@@ -23,14 +24,21 @@ export default function Home() {
           'Content-Type': 'application/json'
         }
       })
-        .then(response => response.json())
-        .then(data => {
-          setUser(data);
-          console.log(data);
-        })
-        .catch(error => {
-          console.error(error);
-        });
+      .then(response => {
+        if (response.status === 401) {
+          Router.push('/');
+        } else if (!response.ok) {
+          throw new Error('Error fetching user data');
+        }
+        return response.json();
+      })
+      .then(data => {
+        setUser(data);
+        console.log(data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
     }
   }, [token]);
 
