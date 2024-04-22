@@ -138,15 +138,17 @@ def get_user():
     except ValueError:
         return jsonify({"message": "Invalid authorization header"}), 401
 
-    # Query the database for the user associated with the given token
     user = User.query.filter_by(access_token=token).first()
-    # Return the user data in a JSON format
-    return jsonify({
-        'email': user.email,
-        'username': user.username,
-        'accountname': user.accountname,
-        'avatarUrl': user.avatarUrl
-    })
+
+    if user:
+        return jsonify({
+            'email': user.email,
+            'username': user.username,
+            'accountname': user.accountname,
+            'avatarUrl': user.avatarUrl
+        })
+    else:
+        return jsonify({'message': 'No user found for the provided token'}), 404
 
 
 @cross_origin
@@ -464,12 +466,12 @@ def get_current_user(token):
 
 #Create a token JWT whit the user identity
 def create_token(identity):
-    #expires_delta = timedelta(minutes=60)
-    #expires = datetime.now(timezone.utc) + expires_delta
+    expires_delta = timedelta(minutes=60)
+    expires = datetime.now(timezone.utc) + expires_delta
 
     payload = {
         "identity": identity,
-        #"exp": expires,
+        "exp": expires,
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm=JWT_ALGORITHM)
     return token
