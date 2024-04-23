@@ -106,28 +106,23 @@ def insert_predefined_data():
 
 
 def save_user(email, username, accountname, avatarUrl, token):
-    # Check if a user with the same email address already exists in the database
     existing_user = User.query.filter_by(email=email).first()
     if existing_user:
         return jsonify({'message': 'User already registered'})
 
-    # Create a new Token object
     user = User(email=email, username=username, accountname=accountname, avatarUrl=avatarUrl, access_token=token)
 
-    # Add the token to the database
     db.session.add(user)
     db.session.commit()
 
-    # Return a success message
-    return jsonify({'success': True})
+    return {'success': True}
 
 
 @cross_origin
 @app.route('/get_user_data', methods=['POST'])
 @jwt_required
 def get_user():
-    # Get the token from the Authorization header
-    auth_header = request.headers.get("Authorization")
+    auth_header = request.headers.get('Authorization').split(' ')[1]
     if not auth_header:
         return jsonify({"message": "Missing authorization header"}), 401
 
@@ -140,15 +135,12 @@ def get_user():
 
     user = User.query.filter_by(access_token=token).first()
 
-    if user:
-        return jsonify({
-            'email': user.email,
-            'username': user.username,
-            'accountname': user.accountname,
-            'avatarUrl': user.avatarUrl
-        })
-    else:
-        return jsonify({'message': 'No user found for the provided token'}), 404
+    return jsonify({
+        'email': user.email,
+        'username': user.username,
+        'accountname': user.accountname,
+        'avatarUrl': user.avatarUrl
+    })
 
 
 @cross_origin
@@ -459,9 +451,11 @@ def post():
 
 
 def get_current_user(token):
-    # Query the User model to get the user object with the given token
     user = User.query.filter_by(access_token=token).first()
-    return user.id
+    if user:
+        return user.id
+    else:
+        return None
 
 
 #Create a token JWT whit the user identity
