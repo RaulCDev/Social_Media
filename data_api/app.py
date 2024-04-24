@@ -122,25 +122,23 @@ def save_user(email, username, accountname, avatarUrl, token):
 @app.route('/get_user_data', methods=['POST'])
 @jwt_required
 def get_user():
-    auth_header = request.headers.get('Authorization').split(' ')[1]
-    if not auth_header:
-        return jsonify({"message": "Missing authorization header"}), 401
-
     try:
-        auth_scheme, token = auth_header.split()
-        if auth_scheme.lower() != "bearer":
-            return jsonify({"message": "Invalid authorization scheme"}), 401
-    except ValueError:
-        return jsonify({"message": "Invalid authorization header"}), 401
+        token = request.headers.get('Authorization').split(' ')[1]
+        user = User.query.filter_by(access_token=token).first()
+        if not user:
+            return jsonify({"message": "User not found"}), 404
 
-    user = User.query.filter_by(access_token=token).first()
-
-    return jsonify({
-        'email': user.email,
-        'username': user.username,
-        'accountname': user.accountname,
-        'avatarUrl': user.avatarUrl
-    })
+        return jsonify({
+            'email': user.email,
+            'username': user.username,
+            'accountname': user.accountname,
+            'avatarUrl': user.avatarUrlF
+        })
+    except Exception as e:
+        # Log the error for debugging purposes
+        print(f"An error occurred in get_user(): {str(e)}")
+        # Return a generic error message
+        return jsonify({"message": "Internal server error"}), 500
 
 
 @cross_origin
@@ -213,6 +211,7 @@ def comment():
 
 @cross_origin
 @app.route('/cards', methods=['POST'])
+@jwt_required
 def get_cards():
     token = request.headers.get('Authorization').split(' ')[1]
     user_id = get_current_user(token)
@@ -259,6 +258,7 @@ def give_like():
     try:
         token = request.headers.get('Authorization').split(' ')[1]
         user_id = get_current_user(token)
+        print(user_id)
     except Exception as e:
         return jsonify({'error': 'Failed to extract user ID from authorization token', 'details': str(e)}), 400
 

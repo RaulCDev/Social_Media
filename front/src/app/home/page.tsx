@@ -16,30 +16,31 @@ export default function Home() {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    if (token) {
-      fetch('http://localhost:5000/get_user_data', {
+    const fetchData = async () => {
+      console.log(token);
+      const response = await fetch('http://localhost:5000/get_user_data', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
-      })
-      .then(response => {
+      });
+
+      if (!response.ok) {
         if (response.status === 401) {
           Router.push('/');
-        } else if (!response.ok) {
+        } else {
           throw new Error('Error fetching user data');
         }
-        return response.json();
-      })
-      .then(data => {
-        setUser(data);
-        console.log(data);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-    }
+      }
+
+      const data = await response.json();
+      setUser(data);
+      console.log(data);
+    };
+
+    fetchData();
+
   }, [token]);
 
   return (
