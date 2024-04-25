@@ -111,7 +111,7 @@ def save_user(email, username, accountname, avatarUrl, token):
         return jsonify({'message': 'User already registered'})
 
     user = User(email=email, username=username, accountname=accountname, avatarUrl=avatarUrl, access_token=token)
-
+    print(token)
     db.session.add(user)
     db.session.commit()
 
@@ -122,23 +122,19 @@ def save_user(email, username, accountname, avatarUrl, token):
 @app.route('/get_user_data', methods=['POST'])
 @jwt_required
 def get_user():
-    try:
-        token = request.headers.get('Authorization').split(' ')[1]
-        user = User.query.filter_by(access_token=token).first()
-        if not user:
-            return jsonify({"message": "User not found"}), 404
+    token = request.headers.get('Authorization').split(' ')[1]
+    print(token)
+    user = User.query.filter_by(access_token=token).first()
+    if not user:
+        print("User not found")
+        return jsonify({"message": "User not found"}), 404
 
-        return jsonify({
-            'email': user.email,
-            'username': user.username,
-            'accountname': user.accountname,
-            'avatarUrl': user.avatarUrlF
-        })
-    except Exception as e:
-        # Log the error for debugging purposes
-        print(f"An error occurred in get_user(): {str(e)}")
-        # Return a generic error message
-        return jsonify({"message": "Internal server error"}), 500
+    return jsonify({
+        'email': user.email,
+        'username': user.username,
+        'accountname': user.accountname,
+        'avatarUrl': user.avatarUrl
+    })
 
 
 @cross_origin
@@ -215,7 +211,7 @@ def comment():
 def get_cards():
     token = request.headers.get('Authorization').split(' ')[1]
     user_id = get_current_user(token)
-
+    print(user_id)
     posts = Post.query.filter(Post.father_id.is_(None)).order_by(Post.timestamp.desc()).limit(10).all()
 
     posts_list = []
@@ -447,7 +443,6 @@ def post():
     db.session.commit()
 
     return jsonify({"message": "Post created successfully"})
-
 
 
 def get_current_user(token):
