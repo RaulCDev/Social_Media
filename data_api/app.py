@@ -106,16 +106,18 @@ def insert_predefined_data():
 
 
 def save_user(email, username, accountname, avatarUrl, token):
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:
-        return jsonify({'message': 'User already registered'})
+    user = User.query.filter_by(email=email).first()
 
-    user = User(email=email, username=username, accountname=accountname, avatarUrl=avatarUrl, access_token=token)
-    print(token)
-    db.session.add(user)
-    db.session.commit()
-
-    return {'success': True}
+    if user:
+        #Save the new token if the user already exists
+        user.access_token = token
+        db.session.commit()
+        return {'success': True}
+    else:
+        new_user = User(email=email, username=username, accountname=accountname, avatarUrl=avatarUrl, access_token=token)
+        db.session.add(new_user)
+        db.session.commit()
+        return {'success': True}
 
 
 @cross_origin
@@ -155,6 +157,7 @@ def github_callback():
         username_value = user.login
         avatarUrl_value = f"https://github.com/{user.login}.png"
         token = create_token(email.email)
+        print(token)
         save_user(email_value, username_value, username_value, avatarUrl_value, token)
         return jsonify({'succes': True,'access_token': token})
 

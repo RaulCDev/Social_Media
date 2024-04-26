@@ -27,11 +27,7 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          Router.push('/');
-        } else {
-          throw new Error('Error fetching user data');
-        }
+        Router.push('/');
       }
 
       const data = await response.json();
