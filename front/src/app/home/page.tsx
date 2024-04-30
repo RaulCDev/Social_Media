@@ -25,11 +25,9 @@ export default function Home() {
           'Content-Type': 'application/json'
         }
       });
-
-      if (!response.ok) {
-        Router.push('/');
+      if(response.status === 401){
+        router.push('/');
       }
-
       const data = await response.json();
       setUser(data);
       console.log(data);
