@@ -25,7 +25,7 @@ export default function Home() {
           'Content-Type': 'application/json'
         }
       });
-      if(response.status === 401){
+      if(response.status === 401 || 404){
         router.push('/');
       }
       const data = await response.json();

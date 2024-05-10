@@ -188,6 +188,7 @@ def comment():
         return jsonify({"error": "Invalid authorization header"}), 401
 
     try:
+
         decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
         user_identity = decoded_token["identity"]
     except jwt.ExpiredSignatureError:
