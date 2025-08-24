@@ -36,7 +36,6 @@ const Home: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     // Construir el objeto JSON con los datos del formulario
     const data = {
       email: email,
