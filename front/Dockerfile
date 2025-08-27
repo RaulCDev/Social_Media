@@ -10,7 +10,6 @@ COPY package*.json ./
 
 # Install dependencies
 RUN npm install
-RUN npm install -g next
 
 # Copy all files
 COPY . .
@@ -19,4 +18,4 @@ COPY . .
 EXPOSE 3000
 
 # Run npm run dev command
-CMD [ "npm", "run", "dev" ]
+CMD ["npm", "run", "dev"]
