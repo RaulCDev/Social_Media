@@ -24,7 +24,7 @@ export default function Profile({ params }: { params: { userName: string } }) {
         })
         .then((data) => {
           setPostCount(data.post_count);
-          console.log("CORRECTO");
+          console.log("CORRECT");
         })
         .catch((error) => {
           console.error("Error:", error);
