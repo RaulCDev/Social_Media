@@ -1,10 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
 import Post_Card from '../../components/PostCards/PostCard';
-import Post_Cards from '../../components/PostCards/PostCards';
-import WritePost from '../../components/Write-Post';
 import LeftSide from '../../components/LeftSide';
 import RightSide from '../../components/RightSide';
 import { IconArrowLeft } from '@tabler/icons-react';
