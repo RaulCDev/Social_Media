@@ -1,8 +1,6 @@
 import React from 'react'
-import { useEffect } from 'react'
 import { Card, CardHeader, CardBody, Avatar, CardFooter } from '@nextui-org/react'
 import Link from 'next/link'
-import { IconHeart, IconMessageCircle, IconRepeat } from '@tabler/icons-react'
 import PostButtons from './Buttons/buttons'
 
 type Post_CardProps = {
