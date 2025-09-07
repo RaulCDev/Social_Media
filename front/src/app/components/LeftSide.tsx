@@ -21,7 +21,7 @@ import {
   IconUsers,
 } from "@tabler/icons-react";
 import TextAreaPost from "./TextArea-Post";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 export default function LeftSide({
   userFullName,
