@@ -5,14 +5,15 @@ from datetime import datetime, timedelta, timezone
 from functools import wraps
 from github import Github
 
+import os
 import requests
 #Import SQL database models from models.py and the database itself from database.py
 from SQL.database import db
 from SQL.models import Post, Like, User
 
 app = Flask(__name__)
-app.secret_key = 'tu_clave_secreta'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://user:1234@localhost:3306/socialmedia'
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'change-me')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'mysql+pymysql://user:1234@db-mysql:3306/socialmedia')
 # Initialize the database
 db.init_app(app)
 
@@ -22,12 +23,11 @@ cors = CORS(app)
 
 # Configura el tiempo de expiración del JWT
 app.config['JWT_EXPIRATION_DELTA'] = timedelta(days=1)
-SECRET_KEY = 'your-secret-key'
-JWT_ALGORITHM = 'HS256'
+SECRET_KEY = os.getenv('JWT_SECRET_KEY', os.getenv('FLASK_SECRET_KEY', 'change-me'))
+JWT_ALGORITHM = os.getenv('JWT_ALGORITHM', 'HS256')
 
-Client_id = "c52a2b6341f080de4773"
-Client_secret="b3ff0aec8649b12d0d026d7a332abdf416010133"
-
+Client_id = os.getenv('GITHUB_CLIENT_ID', '')
+Client_secret = os.getenv('GITHUB_CLIENT_SECRET', '')
 
 def jwt_required(fn):
     @wraps(fn)
@@ -475,4 +475,4 @@ if __name__ == '__main__':
         db.create_all()
         # Insert predefined posts in the database
         insert_predefined_data()
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.getenv('API_PORT', 5000)), debug=True)
