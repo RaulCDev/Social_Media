@@ -4,11 +4,13 @@ services:
   db-mysql:
     image: mysql:8.0
     restart: always
+    env_file:
+      - .env
     environment:
-      MYSQL_DATABASE: socialmedia
-      MYSQL_USER: user
-      MYSQL_PASSWORD: 1234
-      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
@@ -21,18 +23,45 @@ services:
     networks:
       - socialnet
 
+  data_api:
+    build:
+      context: ./data_api
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      FLASK_SECRET_KEY: ${FLASK_SECRET_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      API_PORT: ${API_PORT}
+    ports:
+      - "${API_PORT}:5000"
+    volumes:
+      - ./data_api:/app
+    depends_on:
+      db-mysql:
+        condition: service_healthy
+    networks:
+      - socialnet
+
   front:
     build:
       context: ./front
       dockerfile: Dockerfile
     restart: always
+    env_file:
+      - .env
     ports:
       - "3000:3000"
     volumes:
       - ./front:/usr/src/app
       - /usr/src/app/node_modules
     environment:
-      - NODE_ENV=development
+      NODE_ENV: ${NODE_ENV}
     depends_on:
       - db-mysql
     networks:
