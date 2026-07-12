@@ -21,9 +21,9 @@ services:
     networks:
       - socialnet
 
-  data_api:
+  backend:
     build:
-      context: ./data_api
+      context: ./backend
       dockerfile: Dockerfile
     restart: always
     env_file:
@@ -42,7 +42,7 @@ services:
     ports:
       - "${API_PORT}:5000"
     volumes:
-      - ./data_api:/app
+      - ./backend:/app
     depends_on:
       db-mysql:
         condition: service_healthy
@@ -51,7 +51,7 @@ services:
     develop:
       watch:
         - action: sync
-          path: ./data_api
+          path: ./backend
           target: /app
           ignore:
             - "**/__pycache__/**"
@@ -60,7 +60,7 @@ services:
             - "**/venv/**"
             - "**/.mypy_cache/**"
         - action: rebuild
-          path: ./data_api/requirements.txt
+          path: ./backend/requirements.txt
 
   front:
     build:
