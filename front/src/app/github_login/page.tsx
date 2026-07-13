@@ -1,9 +1,9 @@
 "use client";
 import { usePathname, useSearchParams, useRouter} from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { PacmanLoader } from "react-spinners";
 
-const GithubLogin = () => {
+const GithubLoginContent = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -38,5 +38,16 @@ const GithubLogin = () => {
     </div>
   );
 };
+
+const GithubLogin = () => (
+  <Suspense
+    fallback={
+      <div>
+        <PacmanLoader color="#36d7b7" />
+      </div>
+    }>
+    <GithubLoginContent />
+  </Suspense>
+);
 
 export default GithubLogin;

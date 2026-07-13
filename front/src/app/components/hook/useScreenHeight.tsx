@@ -3,29 +3,37 @@ import { useRef, useEffect, useState  } from 'react';
 const useWindowScroll = (contentRef: React.RefObject<HTMLDivElement>, rightMarginRef: React.RefObject<HTMLDivElement>) => {
   const [diference, setDiference] = useState(0);
 
-  const windowRef = useRef<Window>(null);
+  const windowRef = useRef<Window | null>(null);
   const lastScrollYRef = useRef(0);
 
   useEffect(() => {
     windowRef.current = window;
 
     const handleScroll = () => {
-      const currentScrollY = windowRef.current.scrollY;
+      const currentWindow = windowRef.current;
+      const content = contentRef.current;
+      const rightMargin = rightMarginRef.current;
+
+      if (!currentWindow || !content || !rightMargin) {
+        return;
+      }
+
+      const currentScrollY = currentWindow.scrollY;
       if(currentScrollY > lastScrollYRef.current) {
         // Down
         if(diference < 500){
           setDiference((diference) => diference + (currentScrollY - lastScrollYRef.current));
           console.log(diference);
         }
-        contentRef.current.style.top = '-500px';
-        contentRef.current.style.removeProperty('bottom');
-        rightMarginRef.current.style.setProperty('margin-top', '15px');
+        content.style.top = '-500px';
+        content.style.removeProperty('bottom');
+        rightMargin.style.setProperty('margin-top', '15px');
       } else {
         // Up
-        contentRef.current.style.removeProperty('top');
-        rightMarginRef.current.style.setProperty('margin-top', `${currentScrollY - diference}px`);
+        content.style.removeProperty('top');
+        rightMargin.style.setProperty('margin-top', `${currentScrollY - diference}px`);
         if(diference  > 0){
-          contentRef.current.style.bottom = '-500px - ';
+          content.style.bottom = '-500px - ';
           setDiference((diference) => diference - (currentScrollY - lastScrollYRef.current));
           console.log(diference);
         }

@@ -3,7 +3,7 @@ import { Card, CardHeader, CardBody, Avatar, CardFooter } from '@nextui-org/reac
 import Link from 'next/link'
 import PostButtons from './Buttons/buttons'
 
-type Post_CardProps = {
+export type PostCardData = {
   id: number
   userFullName: string
   userName: string
@@ -15,7 +15,7 @@ type Post_CardProps = {
   isLiked: boolean
 }
 
-const Post_Card: React.FC<Post_CardProps> = ({ id, userFullName, userName, avatarUrl, content, views_amount, likes_amount, comments_amount, isLiked}) => {
+const Post_Card: React.FC<PostCardData> = ({ id, userFullName, userName, avatarUrl, content, views_amount, likes_amount, comments_amount, isLiked}) => {
   return (
     <Link href={`/${userName}/${id}`}>
         <Card className="flex items-center shadow-none bg-transparent hover:bg-slate-800 transition border-b rounded-none cursor-pointer border-white/20">

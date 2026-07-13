@@ -14,7 +14,8 @@ export default function Post_Cards() {
   const [cards, setCards] = useState<JSX.Element[]>(
     new Array(limit).fill(null)
   );
-  const token = localStorage.getItem("token");
+  const token =
+    typeof window === "undefined" ? null : localStorage.getItem("token");
 
   const fetchCards = async () => {
     const response = await fetch(`http://localhost:5000/cards`, {

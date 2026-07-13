@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect  } from "react";
+import React, { type ChangeEvent, useState, useRef, useEffect  } from "react";
 import { IconHeart, IconMessageCircle, IconRepeat, IconHeartFilled, IconEye, IconBookmark, IconShare2 } from '@tabler/icons-react'
 import { Bounce, ToastContainer, toast } from 'react-toastify';
 import Link from 'next/link';
@@ -23,7 +23,7 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amo
   const [content, setContent] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const token = localStorage.getItem('token');
+  const token = typeof window === 'undefined' ? null : localStorage.getItem('token');
 
   const handleLike = async () => {
     try {

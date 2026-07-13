@@ -10,10 +10,14 @@ import LeftSide from '../components/LeftSide';
 import RightSide from '../components/RightSide';
 import Post_Cards from '../components/PostCards/PostCards';
 
+type UserData = {
+  username: string;
+};
+
 export default function Home() {
   const router = useRouter();
-  const [user, setUser] = useState({});
-  const token = localStorage.getItem('token');
+  const [user, setUser] = useState<UserData | null>(null);
+  const token = typeof window === 'undefined' ? null : localStorage.getItem('token');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +32,7 @@ export default function Home() {
       if(response.status != 200){
         router.push('/');
       }
-      const data = await response.json();
+      const data: UserData = await response.json();
       setUser(data);
       console.log(data);
     };
@@ -40,11 +44,11 @@ export default function Home() {
   return (
     <>
       <div className="flex justify-center">
-          <LeftSide userFullName={user.username} userName={user.username}/>
+          <LeftSide userFullName={user?.username ?? ""} userName={user?.username ?? ""}/>
           <main className='flex'>
             <div className='midContainer'>
               <PostTipes />
-              <WritePost userName={user.username}/>
+              <WritePost userName={user?.username ?? ""}/>
               <Post_Cards/>
             </div>
             <RightSide />

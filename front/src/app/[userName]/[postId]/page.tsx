@@ -1,16 +1,22 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Post_Card from "../../components/PostCards/PostCard";
+import Post_Card, {
+  type PostCardData,
+} from "../../components/PostCards/PostCard";
 import LeftSide from "../../components/LeftSide";
 import RightSide from "../../components/RightSide";
 import { IconArrowLeft } from "@tabler/icons-react";
+
+type PostPageData = PostCardData & {
+  comments: PostCardData[];
+};
 
 export default function Post({
   params,
 }: {
   params: { userName: string; postId: number };
 }) {
-  const [postData, setPostData] = useState<any>({});
+  const [postData, setPostData] = useState<PostPageData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -29,8 +35,8 @@ export default function Post({
         if (!response.ok) {
           throw new Error("Error fetching post data");
         }
-        const postData = await response.json();
-        setPostData(postData);
+        const fetchedPostData: PostPageData = await response.json();
+        setPostData(fetchedPostData);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching post data:", error);
@@ -40,7 +46,7 @@ export default function Post({
     fetchPostData();
   }, [params.userName, params.postId]);
 
-  if (loading) {
+  if (loading || !postData) {
     return <div>Loading...</div>;
   }
 

@@ -32,7 +32,8 @@ export default function LeftSide({
 }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isWriteTextOpen, setIsWriteTextOpen] = useState(false);
-  const token = localStorage.getItem("token");
+  const token =
+    typeof window === "undefined" ? null : localStorage.getItem("token");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleWriteTextButtonClick = () => {

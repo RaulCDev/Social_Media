@@ -3,6 +3,12 @@ import { Avatar } from "@nextui-org/react";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { IconGif, IconPhoto, IconMoodSmile } from "@tabler/icons-react";
+import type { PostCardData } from "./PostCards/PostCard";
+
+type PostPreviewData = Pick<
+  PostCardData,
+  "userName" | "userFullName" | "content"
+>;
 
 type TextAreaPostProps = {
   userName: string;
@@ -18,10 +24,10 @@ const TextAreaPost: React.FC<TextAreaPostProps> = ({
   postId,
 }) => {
   const [content, setContent] = useState("");
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<PostPreviewData | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const token = localStorage.getItem("token");
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const token =
+    typeof window === "undefined" ? null : localStorage.getItem("token");
   const postContentRef = useRef<HTMLTextAreaElement>(null);
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -66,23 +72,6 @@ const TextAreaPost: React.FC<TextAreaPostProps> = ({
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
     if (postId && postId > 0) {
       fetch("http://localhost:5000/postData", {
         method: "POST",
@@ -96,7 +85,7 @@ const TextAreaPost: React.FC<TextAreaPostProps> = ({
           if (!response.ok) {
             throw new Error("Error connecting to the API");
           }
-          return response.json();
+          return response.json() as Promise<PostPreviewData>;
         })
         .then((data) => {
           setData(data);
@@ -119,22 +108,22 @@ const TextAreaPost: React.FC<TextAreaPostProps> = ({
           <Avatar
             radius="full"
             size="md"
-            src={`https://github.com/${data.userName}.png`}
+            src={`https://github.com/${data?.userName}.png`}
             className="mr-2"
           />
           <div className="flex flex-col flex-grow pr-4">
             <div className="flex items-center mb-2">
               <h4 className="text-small font-semibold text-default-600">
-                {data.userFullName}
+                {data?.userFullName}
               </h4>
               <h5 className="text-small tracking-tight text-default-400 ml-2">
-                @{data.userName}
+                @{data?.userName}
               </h5>
             </div>
             <textarea
               ref={postContentRef}
               readOnly
-              value={data.content}
+              value={data?.content}
               placeholder="What's your post?"
               className="input bg-gray-700"
             />

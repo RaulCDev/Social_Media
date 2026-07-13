@@ -12,7 +12,7 @@ interface Props {
 
 export default function WritePost({ userName }: Props) {
   const [content, setContent] = useState('');
-  const token = localStorage.getItem('token');
+  const token = typeof window === 'undefined' ? null : localStorage.getItem('token');
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const textarea = event.target;

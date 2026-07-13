@@ -5,12 +5,26 @@ import { Input, Card } from "@nextui-org/react";
 import { IconDots, IconSearch } from "@tabler/icons-react";
 import useWindowScroll from "./hook/useScreenHeight";
 
+type Trend = {
+  number: number;
+  category?: string;
+  name: string;
+  posts: number;
+};
+
+type UserRecommendation = {
+  src: string;
+  name: string;
+  username: string;
+};
+
 export default function RightSide() {
   const rightContentRef = useRef<HTMLDivElement>(null);
   const rightMarginRef = useRef<HTMLDivElement>(null);
-  const [trends, setTrends] = useState([]);
-  const [usersToFollow, setUsersToFollow] = useState([]);
-  const token = localStorage.getItem("token");
+  const [trends, setTrends] = useState<Trend[]>([]);
+  const [usersToFollow, setUsersToFollow] = useState<UserRecommendation[]>([]);
+  const token =
+    typeof window === "undefined" ? null : localStorage.getItem("token");
 
   useWindowScroll(rightContentRef, rightMarginRef);
 
@@ -24,7 +38,7 @@ export default function RightSide() {
             "Content-Type": "application/json",
           },
         });
-        const data = await response.json();
+        const data: Trend[] = await response.json();
         setTrends(data);
       } catch (error) {
         console.error("Error fetching trends data:", error);
@@ -43,7 +57,7 @@ export default function RightSide() {
             },
           }
         );
-        const data = await response.json();
+        const data: UserRecommendation[] = await response.json();
         setUsersToFollow(data);
       } catch (error) {
         console.error("Error fetching users to follow data:", error);
