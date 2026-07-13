@@ -1,4 +1,14 @@
-data_api/__pycache__
-data_api/.idea
-data_api/venv
+# Current backend development artifacts
+backend/__pycache__/
+backend/**/__pycache__/
+backend/.idea/
+backend/venv/
+.venv/
+.pytest_cache/
+.superpowers/
+
+# Historical pre-rename paths (kept for repository context)
+data_api/__pycache__/
+data_api/.idea/
+data_api/venv/
 .env
