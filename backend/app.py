@@ -1,9 +1,10 @@
+from datetime import datetime, timedelta
+
 from flask import Flask, g, request, jsonify, make_response
 from flask_cors import CORS, cross_origin
-from functools import wraps
+from sqlalchemy.exc import IntegrityError
 
 import os
-import jwt
 #Import SQL database models from models.py and the database itself from database.py
 from auth import issue_guest_session, require_jwt
 from SQL.database import db
@@ -17,8 +18,10 @@ app.config['JWT_ALGORITHM'] = os.getenv('JWT_ALGORITHM', 'HS256')
 app.config['JWT_ACCESS_MINUTES'] = int(os.getenv('JWT_ACCESS_MINUTES', '60'))
 app.config['FRONTEND_ORIGIN'] = os.getenv('FRONTEND_ORIGIN', 'http://localhost:3000')
 app.config['COOKIE_SECURE'] = os.getenv('COOKIE_SECURE', 'false').lower() in ('1', 'true', 'yes')
-SECRET_KEY = os.getenv('JWT_SECRET_KEY', os.getenv('FLASK_SECRET_KEY', 'change-me'))
-JWT_ALGORITHM = os.getenv('JWT_ALGORITHM', 'HS256')
+app.config['POST_RATE_LIMIT'] = int(os.getenv('POST_RATE_LIMIT', '5'))
+app.config['POST_RATE_WINDOW_SECONDS'] = int(os.getenv('POST_RATE_WINDOW_SECONDS', '60'))
+app.config['COMMENT_RATE_LIMIT'] = int(os.getenv('COMMENT_RATE_LIMIT', '20'))
+app.config['COMMENT_RATE_WINDOW_SECONDS'] = int(os.getenv('COMMENT_RATE_WINDOW_SECONDS', '60'))
 # Initialize the database
 db.init_app(app)
 
@@ -35,33 +38,6 @@ CORS(
 # import requests
 # Client_id = os.getenv('GITHUB_CLIENT_ID', '')
 # Client_secret = os.getenv('GITHUB_CLIENT_SECRET', '')
-
-
-def jwt_required(fn):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        auth_header = request.headers.get("Authorization")
-        if not auth_header:
-            return jsonify({"message": "Missing authorization header"}), 401
-
-        try:
-            auth_scheme, token = auth_header.split()
-            if auth_scheme.lower() != "bearer":
-                return jsonify({"message": "Invalid authorization scheme"}), 401
-        except ValueError:
-            return jsonify({"message": "Invalid authorization header"}), 401
-
-        try:
-            decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
-            request.user = decoded_token["identity"]
-        except jwt.ExpiredSignatureError:
-            return jsonify({"message": "Token has expired"}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({"message": "Invalid token"}), 401
-
-        return fn(*args, **kwargs)
-
-    return wrapper
 
 def insert_predefined_data():
     # Get the first user from the database
@@ -119,6 +95,48 @@ def _public_identity(user):
         'accountname': user.accountname,
         'is_guest': user.is_guest,
     }
+
+
+def _json_object():
+    data = request.get_json(silent=True)
+    return data if isinstance(data, dict) else None
+
+
+def _validated_content(data):
+    content = data.get('content')
+    if not isinstance(content, str):
+        return None
+
+    content = content.strip()
+    if not content or len(content) > 280:
+        return None
+    return content
+
+
+def _validated_post_id(data):
+    post_id = data.get('postId')
+    if isinstance(post_id, bool) or not isinstance(post_id, int) or post_id <= 0:
+        return None
+    return post_id
+
+
+def _rate_limit_exceeded(user_id, *, comments):
+    if comments:
+        limit = app.config['COMMENT_RATE_LIMIT']
+        window_seconds = app.config['COMMENT_RATE_WINDOW_SECONDS']
+        kind_filter = Post.father_id.is_not(None)
+    else:
+        limit = app.config['POST_RATE_LIMIT']
+        window_seconds = app.config['POST_RATE_WINDOW_SECONDS']
+        kind_filter = Post.father_id.is_(None)
+
+    since = datetime.utcnow() - timedelta(seconds=window_seconds)
+    recent_count = Post.query.filter(
+        Post.user_id == user_id,
+        kind_filter,
+        Post.timestamp >= since,
+    ).count()
+    return recent_count >= limit
 
 
 @app.route('/auth/guest', methods=['POST'])
@@ -226,60 +244,39 @@ def logout():
 #         return jsonify({'succes': True, 'access_token': token})
 
 
-@cross_origin
 @app.route('/comment', methods=['POST'])
+@require_jwt
 def comment():
-    data = request.json
-    post_id = data.get('postId')
-    content = data.get('content')
+    data = _json_object()
+    if data is None:
+        return jsonify({'message': 'Invalid JSON'}), 400
 
-    if len(content) > 280:
-        return jsonify({'error': 'Comment content exceeds the character limit of 280'}), 400
+    content = _validated_content(data)
+    if content is None:
+        return jsonify({'message': 'Content must be a non-empty string of at most 280 characters'}), 400
 
-    post = Post.query.get(post_id)
+    post_id = _validated_post_id(data)
+    if post_id is None:
+        return jsonify({'message': 'Post ID must be a positive integer'}), 400
+
+    post = db.session.get(Post, post_id)
     if not post:
-        return jsonify({'error': 'Post not found'}), 404
+        return jsonify({'message': 'Post not found'}), 404
 
-    auth_header = request.headers.get("Authorization")
-    if not auth_header:
-        return jsonify({"error": "Missing authorization header"}), 401
+    if _rate_limit_exceeded(g.current_user.id, comments=True):
+        return jsonify({'message': 'Rate limit exceeded'}), 429
 
-    try:
-        auth_scheme, token = auth_header.split()
-        if auth_scheme.lower() != "bearer":
-            return jsonify({"error": "Invalid authorization scheme"}), 401
-    except ValueError:
-        return jsonify({"error": "Invalid authorization header"}), 401
-
-    try:
-
-        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
-        user_identity = decoded_token["identity"]
-    except jwt.ExpiredSignatureError:
-        return jsonify({"error": "Token has expired"}), 401
-    except jwt.InvalidTokenError:
-        return jsonify({"error": "Invalid token"}), 401
-
-    user = User.query.filter_by(email=user_identity).first()
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-
-    comment = Post(user_id=user.id, content=content, father_id=post_id)
+    comment = Post(user_id=g.current_user.id, content=content, father_id=post_id)
     db.session.add(comment)
     db.session.commit()
 
-    return jsonify({'message': 'Comment posted successfully'})
+    return jsonify({'message': 'Comment posted successfully'}), 201
 
 
 
 
-@cross_origin
 @app.route('/cards', methods=['POST'])
-@jwt_required
 def get_cards():
-    token = request.headers.get('Authorization').split(' ')[1]
-    user_id = get_current_user(token)
-    print(user_id)
     posts = Post.query.filter(Post.father_id.is_(None)).order_by(Post.timestamp.desc()).limit(10).all()
 
     posts_list = []
@@ -291,8 +288,6 @@ def get_cards():
 
         comments_amount = Post.query.filter_by(father_id=post.id).count()
 
-        is_liked = Like.query.filter_by(post_id=post.id, user_id=user_id).first() is not None
-
         posts_list.append({
             'id': post.id,
             'userFullName': post.user.accountname,
@@ -302,7 +297,7 @@ def get_cards():
             'likes': likes_amount,
             'views': post.views_amount,
             'comments': comments_amount,
-            'isLiked': is_liked
+            'isLiked': False
         })
 
     response = make_response(jsonify(posts_list))
@@ -310,25 +305,29 @@ def get_cards():
 
 
 
-@cross_origin
 @app.route('/like', methods=['POST'])
+@require_jwt
 def give_like():
-    request_data = request.get_json()
+    request_data = _json_object()
+    if request_data is None:
+        return jsonify({'message': 'Invalid JSON'}), 400
 
-    post_id = request_data.get('postId')
+    post_id = _validated_post_id(request_data)
     if post_id is None:
-        return jsonify({'error': 'Post ID is missing in the request data'}), 400
+        return jsonify({'message': 'Post ID must be a positive integer'}), 400
+    if db.session.get(Post, post_id) is None:
+        return jsonify({'message': 'Post not found'}), 404
 
-    try:
-        token = request.headers.get('Authorization').split(' ')[1]
-        user_id = get_current_user(token)
-        print(user_id)
-    except Exception as e:
-        return jsonify({'error': 'Failed to extract user ID from authorization token', 'details': str(e)}), 400
+    existing = Like.query.filter_by(post_id=post_id, user_id=g.current_user.id).first()
+    if existing is not None:
+        return jsonify({'message': 'Like saved successfully'}), 200
 
-    like = Like(post_id=post_id, user_id=user_id)
+    like = Like(post_id=post_id, user_id=g.current_user.id)
     db.session.add(like)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
 
     return jsonify({'message': 'Like saved successfully'}), 200
 
@@ -379,7 +378,7 @@ def postCards():
             'likes_amount': comment.count_likes(),
             'views_amount': comment.views_amount,
             'comments_amount': comment.count_comments(),
-            'isLiked': comment.is_liked_by_user(comment.user_id)
+            'isLiked': False
         }
         comments.append(comment_data)
 
@@ -387,8 +386,6 @@ def postCards():
     comments_amount = post.count_comments()
     likes_amount = post.count_likes()
     views_amount = post.views_amount
-    is_liked = post.is_liked_by_user(post.user_id)
-
     postData = {
         'id': post.id,
         'userFullName': post.user.accountname,
@@ -398,7 +395,7 @@ def postCards():
         "comments_amount": comments_amount,
         "likes_amount": likes_amount,
         "views_amount": views_amount,
-        "isLiked": is_liked,
+        "isLiked": False,
         "comments": comments
     }
 
@@ -429,24 +426,25 @@ def postData():
     return jsonify(postData)
 
 
-@cross_origin
 @app.route('/unlike', methods=['POST'])
+@require_jwt
 def remove_like():
-    request_data = request.get_json()
-    post_id = request_data.get('postId')
+    request_data = _json_object()
+    if request_data is None:
+        return jsonify({'message': 'Invalid JSON'}), 400
 
-    token = request.headers.get('Authorization').split(' ')[1]
+    post_id = _validated_post_id(request_data)
+    if post_id is None:
+        return jsonify({'message': 'Post ID must be a positive integer'}), 400
+    if db.session.get(Post, post_id) is None:
+        return jsonify({'message': 'Post not found'}), 404
 
-    user_id = get_current_user(token)
-
-    like = Like.query.filter_by(post_id=post_id, user_id=user_id).first()
+    like = Like.query.filter_by(post_id=post_id, user_id=g.current_user.id).first()
     if like:
         db.session.delete(like)
         db.session.commit()
 
-        return jsonify({'message': 'Like removed successfully'}), 200
-    else:
-        return jsonify({'error': 'Like not found'}), 404
+    return jsonify({'message': 'Like removed successfully'}), 200
 
 
 @cross_origin
@@ -477,48 +475,26 @@ def send_users_recomendation():
     return jsonify(users_data)
 
 
-@cross_origin
 @app.route('/post', methods=['POST'])
+@require_jwt
 def post():
-    auth_header = request.headers.get("Authorization")
-    if not auth_header:
-        return jsonify({"message": "Missing authorization header"}), 401
+    data = _json_object()
+    if data is None:
+        return jsonify({'message': 'Invalid JSON'}), 400
 
-    try:
-        auth_scheme, token = auth_header.split()
-        if auth_scheme.lower() != "bearer":
-            return jsonify({"message": "Invalid authorization scheme"}), 401
-    except ValueError:
-        return jsonify({"message": "Invalid authorization header"}), 401
+    content = _validated_content(data)
+    if content is None:
+        return jsonify({'message': 'Content must be a non-empty string of at most 280 characters'}), 400
 
-    try:
-        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
-        user_identity = decoded_token["identity"]
-    except jwt.ExpiredSignatureError:
-        return jsonify({"message": "Token has expired"}), 401
-    except jwt.InvalidTokenError:
-        return jsonify({"message": "Invalid token"}), 401
+    if _rate_limit_exceeded(g.current_user.id, comments=False):
+        return jsonify({'message': 'Rate limit exceeded'}), 429
 
-    user = User.query.filter_by(email=user_identity).first()
-    if not user:
-        return jsonify({"message": "User not found"}), 404
-
-    content = request.json.get('content')
-
-    new_post = Post(user_id=user.id, content=content)
+    new_post = Post(user_id=g.current_user.id, content=content)
 
     db.session.add(new_post)
     db.session.commit()
 
-    return jsonify({"message": "Post created successfully"})
-
-
-def get_current_user(token):
-    user = User.query.filter_by(access_token=token).first()
-    if user:
-        return user.id
-    else:
-        return None
+    return jsonify({"message": "Post created successfully"}), 201
 
 
 # HISTORICAL GITHUB LOGIN (DISABLED)
