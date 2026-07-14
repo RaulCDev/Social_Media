@@ -14,6 +14,7 @@ No visible logout, form, panel, extra text, or extra button was added.
 - Base: `c26eaad066aac307c91196cacdca77d55536c9c6`
 - Branch: `feature/anonymous-jwt`
 - Implementation: `1662bcd5` (`feat(frontend): use anonymous cookie sessions`)
+- Review remediation: `c24b9c1f` (`fix(frontend): verify anonymous session races`)
 - The implementation and this report are committed separately.
 
 ## RED evidence
@@ -35,10 +36,12 @@ The first production build exposed `useState(null)` rejecting the typed numeric
 profile count. A sixth regression was observed RED (**5 passed, 1 failed**)
 before the state became `number | null`.
 
-Independent review then found restoration/guest races and stale cookies needing
-a second mutation click. Two regressions were observed RED (**6 passed, 2
-failed**) before guest creation was serialized/deduplicated and mutations gained
-one 401 renewal/retry.
+Independent review then found that the historical GitHub source had been
+rewritten and that the restoration/guest and stale-cookie regressions only
+searched source text instead of executing behavior. Before the review fix, the
+replacement tests were observed RED with **5 passed, 4 failed**: the historical
+test failed on its missing `catch`, while the three behavioral tests failed
+because the testable session-flow functions did not exist yet.
 
 ## GREEN and build evidence
 
@@ -46,10 +49,10 @@ Fresh final tests:
 
 ```text
 > npm.cmd test
-tests 8
-pass 8
+tests 9
+pass 9
 fail 0
-duration_ms 60.6688
+duration_ms 64.9741
 ```
 
 Clean install:
@@ -73,7 +76,7 @@ Compiled successfully
 Linting and checking validity of types ...
 Generating static pages (7/7)
 Exit code: 0
-Wall time: 16.4 seconds
+Wall time: 29.1 seconds
 ```
 
 `git diff --check` exited `0` before commit.
@@ -82,6 +85,10 @@ Wall time: 16.4 seconds
 
 - `front/src/lib/api-client.ts`: JSON headers, `credentials: "include"`, typed
   failures, and one shared session-expired event for 401.
+- `front/src/lib/session-flow.mjs`: pure runtime session coordinator shared by
+  `AuthProvider` and Node tests. Controlled promises prove restoration and guest
+  creation are ordered and deduplicated, concurrent calls create one guest, and
+  an expired cookie causes exactly one renewal and one retry without a loop.
 - `front/src/components/AuthProvider.tsx`, `front/src/app/layout.tsx`: restore
   `/auth/me` without redirecting readers; expose `user`, `loading`,
   `startGuestSession()` and `logout()`; serialize restoration and deduplicate
@@ -95,11 +102,14 @@ Wall time: 16.4 seconds
   through the session mutation hook.
 - `front/src/app/components/Token_button.tsx`: renders nothing and never reads
   or prints browser storage.
-- `front/src/app/github_login/page.tsx`: renders nothing. The previous callback
-  is wholly commented under exact heading `HISTORICAL GITHUB LOGIN (DISABLED)`
-  with no active OAuth imports, route logic, variables, or client ID.
-- `front/tests/task-5-auth-flow.test.mjs`: eight reproducible contract/regression
-  checks using only Node's standard runner.
+- `front/src/app/github_login/page.tsx`: renders nothing. The complete source
+  from `c26eaad0` is preserved byte-for-byte inside the comment under exact
+  heading `HISTORICAL GITHUB LOGIN (DISABLED)`, with no active OAuth imports,
+  route logic, variables, or client ID.
+- `front/tests/task-5-auth-flow.test.mjs`: nine reproducible checks using only
+  Node's standard runner; session race and retry coverage imports and executes
+  the same pure module used by `AuthProvider` rather than duplicating its logic
+  or searching implementation names.
 
 ## Search review
 
@@ -116,6 +126,9 @@ rg -n -S "fetch\(" front/src --glob '*.ts' --glob '*.tsx'
   avatar URLs, not login routes/imports/variables.
 - The only active native `fetch()` is inside `api-client.ts`; the other textual
   match is the disabled callback.
+- A direct comparison of the disabled block with
+  `git show c26eaad0:front/src/app/github_login/page.tsx` reported
+  `HISTORICAL_EXACT_MATCH=true`.
 
 ## Concerns
 
@@ -124,5 +137,7 @@ rg -n -S "fetch\(" front/src --glob '*.ts' --glob '*.tsx'
 - The build retains pre-existing warnings: hook dependencies in
   `useScreenHeight.tsx` and `PostCards.tsx`, two `<img>` warnings in `Icons.tsx`,
   and outdated `caniuse-lite`. They are outside this focused migration.
-- Tests are source-contract/regression tests because the repo had no frontend
-  framework. No browser E2E run against a live Flask service is claimed.
+- API wiring and UI constraints still use source-contract checks because the
+  repo had no frontend test framework. Session races and retry limits are now
+  executable behavioral tests. No browser E2E run against a live Flask service
+  is claimed.
