@@ -1,4 +1,4 @@
-FROM python:3.9-slim AS production
+FROM python:3.12-slim AS production
 
 ENV APP_ENV=production \
     PYTHONDONTWRITEBYTECODE=1 \

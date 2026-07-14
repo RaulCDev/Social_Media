@@ -1,4 +1,4 @@
-FROM node:18 AS dependencies
+FROM node:22 AS dependencies
 
 WORKDIR /usr/src/app
 COPY package*.json ./
@@ -19,7 +19,7 @@ COPY . .
 RUN npm run build
 
 
-FROM node:18-slim AS production
+FROM node:22-slim AS production
 
 ENV NODE_ENV=production
 WORKDIR /usr/src/app

@@ -130,6 +130,10 @@ Fresh results:
 - `docker compose config --quiet`: exit `0`.
 - `docker compose config --services`: `db-mysql`, `backend`, `front`.
 
+Review remediation upgraded the supported production/development base lines to
+Python 3.12 and Node.js 22. The focused rebuild and regression results are
+recorded in the follow-up commit.
+
 Host `npm.cmd ci` could not provide a clean-build substitute: Windows returned
 `EPERM` while unlinking the Docker-created
 `front/node_modules/.package-lock.json`. A following `npm.cmd run build`
