@@ -96,6 +96,23 @@ def test_auth_me_rejects_deleted_user(client, db_session):
     assert response.status_code == 401
 
 
+def test_auth_me_rejects_non_guest_user_with_guest_claim(app, db_session):
+    user = User(
+        email="historical-auth@example.com",
+        username="historical-auth",
+        accountname="Historical Auth User",
+    )
+    db_session.add(user)
+    db_session.commit()
+    token = _make_token(app, user.id, jti="historical-user-jti", is_guest=True)
+    client = app.test_client()
+    client.set_cookie("access_token", token)
+
+    response = client.get("/auth/me")
+
+    assert response.status_code == 401
+
+
 def test_authorization_bearer_is_supported_during_transition(app, db_session):
     from seed_guest_policy import create_guest_user
 

@@ -77,11 +77,13 @@ def decode_jwt_from_request():
     ):
         return _unauthorized()
 
-    if db.session.get(User, int(subject)) is None:
+    user = db.session.get(User, int(subject))
+    if user is None or user.is_guest is not True:
         return _unauthorized()
     if RevokedToken.query.filter_by(jti=jti).first() is not None:
         return _unauthorized()
 
+    g.jwt_user = user
     return payload
 
 
@@ -94,11 +96,7 @@ def require_jwt(view):
         if not isinstance(payload, dict):
             return payload
 
-        user = db.session.get(User, int(payload["sub"]))
-        if user is None:
-            return _unauthorized()
-
-        g.current_user = user
+        g.current_user = g.jwt_user
         g.jwt_payload = payload
         return view(*args, **kwargs)
 

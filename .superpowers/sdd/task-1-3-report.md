@@ -31,6 +31,8 @@ changed in this wave, so UI integration remains for a later wave.
   historical disabled references.
 - Modified `docker-compose.yml` with JWT duration, frontend origin, and secure
   cookie configuration; GitHub variables are historical disabled comments.
+  The frontend no longer imports the repository `.env` and receives only its
+  explicitly listed public runtime variables.
 - Added `backend/tests/conftest.py`, `test_auth_contract.py`,
   `test_guest_user.py`, and `test_guest_auth.py`.
 - No frontend file was changed.
@@ -87,6 +89,51 @@ Final output:
 13 passed in 0.19s
 ```
 
+## Review fixes after the initial Tasks 1-3 commit
+
+### Guest identity boundary (RED -> GREEN)
+
+The review found that a correctly signed token could claim `is_guest=True` for
+an existing historical non-guest user. A focused regression test was added
+before changing production code:
+
+```powershell
+docker compose -p social-media-anon-test run --rm --no-deps `
+  -e PYTHONDONTWRITEBYTECODE=1 `
+  -e DATABASE_URL=sqlite:///:memory: `
+  -e JWT_SECRET_KEY=[test-only-value] `
+  -e JWT_ALGORITHM=HS256 `
+  -e JWT_ACCESS_MINUTES=60 `
+  -e FRONTEND_ORIGIN=http://localhost:3000 `
+  -e COOKIE_SECURE=false `
+  backend python -m pytest tests/test_guest_auth.py::test_auth_me_rejects_non_guest_user_with_guest_claim -q
+```
+
+- RED: expected `401`, received `200` (`1 failed in 0.13s`).
+- GREEN after validating `user.is_guest is True`: `1 passed in 0.09s`.
+- The authenticated `User` row is now loaded once, validated against the claim,
+  and reused by `require_jwt` through request-local `flask.g` state.
+
+The complete focused suite then produced:
+
+```text
+..............                                                           [100%]
+14 passed in 0.20s
+```
+
+### Compose secret boundary
+
+The `front` service no longer has `env_file: .env`. Fresh rendered-config
+verification reported only these frontend environment key names:
+
+```text
+CHOKIDAR_USEPOLLING,NODE_ENV,WATCHPACK_POLLING
+```
+
+The rendered frontend configuration contained zero keys named
+`JWT_SECRET_KEY`, `FLASK_SECRET_KEY`, `DATABASE_URL`, or matching `MYSQL_*`.
+No secret values were printed during this verification.
+
 Additional verification:
 
 - `docker compose -p social-media-anon-test config --quiet`: exit `0`.
@@ -138,3 +185,6 @@ Additional verification:
 - The isolated Compose project may leave its test-only named network/volume
   metadata because `down -v` was explicitly prohibited; no historical or
   `social_media-*` container was touched.
+- Minor follow-up: decide whether `pytest` should move out of production runtime
+  requirements into a dedicated development/test dependency file.
+- Minor follow-up: add an explicit negative CORS test for disallowed origins.
