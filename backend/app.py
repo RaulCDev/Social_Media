@@ -2,13 +2,14 @@ from datetime import datetime, timedelta
 
 from flask import Flask, g, request, jsonify, make_response
 from flask_cors import CORS, cross_origin
+from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
 
 import os
 #Import SQL database models from models.py and the database itself from database.py
 from auth import issue_guest_session, require_jwt
 from SQL.database import db
-from SQL.models import Post, Like, RevokedToken, User
+from SQL.models import Like, Post, RateLimitBucket, RevokedToken, User
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'change-me')
@@ -120,23 +121,68 @@ def _validated_post_id(data):
     return post_id
 
 
-def _rate_limit_exceeded(user_id, *, comments):
+def _reserve_rate_limit_slot(
+    session,
+    *,
+    user_id,
+    action,
+    limit,
+    window_seconds,
+    now=None,
+):
+    """Atomically reserve one identity/action slot in a fixed DB window."""
+    if limit <= 0 or window_seconds <= 0:
+        return False
+
+    now = now or datetime.utcnow()
+    epoch_seconds = int(now.timestamp())
+    window_start = datetime.utcfromtimestamp(
+        epoch_seconds - (epoch_seconds % window_seconds)
+    )
+    bucket = RateLimitBucket(
+        user_id=user_id,
+        action=action,
+        window_start=window_start,
+        request_count=1,
+    )
+    session.add(bucket)
+    try:
+        session.commit()
+        return True
+    except IntegrityError:
+        session.rollback()
+
+    result = session.execute(
+        update(RateLimitBucket)
+        .where(
+            RateLimitBucket.user_id == user_id,
+            RateLimitBucket.action == action,
+            RateLimitBucket.window_start == window_start,
+            RateLimitBucket.request_count < limit,
+        )
+        .values(request_count=RateLimitBucket.request_count + 1)
+    )
+    session.commit()
+    return result.rowcount == 1
+
+
+def _reserve_rate_limit(user_id, *, comments):
     if comments:
         limit = app.config['COMMENT_RATE_LIMIT']
         window_seconds = app.config['COMMENT_RATE_WINDOW_SECONDS']
-        kind_filter = Post.father_id.is_not(None)
+        action = 'comment'
     else:
         limit = app.config['POST_RATE_LIMIT']
         window_seconds = app.config['POST_RATE_WINDOW_SECONDS']
-        kind_filter = Post.father_id.is_(None)
+        action = 'post'
 
-    since = datetime.utcnow() - timedelta(seconds=window_seconds)
-    recent_count = Post.query.filter(
-        Post.user_id == user_id,
-        kind_filter,
-        Post.timestamp >= since,
-    ).count()
-    return recent_count >= limit
+    return _reserve_rate_limit_slot(
+        db.session,
+        user_id=user_id,
+        action=action,
+        limit=limit,
+        window_seconds=window_seconds,
+    )
 
 
 @app.route('/auth/guest', methods=['POST'])
@@ -263,7 +309,7 @@ def comment():
     if not post:
         return jsonify({'message': 'Post not found'}), 404
 
-    if _rate_limit_exceeded(g.current_user.id, comments=True):
+    if not _reserve_rate_limit(g.current_user.id, comments=True):
         return jsonify({'message': 'Rate limit exceeded'}), 429
 
     comment = Post(user_id=g.current_user.id, content=content, father_id=post_id)
@@ -328,6 +374,12 @@ def give_like():
         db.session.commit()
     except IntegrityError:
         db.session.rollback()
+        duplicate = Like.query.filter_by(
+            post_id=post_id,
+            user_id=g.current_user.id,
+        ).first()
+        if duplicate is None:
+            return jsonify({'message': 'Unable to save like'}), 500
 
     return jsonify({'message': 'Like saved successfully'}), 200
 
@@ -486,7 +538,7 @@ def post():
     if content is None:
         return jsonify({'message': 'Content must be a non-empty string of at most 280 characters'}), 400
 
-    if _rate_limit_exceeded(g.current_user.id, comments=False):
+    if not _reserve_rate_limit(g.current_user.id, comments=False):
         return jsonify({'message': 'Rate limit exceeded'}), 429
 
     new_post = Post(user_id=g.current_user.id, content=content)

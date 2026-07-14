@@ -1,9 +1,15 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from concurrent.futures import ThreadPoolExecutor
+from threading import Barrier
 
 import pytest
+import jwt
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
+from app import _reserve_rate_limit_slot
 from SQL.database import db
-from SQL.models import Like, Post
+from SQL.models import Like, Post, RateLimitBucket, User
 
 
 WRITE_ENDPOINTS = (
@@ -31,6 +37,46 @@ def _post(user_id, content="existing post", father_id=None):
 @pytest.mark.parametrize(("path", "payload"), WRITE_ENDPOINTS)
 def test_write_endpoints_require_jwt(client, path, payload):
     response = client.post(path, json=payload)
+
+    assert response.status_code == 401
+    assert response.json == {"message": "Unauthorized"}
+
+
+@pytest.mark.parametrize(("path", "payload"), WRITE_ENDPOINTS)
+def test_write_endpoints_reject_invalid_jwt(client, path, payload):
+    response = client.post(
+        path,
+        json=payload,
+        headers={"Authorization": "Bearer not-a-valid-jwt"},
+    )
+
+    assert response.status_code == 401
+    assert response.json == {"message": "Unauthorized"}
+
+
+@pytest.mark.parametrize(("path", "payload"), WRITE_ENDPOINTS)
+def test_write_endpoints_reject_expired_jwt(app, path, payload):
+    from seed_guest_policy import create_guest_user
+
+    user = create_guest_user()
+    now = datetime.now(timezone.utc)
+    token = jwt.encode(
+        {
+            "sub": str(user.id),
+            "jti": f"expired-{path}",
+            "is_guest": True,
+            "iat": now - timedelta(minutes=2),
+            "exp": now - timedelta(minutes=1),
+        },
+        app.config["JWT_SECRET_KEY"],
+        algorithm=app.config["JWT_ALGORITHM"],
+    )
+
+    response = app.test_client().post(
+        path,
+        json=payload,
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     assert response.status_code == 401
     assert response.json == {"message": "Unauthorized"}
@@ -200,6 +246,31 @@ def test_duplicate_like_is_stable_and_unique(app):
     assert ("user_id", "post_id") in unique_columns
 
 
+def test_like_does_not_treat_unrelated_integrity_error_as_success(app):
+    client, current_user = _authenticated_client(app)
+    post = _post(current_user["id"])
+    db.session.execute(
+        db.text(
+            """
+            CREATE TRIGGER reject_like_insert
+            BEFORE INSERT ON `like`
+            BEGIN
+                SELECT RAISE(ABORT, 'simulated unrelated integrity failure');
+            END
+            """
+        )
+    )
+    db.session.commit()
+
+    response = client.post("/like", json={"postId": post.id})
+
+    assert response.status_code == 500
+    assert response.json == {"message": "Unable to save like"}
+    assert "integrity" not in response.get_data(as_text=True).lower()
+    assert Like.query.filter_by(user_id=current_user["id"], post_id=post.id).count() == 0
+    assert db.session.execute(db.text("SELECT 1")).scalar_one() == 1
+
+
 def test_unlike_is_idempotent_and_cannot_remove_another_users_like(app):
     owner_client, owner = _authenticated_client(app)
     other_client, other = _authenticated_client(app)
@@ -269,10 +340,6 @@ def test_post_and_comment_rate_limits_are_per_identity_and_configurable(app):
         assert first_client.post("/post", json={"content": "first allowed"}).status_code == 201
         assert first_client.post("/post", json={"content": "first blocked"}).status_code == 429
         assert second_client.post("/post", json={"content": "second allowed"}).status_code == 201
-        first_post = Post.query.filter_by(user_id=first["id"], content="first allowed").one()
-        first_post.timestamp = datetime.utcnow() - timedelta(seconds=61)
-        db.session.commit()
-        assert first_client.post("/post", json={"content": "allowed after window"}).status_code == 201
         assert first_client.post(
             "/comment", json={"postId": root.id, "content": "comment allowed"}
         ).status_code == 201
@@ -282,13 +349,61 @@ def test_post_and_comment_rate_limits_are_per_identity_and_configurable(app):
         assert second_client.post(
             "/comment", json={"postId": root.id, "content": "other allowed"}
         ).status_code == 201
-        first_comment = Post.query.filter_by(
-            user_id=first["id"], content="comment allowed", father_id=root.id
-        ).one()
-        first_comment.timestamp = datetime.utcnow() - timedelta(seconds=61)
-        db.session.commit()
-        assert first_client.post(
-            "/comment", json={"postId": root.id, "content": "comment after window"}
-        ).status_code == 201
     finally:
         app.config.update(original)
+
+
+def test_rate_limit_reservation_is_atomic_across_database_sessions(tmp_path):
+    engine = create_engine(
+        f"sqlite:///{tmp_path / 'rate-limit.db'}",
+        connect_args={"check_same_thread": False, "timeout": 30},
+    )
+    db.metadata.create_all(engine)
+    session_factory = sessionmaker(bind=engine)
+    with session_factory() as session:
+        user = User(
+            email="rate-limit@example.com",
+            username="rate-limit",
+            accountname="Rate Limit",
+            is_guest=True,
+        )
+        session.add(user)
+        session.commit()
+        user_id = user.id
+
+    workers = 12
+    barrier = Barrier(workers)
+    now = datetime(2026, 7, 14, 12, 0, 15)
+
+    def reserve_once():
+        with session_factory() as session:
+            barrier.wait()
+            return _reserve_rate_limit_slot(
+                session,
+                user_id=user_id,
+                action="post",
+                limit=3,
+                window_seconds=60,
+                now=now,
+            )
+
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        results = list(pool.map(lambda _: reserve_once(), range(workers)))
+
+    with session_factory() as session:
+        bucket = session.query(RateLimitBucket).one()
+        assert sum(results) == 3
+        assert bucket.request_count == 3
+        assert bucket.user_id == user_id
+        assert bucket.action == "post"
+
+    with session_factory() as session:
+        assert _reserve_rate_limit_slot(
+            session,
+            user_id=user_id,
+            action="post",
+            limit=3,
+            window_seconds=60,
+            now=now + timedelta(seconds=60),
+        )
+        assert session.query(RateLimitBucket).count() == 2

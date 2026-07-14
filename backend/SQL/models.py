@@ -17,6 +17,23 @@ class RevokedToken(db.Model):
     jti = db.Column(db.String(36), unique=True, nullable=False, index=True)
     revoked_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
+
+class RateLimitBucket(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint(
+            'user_id',
+            'action',
+            'window_start',
+            name='uq_rate_limit_identity_action_window',
+        ),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    action = db.Column(db.String(16), nullable=False)
+    window_start = db.Column(db.DateTime, nullable=False)
+    request_count = db.Column(db.Integer, nullable=False, default=1)
+
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
