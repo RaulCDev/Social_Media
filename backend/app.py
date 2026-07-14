@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from flask import Flask, g, request, jsonify, make_response
 from flask_cors import CORS
@@ -8,8 +8,10 @@ from sqlalchemy.exc import IntegrityError
 import os
 #Import SQL database models from models.py and the database itself from database.py
 from auth import issue_guest_session, require_jwt
+from moderation import require_moderator
+from rate_limits import reserve_session_ip, reserve_write
 from SQL.database import db
-from SQL.models import Like, Post, RateLimitBucket, RevokedToken, User
+from SQL.models import ContentReport, Like, Post, RateLimitBucket, RevokedToken, User
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'change-me')
@@ -28,6 +30,16 @@ app.config['POST_RATE_LIMIT'] = int(os.getenv('POST_RATE_LIMIT', '5'))
 app.config['POST_RATE_WINDOW_SECONDS'] = int(os.getenv('POST_RATE_WINDOW_SECONDS', '60'))
 app.config['COMMENT_RATE_LIMIT'] = int(os.getenv('COMMENT_RATE_LIMIT', '20'))
 app.config['COMMENT_RATE_WINDOW_SECONDS'] = int(os.getenv('COMMENT_RATE_WINDOW_SECONDS', '60'))
+app.config['POST_JTI_RATE_LIMIT'] = None
+app.config['POST_IP_RATE_LIMIT'] = int(os.getenv('POST_IP_RATE_LIMIT', '20'))
+app.config['COMMENT_JTI_RATE_LIMIT'] = None
+app.config['COMMENT_IP_RATE_LIMIT'] = int(os.getenv('COMMENT_IP_RATE_LIMIT', '60'))
+app.config['LIKE_RATE_LIMIT'] = int(os.getenv('LIKE_RATE_LIMIT', '30'))
+app.config['LIKE_JTI_RATE_LIMIT'] = None
+app.config['LIKE_IP_RATE_LIMIT'] = int(os.getenv('LIKE_IP_RATE_LIMIT', '100'))
+app.config['WRITE_RATE_WINDOW_SECONDS'] = int(os.getenv('WRITE_RATE_WINDOW_SECONDS', '60'))
+app.config['SESSION_IP_RATE_LIMIT'] = int(os.getenv('SESSION_IP_RATE_LIMIT', '10'))
+app.config['SESSION_RATE_WINDOW_SECONDS'] = int(os.getenv('SESSION_RATE_WINDOW_SECONDS', '60'))
 # Initialize the database
 db.init_app(app)
 
@@ -159,11 +171,11 @@ def _reserve_rate_limit_slot(
     if limit <= 0 or window_seconds <= 0:
         return False
 
-    now = now or datetime.utcnow()
+    now = now or datetime.now(timezone.utc).replace(tzinfo=None)
     epoch_seconds = int(now.timestamp())
-    window_start = datetime.utcfromtimestamp(
-        epoch_seconds - (epoch_seconds % window_seconds)
-    )
+    window_start = datetime.fromtimestamp(
+        epoch_seconds - (epoch_seconds % window_seconds), timezone.utc
+    ).replace(tzinfo=None)
     bucket = RateLimitBucket(
         user_id=user_id,
         action=action,
@@ -214,6 +226,8 @@ def _reserve_rate_limit(user_id, *, comments):
 def guest_session():
     if not app.config['JWT_SECRET_KEY']:
         return jsonify({'message': 'Authentication is not configured'}), 503
+    if not reserve_session_ip():
+        return jsonify({'message': 'Rate limit exceeded'}), 429
 
     user, token = issue_guest_session()
     response = make_response(jsonify({'user': _public_identity(user)}), 201)
@@ -331,11 +345,11 @@ def comment():
     if post_id is None:
         return jsonify({'message': 'Post ID must be a positive integer'}), 400
 
-    post = db.session.get(Post, post_id)
+    post = Post.query.filter_by(id=post_id, is_hidden=False).first()
     if not post:
         return jsonify({'message': 'Post not found'}), 404
 
-    if not _reserve_rate_limit(g.current_user.id, comments=True):
+    if not reserve_write('comment', g.jwt_payload['jti']):
         return jsonify({'message': 'Rate limit exceeded'}), 429
 
     comment = Post(user_id=g.current_user.id, content=content, father_id=post_id)
@@ -349,7 +363,9 @@ def comment():
 
 @app.route('/cards', methods=['POST'])
 def get_cards():
-    posts = Post.query.filter(Post.father_id.is_(None)).order_by(Post.timestamp.desc()).limit(10).all()
+    posts = Post.query.filter(
+        Post.father_id.is_(None), Post.is_hidden.is_(False)
+    ).order_by(Post.timestamp.desc()).limit(10).all()
 
     posts_list = []
     for post in posts:
@@ -358,7 +374,7 @@ def get_cards():
         post.views_amount += 1
         db.session.commit()
 
-        comments_amount = Post.query.filter_by(father_id=post.id).count()
+        comments_amount = Post.query.filter_by(father_id=post.id, is_hidden=False).count()
 
         posts_list.append({
             'id': post.id,
@@ -387,8 +403,11 @@ def give_like():
     post_id = _validated_post_id(request_data)
     if post_id is None:
         return jsonify({'message': 'Post ID must be a positive integer'}), 400
-    if db.session.get(Post, post_id) is None:
+    if Post.query.filter_by(id=post_id, is_hidden=False).first() is None:
         return jsonify({'message': 'Post not found'}), 404
+
+    if not reserve_write('like', g.jwt_payload['jti']):
+        return jsonify({'message': 'Rate limit exceeded'}), 429
 
     existing = Like.query.filter_by(post_id=post_id, user_id=g.current_user.id).first()
     if existing is not None:
@@ -422,7 +441,7 @@ def profileData():
     if not user:
         return jsonify({'error': 'That user does not exist'}), 400
 
-    post_count = Post.query.filter_by(user_id=user.id).count()
+    post_count = Post.query.filter_by(user_id=user.id, is_hidden=False).count()
 
     return jsonify({'post_count': post_count})
 
@@ -436,14 +455,14 @@ def postCards():
 
     post_id = postId['post_id']
 
-    post = Post.query.filter_by(id=post_id).first()
+    post = Post.query.filter_by(id=post_id, is_hidden=False).first()
 
     if not post:
         return jsonify({'error': 'Post not found'}), 404
 
     comments = []
 
-    post_comments = Post.query.filter_by(father_id=post_id).all()
+    post_comments = Post.query.filter_by(father_id=post_id, is_hidden=False).all()
     for comment in post_comments:
         comment_data = {
             'id': comment.id,
@@ -485,7 +504,7 @@ def postData():
     if not postId:
         return jsonify({'error': 'Missing post ID'}), 400
 
-    post = Post.query.filter_by(id=postId).first()
+    post = Post.query.filter_by(id=postId, is_hidden=False).first()
 
     if not post:
         return jsonify({'error': 'Post not found'}), 404
@@ -511,7 +530,7 @@ def remove_like():
     post_id = _validated_post_id(request_data)
     if post_id is None:
         return jsonify({'message': 'Post ID must be a positive integer'}), 400
-    if db.session.get(Post, post_id) is None:
+    if Post.query.filter_by(id=post_id, is_hidden=False).first() is None:
         return jsonify({'message': 'Post not found'}), 404
 
     like = Like.query.filter_by(post_id=post_id, user_id=g.current_user.id).first()
@@ -559,7 +578,7 @@ def post():
     if content is None:
         return jsonify({'message': 'Content must be a non-empty string of at most 280 characters'}), 400
 
-    if not _reserve_rate_limit(g.current_user.id, comments=False):
+    if not reserve_write('post', g.jwt_payload['jti']):
         return jsonify({'message': 'Rate limit exceeded'}), 429
 
     new_post = Post(user_id=g.current_user.id, content=content)
@@ -568,6 +587,72 @@ def post():
     db.session.commit()
 
     return jsonify({"message": "Post created successfully"}), 201
+
+
+@app.route('/reports', methods=['POST'])
+@require_jwt
+def report_content():
+    data = _json_object()
+    if data is None:
+        return jsonify({'message': 'Invalid JSON'}), 400
+    post_id = _validated_post_id(data)
+    reason = data.get('reason')
+    if post_id is None or not isinstance(reason, str) or not reason.strip() or len(reason.strip()) > 280:
+        return jsonify({'message': 'Invalid report'}), 400
+    if Post.query.filter_by(id=post_id, is_hidden=False).first() is None:
+        return jsonify({'message': 'Post not found'}), 404
+    existing = ContentReport.query.filter_by(
+        reporter_id=g.current_user.id, post_id=post_id
+    ).first()
+    if existing is None:
+        db.session.add(ContentReport(
+            reporter_id=g.current_user.id,
+            post_id=post_id,
+            reason=reason.strip(),
+        ))
+        db.session.commit()
+    return jsonify({'message': 'Report submitted'}), 201
+
+
+@app.route('/moderation/reports', methods=['GET'])
+@require_jwt
+@require_moderator
+def moderation_reports():
+    reports = ContentReport.query.filter_by(status='open').all()
+    return jsonify([
+        {'id': item.id, 'postId': item.post_id, 'reason': item.reason}
+        for item in reports
+    ])
+
+
+@app.route('/moderation/posts/<int:post_id>/hide', methods=['POST'])
+@require_jwt
+@require_moderator
+def hide_post(post_id):
+    post = db.session.get(Post, post_id)
+    if post is None:
+        return jsonify({'message': 'Post not found'}), 404
+    post.is_hidden = True
+    post.hidden_at = datetime.now(timezone.utc).replace(tzinfo=None)
+    post.hidden_by = g.current_user.id
+    db.session.commit()
+    return jsonify({'message': 'Post hidden'}), 200
+
+
+@app.route('/moderation/users/<int:user_id>/status', methods=['POST'])
+@require_jwt
+@require_moderator
+def change_user_status(user_id):
+    data = _json_object()
+    status = data.get('status') if data else None
+    if status not in {'active', 'suspended', 'blocked'}:
+        return jsonify({'message': 'Invalid status'}), 400
+    user = db.session.get(User, user_id)
+    if user is None:
+        return jsonify({'message': 'User not found'}), 404
+    user.status = status
+    db.session.commit()
+    return jsonify({'message': 'User status updated'}), 200
 
 
 # HISTORICAL GITHUB LOGIN (DISABLED)

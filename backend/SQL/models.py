@@ -1,5 +1,9 @@
 from SQL.database import db
-from datetime import datetime
+from datetime import datetime, timezone
+
+
+def utc_now():
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -10,12 +14,15 @@ class User(db.Model):
     access_token = db.Column(db.String(255), unique=True, nullable=True)
     is_guest = db.Column(db.Boolean, nullable=False, default=False, server_default="0")
     guest_public_name = db.Column(db.String(50), unique=True, nullable=True)
+    status = db.Column(db.String(16), nullable=False, default="active", server_default="active")
+    role = db.Column(db.String(16), nullable=False, default="member", server_default="member")
+    last_seen_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
 
 class RevokedToken(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     jti = db.Column(db.String(36), unique=True, nullable=False, index=True)
-    revoked_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    revoked_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
 
 class RateLimitBucket(db.Model):
@@ -34,21 +41,42 @@ class RateLimitBucket(db.Model):
     window_start = db.Column(db.DateTime, nullable=False)
     request_count = db.Column(db.Integer, nullable=False, default=1)
 
+
+class AbuseRateLimitBucket(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint(
+            'identity_type', 'identity_hash', 'action', 'window_start',
+            name='uq_abuse_limit_identity_action_window',
+        ),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    identity_type = db.Column(db.String(8), nullable=False)
+    identity_hash = db.Column(db.String(64), nullable=False)
+    action = db.Column(db.String(16), nullable=False)
+    window_start = db.Column(db.DateTime, nullable=False)
+    request_count = db.Column(db.Integer, nullable=False, default=1)
+
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=utc_now)
     views_amount = db.Column(db.Integer, default=0)
-    user = db.relationship('User', backref=db.backref('posts', lazy=True))
+    user = db.relationship(
+        'User', foreign_keys=[user_id], backref=db.backref('posts', lazy=True)
+    )
     father_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     father_post = db.relationship('Post', backref=db.backref('responses', lazy=True), remote_side=[id])
+    is_hidden = db.Column(db.Boolean, nullable=False, default=False, server_default="0")
+    hidden_at = db.Column(db.DateTime, nullable=True)
+    hidden_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
 
     def count_likes(self):
         return Like.query.filter_by(post_id=self.id).count()
 
     def count_comments(self):
-        return Post.query.filter_by(father_id=self.id).count()
+        return Post.query.filter_by(father_id=self.id, is_hidden=False).count()
 
     def is_liked_by_user(self, user_id):
         return Like.query.filter_by(post_id=self.id, user_id=user_id).count() > 0
@@ -62,6 +90,19 @@ class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=utc_now)
     user = db.relationship('User', backref=db.backref('likes', lazy=True))
+
+
+class ContentReport(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint('reporter_id', 'post_id', name='uq_report_reporter_post'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    reporter_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    reason = db.Column(db.String(280), nullable=False)
+    status = db.Column(db.String(16), nullable=False, default='open', server_default='open')
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 

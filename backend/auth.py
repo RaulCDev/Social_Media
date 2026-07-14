@@ -98,6 +98,10 @@ def require_jwt(view):
 
         g.current_user = g.jwt_user
         g.jwt_payload = payload
+        if g.current_user.status != "active":
+            return jsonify({"message": "Account is not active"}), 403
+        g.current_user.last_seen_at = datetime.now(timezone.utc).replace(tzinfo=None)
+        db.session.commit()
         return view(*args, **kwargs)
 
     return wrapped
