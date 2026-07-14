@@ -9,8 +9,6 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    ports:
-      - "3306:3306"
     volumes:
       - my-db:/var/lib/mysql
     healthcheck:
@@ -25,11 +23,13 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      target: development
     restart: always
     env_file:
       - .env
     environment:
       DATABASE_URL: ${DATABASE_URL}
+      APP_ENV: development
       FLASK_SECRET_KEY: ${FLASK_SECRET_KEY}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
@@ -40,9 +40,12 @@ services:
       # GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
       # GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
       API_PORT: ${API_PORT}
-      FLASK_ENV: development
-      FLASK_DEBUG: "1"
       PYTHONUNBUFFERED: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: /app
+    command: >-
+      sh -c "flask --app app init-db &&
+      flask --app app run --host 0.0.0.0 --port 5000 --debug"
     ports:
       - "${API_PORT}:5000"
     volumes:
@@ -65,11 +68,14 @@ services:
             - "**/.mypy_cache/**"
         - action: rebuild
           path: ./backend/requirements.txt
+        - action: rebuild
+          path: ./backend/requirements-dev.txt
 
   front:
     build:
       context: ./front
       dockerfile: Dockerfile
+      target: development
     restart: always
     ports:
       - "3000:3000"

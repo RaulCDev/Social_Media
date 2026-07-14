@@ -38,6 +38,24 @@ def test_guest_authentication_flow_returns_only_public_identity(client):
     assert "@anonymous.invalid" not in current.get_data(as_text=True)
 
 
+def test_guest_cookie_uses_the_jwt_lifetime_and_security_attributes(client):
+    response = client.post("/auth/guest")
+    set_cookie = response.headers["Set-Cookie"]
+
+    assert "access_token=" in set_cookie
+    assert "HttpOnly" in set_cookie
+    assert "SameSite=Lax" in set_cookie
+    assert "Max-Age=3600" in set_cookie
+
+
+def test_guest_cookie_secure_attribute_is_configurable(app):
+    app.config["COOKIE_SECURE"] = True
+
+    response = app.test_client().post("/auth/guest")
+
+    assert "Secure" in response.headers["Set-Cookie"]
+
+
 def test_auth_me_rejects_missing_cookie(client):
     response = client.get("/auth/me")
 

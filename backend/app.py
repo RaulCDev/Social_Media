@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from flask import Flask, g, request, jsonify, make_response
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
 
@@ -17,7 +17,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'mysql+pymysql
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', '')
 app.config['JWT_ALGORITHM'] = os.getenv('JWT_ALGORITHM', 'HS256')
 app.config['JWT_ACCESS_MINUTES'] = int(os.getenv('JWT_ACCESS_MINUTES', '60'))
-app.config['FRONTEND_ORIGIN'] = os.getenv('FRONTEND_ORIGIN', 'http://localhost:3000')
+app.config['APP_ENV'] = os.getenv('APP_ENV', 'development').lower()
+app.config['FRONTEND_ORIGINS'] = [
+    origin.strip()
+    for origin in os.getenv('FRONTEND_ORIGIN', 'http://localhost:3000').split(',')
+    if origin.strip()
+]
 app.config['COOKIE_SECURE'] = os.getenv('COOKIE_SECURE', 'false').lower() in ('1', 'true', 'yes')
 app.config['POST_RATE_LIMIT'] = int(os.getenv('POST_RATE_LIMIT', '5'))
 app.config['POST_RATE_WINDOW_SECONDS'] = int(os.getenv('POST_RATE_WINDOW_SECONDS', '60'))
@@ -26,10 +31,17 @@ app.config['COMMENT_RATE_WINDOW_SECONDS'] = int(os.getenv('COMMENT_RATE_WINDOW_S
 # Initialize the database
 db.init_app(app)
 
+if not app.config['FRONTEND_ORIGINS'] or '*' in app.config['FRONTEND_ORIGINS']:
+    raise RuntimeError('FRONTEND_ORIGIN must contain explicit origins')
+if app.config['APP_ENV'] == 'production' and any(
+    not origin.startswith('https://') for origin in app.config['FRONTEND_ORIGINS']
+):
+    raise RuntimeError('Production FRONTEND_ORIGIN entries must use HTTPS')
+
 # Inicializa la extensión CORS
 CORS(
     app,
-    resources={r'/*': {'origins': [app.config['FRONTEND_ORIGIN']]}},
+    resources={r'/*': {'origins': app.config['FRONTEND_ORIGINS']}},
     supports_credentials=True,
 )
 
@@ -87,6 +99,19 @@ def insert_predefined_data():
             posts.append(post_data)
             db.session.add(post_data)
             db.session.commit()
+
+
+@app.cli.command('init-db')
+def init_db_command():
+    """Create local development tables explicitly."""
+    db.create_all()
+
+
+@app.cli.command('seed-demo')
+def seed_demo_command():
+    """Create tables and insert demonstration data explicitly."""
+    db.create_all()
+    insert_predefined_data()
 
 
 def _public_identity(user):
@@ -195,6 +220,7 @@ def guest_session():
     response.set_cookie(
         'access_token',
         token,
+        max_age=app.config['JWT_ACCESS_MINUTES'] * 60,
         httponly=True,
         secure=app.config['COOKIE_SECURE'],
         samesite='Lax',
@@ -384,7 +410,6 @@ def give_like():
     return jsonify({'message': 'Like saved successfully'}), 200
 
 
-@cross_origin
 @app.route('/profileData', methods=['POST'])
 def profileData():
     user_name = request.json.get('user_name')
@@ -402,7 +427,6 @@ def profileData():
     return jsonify({'post_count': post_count})
 
 
-@cross_origin
 @app.route('/postCards', methods=['POST'])
 def postCards():
     postId = request.json
@@ -454,7 +478,6 @@ def postCards():
     return jsonify(postData)
 
 
-@cross_origin
 @app.route('/postData', methods=['POST'])
 def postData():
     postId = request.json
@@ -499,7 +522,6 @@ def remove_like():
     return jsonify({'message': 'Like removed successfully'}), 200
 
 
-@cross_origin
 @app.route('/trends', methods=['POST'])
 def send_trends():
     trends_data = [
@@ -516,7 +538,6 @@ def send_trends():
     ]
     return jsonify(trends_data)
 
-@cross_origin
 @app.route('/users_recomendation', methods=['POST'])
 def send_users_recomendation():
     users_data = [
@@ -558,8 +579,4 @@ def post():
 
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        # Insert predefined posts in the database
-        insert_predefined_data()
-    app.run(host='0.0.0.0', port=int(os.getenv('API_PORT', 5000)), debug=True)
+    app.run(host='0.0.0.0', port=int(os.getenv('API_PORT', 5000)), debug=False)

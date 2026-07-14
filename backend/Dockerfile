@@ -1,14 +1,26 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9
+FROM python:3.9-slim AS production
 
-# Set the working directory to /app
+ENV APP_ENV=production \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install any needed packages specified in requirements.txt
-RUN pip install -r requirements.txt
+COPY . .
 
-# Run the Python script when the container launches
-CMD ["python", "app.py"]
+EXPOSE 5000
+
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+
+
+FROM production AS development
+
+ENV APP_ENV=development
+
+COPY requirements-dev.txt ./
+RUN pip install --no-cache-dir -r requirements-dev.txt
+
+CMD ["flask", "--app", "app", "run", "--host", "0.0.0.0", "--port", "5000", "--debug"]
