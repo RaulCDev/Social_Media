@@ -48,6 +48,14 @@ npm install
 npm run dev
 ```
 
+Run backend tests in the isolated development image:
+
+```powershell
+docker compose -p social-media-anon-test run --rm --no-deps `
+  -e DATABASE_URL=sqlite:///:memory: `
+  -e PYTHONDONTWRITEBYTECODE=1 backend pytest -q
+```
+
 The frontend is served at `http://localhost:3000` and currently calls the API
 at `http://localhost:5000`.
 
@@ -69,9 +77,20 @@ at `http://localhost:5000`.
 ## Known project state
 
 - The frontend README is still the generic Create Next App document.
-- The frontend contains direct `localhost:5000` API URLs.
-- The frontend requests `/login`, but that route is not present in the current
-  Flask API and requires investigation before login can be considered working.
+- Active login is anonymous: `LogIn (No credentials)` creates a guest identity
+  through `POST /auth/guest` and receives JWT authentication only in an
+  `HttpOnly` cookie. Deleting that cookie makes the guest session unrecoverable.
+- Public reads remain available without a session; writes require the shared
+  JWT boundary and derive identity only from `flask.g.current_user`.
+- Active frontend API calls use the centralized cookie client. GitHub OAuth is
+  retained only inside disabled historical blocks headed
+  `HISTORICAL GITHUB LOGIN (DISABLED)`.
+- Abuse controls include database-backed `jti` and IP limits, account states,
+  reports, moderator-only hiding, and a documented non-destructive guest
+  lifecycle policy. No automatic guest or content deletion is enabled.
+- MySQL migrations are additive files `001` through `004`; validate them only
+  against a temporary database or verified copy before production use.
 - Generated `.pyc` files exist in Git history and should be removed in a
   separate, explicitly approved cleanup.
-- No root-level automated test workflow has been verified yet.
+- Backend pytest, frontend contract tests/build, Compose validation, and
+  development/production Docker builds are the verified workflow.
