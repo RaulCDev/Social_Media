@@ -22,6 +22,8 @@ import {
 } from "@tabler/icons-react";
 import TextAreaPost from "./TextArea-Post";
 import { toast } from "react-toastify";
+import { apiFetch } from "@/lib/api-client";
+import { useSessionMutation } from "@/components/AuthProvider";
 
 export default function LeftSide({
   userFullName,
@@ -32,8 +34,7 @@ export default function LeftSide({
 }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isWriteTextOpen, setIsWriteTextOpen] = useState(false);
-  const token =
-    typeof window === "undefined" ? null : localStorage.getItem("token");
+  const runMutation = useSessionMutation();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleWriteTextButtonClick = () => {
@@ -56,36 +57,18 @@ export default function LeftSide({
     setDropdownOpen(!dropdownOpen);
   };
 
-  const handlePostClick = (content: string) => {
+  const handlePostClick = async (content: string) => {
     const postData = {
       content: content,
     };
 
-    fetch("http://localhost:5000/post", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(postData),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          toast.error("Error connecting to the API", {
-            position: "bottom-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-          });
-          throw new Error("Error connecting to the API");
-        }
-        return response.json();
-      })
-      .then((data) => {
+    try {
+      const data = await runMutation(() =>
+        apiFetch("/post", {
+          method: "POST",
+          body: JSON.stringify(postData),
+        }),
+      );
         console.log("Server response:", data);
         toast.success("Post created successfully", {
           position: "bottom-center",
@@ -97,8 +80,7 @@ export default function LeftSide({
           progress: undefined,
           theme: "colored",
         });
-      })
-      .catch((error) => {
+    } catch (error) {
         console.error("Error:", error);
         toast.error("Something went wrong", {
           position: "bottom-center",
@@ -110,7 +92,7 @@ export default function LeftSide({
           progress: undefined,
           theme: "colored",
         });
-      });
+    }
   };
 
   useEffect(() => {

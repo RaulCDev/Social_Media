@@ -3,25 +3,17 @@ import React, { useState, useEffect } from "react";
 import LeftSide from "../components/LeftSide";
 import RightSide from "../components/RightSide";
 import { IconArrowLeft } from "@tabler/icons-react";
+import { apiFetch } from "@/lib/api-client";
 
 export default function Profile({ params }: { params: { userName: string } }) {
-  const [postCount, setPostCount] = useState(null);
+  const [postCount, setPostCount] = useState<number | null>(null);
 
   useEffect(() => {
     if (params.userName) {
-      fetch("http://localhost:5000/profileData", {
+      apiFetch<{ post_count: number }>("/profileData", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ user_name: params.userName }),
       })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Error fetching data from server");
-          }
-          return response.json();
-        })
         .then((data) => {
           setPostCount(data.post_count);
           console.log("CORRECT");

@@ -5,6 +5,8 @@ import { IconGif, IconPhoto, IconMoodSmile } from '@tabler/icons-react';
 
 import { Bounce, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { apiFetch } from '@/lib/api-client';
+import { useSessionMutation } from '@/components/AuthProvider';
 
 interface Props {
   userName: string;
@@ -12,7 +14,7 @@ interface Props {
 
 export default function WritePost({ userName }: Props) {
   const [content, setContent] = useState('');
-  const token = typeof window === 'undefined' ? null : localStorage.getItem('token');
+  const runMutation = useSessionMutation();
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const textarea = event.target;
@@ -21,36 +23,18 @@ export default function WritePost({ userName }: Props) {
     setContent(textarea.value);
   };
 
-  const handlePostClick = () => {
+  const handlePostClick = async () => {
     const postData = {
       content: content,
     };
 
-    fetch('http://localhost:5000/post', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(postData),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          toast.error('Error connecting to the API', {
-            position: "bottom-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            transition: Bounce,
-          });
-        }
-        return response.json();
-      })
-      .then((data) => {
+    try {
+      const data = await runMutation(() =>
+        apiFetch('/post', {
+          method: 'POST',
+          body: JSON.stringify(postData),
+        }),
+      );
         console.log('Server response:', data);
         toast.success('Post created successfully', {
           position: "bottom-center",
@@ -64,8 +48,7 @@ export default function WritePost({ userName }: Props) {
           transition: Bounce,
         });
         setContent('');
-      })
-      .catch((error) => {
+    } catch (error) {
         console.error('Error:', error);
         toast.error('Something went wrong', {
           position: "bottom-center",
@@ -78,7 +61,7 @@ export default function WritePost({ userName }: Props) {
           theme: "colored",
           transition: Bounce,
         });
-      });
+    }
   };
 
   return (

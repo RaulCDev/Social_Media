@@ -6,6 +6,7 @@ import Post_Card, {
 import LeftSide from "../../components/LeftSide";
 import RightSide from "../../components/RightSide";
 import { IconArrowLeft } from "@tabler/icons-react";
+import { apiFetch } from "@/lib/api-client";
 
 type PostPageData = PostCardData & {
   comments: PostCardData[];
@@ -22,20 +23,13 @@ export default function Post({
   useEffect(() => {
     const fetchPostData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/postCards", {
+        const fetchedPostData = await apiFetch<PostPageData>("/postCards", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
             user_name: params.userName,
             post_id: params.postId,
           }),
         });
-        if (!response.ok) {
-          throw new Error("Error fetching post data");
-        }
-        const fetchedPostData: PostPageData = await response.json();
         setPostData(fetchedPostData);
         setLoading(false);
       } catch (error) {

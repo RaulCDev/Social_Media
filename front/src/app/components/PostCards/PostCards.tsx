@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Post_Card from "./PostCard";
+import { apiFetch } from "@/lib/api-client";
 
 type Post_CardProps = {
   id: number;
@@ -14,19 +15,10 @@ export default function Post_Cards() {
   const [cards, setCards] = useState<JSX.Element[]>(
     new Array(limit).fill(null)
   );
-  const token =
-    typeof window === "undefined" ? null : localStorage.getItem("token");
-
   const fetchCards = async () => {
-    const response = await fetch(`http://localhost:5000/cards`, {
+    return apiFetch<any[]>("/cards", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
     });
-    const newCards = await response.json();
-    return newCards;
   };
 
   const loadMoreCards = async () => {

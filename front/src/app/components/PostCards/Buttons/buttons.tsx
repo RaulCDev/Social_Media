@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Avatar } from '@nextui-org/react';
 import PostButtons from './buttons';
 import TextAreaPost from '../../TextArea-Post';
+import { apiFetch } from '@/lib/api-client';
+import { useSessionMutation } from '@/components/AuthProvider';
 
 type Post_ButtonsProps = {
   id: number
@@ -23,40 +25,28 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amo
   const [content, setContent] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const token = typeof window === 'undefined' ? null : localStorage.getItem('token');
+  const runMutation = useSessionMutation();
 
   const handleLike = async () => {
     try {
       if (isHeartFilled) {
-        const response = await fetch(`http://localhost:5000/unlike`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ postId: id, content }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setIsHeartFilled(false);
-          setLikesAmount(prevLikesAmount => prevLikesAmount - 1);
-        } else {
-          console.error('Error removing like:', data.error);
-        }
+        await runMutation(() =>
+          apiFetch(`/unlike`, {
+            method: 'POST',
+            body: JSON.stringify({ postId: id, content }),
+          }),
+        );
+        setIsHeartFilled(false);
+        setLikesAmount(prevLikesAmount => prevLikesAmount - 1);
       } else {
-        const response = await fetch(`http://localhost:5000/like`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ postId: id })
-        })
-        const data = await response.json();
-        if (response.ok) {
-          setIsHeartFilled(true);
-          setLikesAmount(prevLikesAmount => prevLikesAmount + 1);
-        }
+        await runMutation(() =>
+          apiFetch(`/like`, {
+            method: 'POST',
+            body: JSON.stringify({ postId: id })
+          }),
+        );
+        setIsHeartFilled(true);
+        setLikesAmount(prevLikesAmount => prevLikesAmount + 1);
       }
     } catch (error) {
       console.error(error);
@@ -80,39 +70,23 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amo
 
   const handleCommentPost = async () => {
     try {
-      const response = await fetch('http://localhost:5000/comment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ postId: id, content }),
+      await runMutation(() =>
+        apiFetch('/comment', {
+          method: 'POST',
+          body: JSON.stringify({ postId: id, content }),
+        }),
+      );
+      setContent('');
+      toast.success('Comment posted successfully', {
+        position: 'bottom-center',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
       });
-      const data = await response.json();
-      if (response.ok) {
-        setContent('');
-        toast.success('Comment posted successfully', {
-          position: 'bottom-center',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'colored',
-        });
-      } else {
-        toast.error(data.message || 'Error posting comment', {
-          position: 'bottom-center',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'colored',
-        });
-      }
     } catch (error) {
       console.error('Error posting comment:', error);
       toast.error('Something went wrong', {

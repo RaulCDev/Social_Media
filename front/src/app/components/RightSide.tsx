@@ -4,6 +4,7 @@ import { Avatar } from "@nextui-org/react";
 import { Input, Card } from "@nextui-org/react";
 import { IconDots, IconSearch } from "@tabler/icons-react";
 import useWindowScroll from "./hook/useScreenHeight";
+import { apiFetch } from "@/lib/api-client";
 
 type Trend = {
   number: number;
@@ -23,22 +24,14 @@ export default function RightSide() {
   const rightMarginRef = useRef<HTMLDivElement>(null);
   const [trends, setTrends] = useState<Trend[]>([]);
   const [usersToFollow, setUsersToFollow] = useState<UserRecommendation[]>([]);
-  const token =
-    typeof window === "undefined" ? null : localStorage.getItem("token");
-
   useWindowScroll(rightContentRef, rightMarginRef);
 
   useEffect(() => {
     const fetchTrendsData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/trends`, {
+        const data = await apiFetch<Trend[]>("/trends", {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
         });
-        const data: Trend[] = await response.json();
         setTrends(data);
       } catch (error) {
         console.error("Error fetching trends data:", error);
@@ -47,17 +40,10 @@ export default function RightSide() {
 
     const fetchUsersToFollowData = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:5000/users_recomendation`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
+        const data = await apiFetch<UserRecommendation[]>(
+          "/users_recomendation",
+          { method: "POST" },
         );
-        const data: UserRecommendation[] = await response.json();
         setUsersToFollow(data);
       } catch (error) {
         console.error("Error fetching users to follow data:", error);

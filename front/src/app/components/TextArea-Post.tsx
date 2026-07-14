@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import { IconGif, IconPhoto, IconMoodSmile } from "@tabler/icons-react";
 import type { PostCardData } from "./PostCards/PostCard";
+import { apiFetch } from "@/lib/api-client";
 
 type PostPreviewData = Pick<
   PostCardData,
@@ -26,8 +27,6 @@ const TextAreaPost: React.FC<TextAreaPostProps> = ({
   const [content, setContent] = useState("");
   const [data, setData] = useState<PostPreviewData | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const token =
-    typeof window === "undefined" ? null : localStorage.getItem("token");
   const postContentRef = useRef<HTMLTextAreaElement>(null);
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -73,20 +72,10 @@ const TextAreaPost: React.FC<TextAreaPostProps> = ({
 
   useEffect(() => {
     if (postId && postId > 0) {
-      fetch("http://localhost:5000/postData", {
+      apiFetch<PostPreviewData>("/postData", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify(postId),
       })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Error connecting to the API");
-          }
-          return response.json() as Promise<PostPreviewData>;
-        })
         .then((data) => {
           setData(data);
           console.log("Server response:", data);
@@ -95,7 +84,7 @@ const TextAreaPost: React.FC<TextAreaPostProps> = ({
           console.error("Error:", error);
         });
     }
-  }, [postId, token]);
+  }, [postId]);
 
   return (
     <div
