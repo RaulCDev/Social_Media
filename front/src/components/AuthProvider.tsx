@@ -6,7 +6,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -15,6 +14,7 @@ import {
   SESSION_EXPIRED_EVENT,
   apiFetch,
 } from "@/lib/api-client";
+import { createSessionFlow, runSessionMutation } from "@/lib/session-flow.mjs";
 
 export type SessionUser = {
   id: number;
@@ -35,75 +35,63 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const userRef = useRef<SessionUser | null>(null);
-  const restorePromiseRef = useRef<Promise<SessionUser | null> | null>(null);
-  const guestPromiseRef = useRef<Promise<SessionUser> | null>(null);
 
   const updateUser = useCallback((nextUser: SessionUser | null) => {
-    userRef.current = nextUser;
     setUser(nextUser);
   }, []);
 
-  const startGuestSession = useCallback(
-    async (force = false) => {
-      if (restorePromiseRef.current) {
-        await restorePromiseRef.current;
-      }
-      if (!force && userRef.current) {
-        return userRef.current;
-      }
-      if (!guestPromiseRef.current) {
-        guestPromiseRef.current = apiFetch<{ user: SessionUser }>("/auth/guest", {
-          method: "POST",
-        })
-          .then((response) => {
-            updateUser(response.user);
-            return response.user;
-          })
-          .finally(() => {
-            guestPromiseRef.current = null;
+  const sessionFlow = useMemo(
+    () =>
+      createSessionFlow({
+        restoreSession: async () => {
+          try {
+            return await apiFetch<SessionUser>("/auth/me", { method: "GET" });
+          } catch (error) {
+            if (!(error instanceof ApiError && error.status === 401)) {
+              console.error("Unable to restore the session:", error);
+            }
+            return null;
+          }
+        },
+        createGuestSession: async () => {
+          const response = await apiFetch<{ user: SessionUser }>("/auth/guest", {
+            method: "POST",
           });
-      }
-      return guestPromiseRef.current;
-    },
+          return response.user;
+        },
+        onUserChange: updateUser,
+      }),
     [updateUser],
   );
 
+  const startGuestSession = useCallback(
+    (force = false) => sessionFlow.startGuestSession(force),
+    [sessionFlow],
+  );
+
   const logout = useCallback(async () => {
-    if (restorePromiseRef.current) {
-      await restorePromiseRef.current;
-    }
+    await sessionFlow.waitForRestoration();
     await apiFetch("/auth/logout", { method: "POST" });
-    updateUser(null);
-  }, [updateUser]);
+    sessionFlow.clear();
+  }, [sessionFlow]);
 
   useEffect(() => {
     let active = true;
 
-    const restorePromise = apiFetch<SessionUser>("/auth/me", { method: "GET" })
-      .then((currentUser) => {
-        if (active) updateUser(currentUser);
-        return currentUser;
-      })
-      .catch((error: unknown) => {
-        if (!(error instanceof ApiError && error.status === 401)) {
-          console.error("Unable to restore the session:", error);
-        }
-        return null;
-      })
+    sessionFlow
+      .restore()
       .finally(() => {
         if (active) setLoading(false);
       });
-    restorePromiseRef.current = restorePromise;
 
-    const clearExpiredSession = () => updateUser(null);
+    const clearExpiredSession = () => sessionFlow.clear();
     window.addEventListener(SESSION_EXPIRED_EVENT, clearExpiredSession);
 
     return () => {
       active = false;
       window.removeEventListener(SESSION_EXPIRED_EVENT, clearExpiredSession);
     };
-  }, [updateUser]);
+  }, [sessionFlow]);
 
   const value = useMemo(
     () => ({ user, loading, startGuestSession, logout }),
@@ -125,20 +113,14 @@ export function useSessionMutation() {
   const { user, startGuestSession } = useAuth();
 
   return useCallback(
-    async <T,>(request: () => Promise<T>) => {
-      if (!user) {
-        await startGuestSession();
-      }
-      try {
-        return await request();
-      } catch (error) {
-        if (error instanceof ApiError && error.status === 401) {
-          await startGuestSession(true);
-          return request();
-        }
-        throw error;
-      }
-    },
+    <T,>(request: () => Promise<T>) =>
+      runSessionMutation({
+        hasSession: Boolean(user),
+        startGuestSession,
+        request,
+        isUnauthorized: (error: unknown) =>
+          error instanceof ApiError && error.status === 401,
+      }) as Promise<T>,
     [user, startGuestSession],
   );
 }

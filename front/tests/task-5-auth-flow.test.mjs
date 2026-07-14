@@ -2,6 +2,27 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
+const loadSessionFlow = async () => {
+  try {
+    return await import("../src/lib/session-flow.mjs");
+  } catch (error) {
+    if (error && error.code === "ERR_MODULE_NOT_FOUND") {
+      return {};
+    }
+    throw error;
+  }
+};
+
+const deferred = () => {
+  let resolve;
+  let reject;
+  const promise = new Promise((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, resolve, reject };
+};
+
 const source = async (path) => {
   try {
     return await readFile(new URL(`../${path}`, import.meta.url), "utf8");
@@ -69,6 +90,10 @@ test("GitHub login remains disabled as historical commented source only", async 
 
   assert.match(contents, /HISTORICAL GITHUB LOGIN \(DISABLED\)/);
   assert.match(contents, /github_callback/);
+  assert.match(contents, /\.catch\(error => \{/);
+  assert.match(contents, /\}, \[pathname, searchParams\]\);/);
+  assert.match(contents, /return \(\s*<div>\s*<PacmanLoader/);
+  assert.match(contents, /fallback=\{\s*<div>\s*<PacmanLoader/);
   assert.doesNotMatch(active, /github_callback|client_id|useRouter|useSearchParams|localStorage|access_token/);
 });
 
@@ -78,20 +103,99 @@ test("profile state accepts the numeric count returned by the typed API client",
   assert.match(contents, /useState<number\s*\|\s*null>\(null\)/);
 });
 
-test("session restoration and guest creation are serialized and deduplicated", async () => {
-  const contents = await source("src/components/AuthProvider.tsx");
+test("session restoration finishes before concurrent guest calls create exactly one guest", async () => {
+  const { createSessionFlow } = await loadSessionFlow();
+  assert.equal(typeof createSessionFlow, "function");
 
-  assert.match(contents, /restorePromiseRef/);
-  assert.match(contents, /guestPromiseRef/);
-  assert.match(contents, /await restorePromiseRef\.current/);
-  assert.match(contents, /force/);
+  const restore = deferred();
+  const guest = deferred();
+  const order = [];
+  let restoreCalls = 0;
+  let guestCalls = 0;
+  const flow = createSessionFlow({
+    restoreSession: () => {
+      restoreCalls += 1;
+      order.push("restore:start");
+      return restore.promise;
+    },
+    createGuestSession: () => {
+      guestCalls += 1;
+      order.push("guest:start");
+      return guest.promise;
+    },
+  });
+
+  const restoration = flow.restore();
+  const duplicateRestoration = flow.restore();
+  const firstGuest = flow.startGuestSession();
+  const secondGuest = flow.startGuestSession();
+  await Promise.resolve();
+
+  assert.deepEqual(order, ["restore:start"]);
+  assert.equal(restoreCalls, 1);
+  assert.equal(guestCalls, 0);
+
+  restore.resolve(null);
+  await Promise.all([restoration, duplicateRestoration]);
+  await Promise.resolve();
+  assert.deepEqual(order, ["restore:start", "guest:start"]);
+  assert.equal(guestCalls, 1);
+
+  const guestUser = { id: 7, username: "guest-7" };
+  guest.resolve(guestUser);
+  assert.deepEqual(await Promise.all([firstGuest, secondGuest]), [guestUser, guestUser]);
+  assert.equal(guestCalls, 1);
 });
 
-test("authenticated mutations renew an expired session and retry only once", async () => {
-  const contents = await source("src/components/AuthProvider.tsx");
+test("an expired cookie causes one renewal followed by one successful retry in order", async () => {
+  const { runSessionMutation } = await loadSessionFlow();
+  assert.equal(typeof runSessionMutation, "function");
 
-  assert.match(contents, /useSessionMutation/);
-  assert.match(contents, /error instanceof ApiError\s*&&\s*error\.status === 401/);
-  assert.match(contents, /startGuestSession\(true\)/);
-  assert.match(contents, /return request\(\)/);
+  const order = [];
+  let requestCalls = 0;
+  let renewalCalls = 0;
+  const result = await runSessionMutation({
+    hasSession: true,
+    startGuestSession: async (force) => {
+      renewalCalls += 1;
+      order.push(`guest:${force}`);
+    },
+    request: async () => {
+      requestCalls += 1;
+      order.push(`request:${requestCalls}`);
+      if (requestCalls === 1) throw { status: 401 };
+      return "created";
+    },
+    isUnauthorized: (error) => error?.status === 401,
+  });
+
+  assert.equal(result, "created");
+  assert.equal(renewalCalls, 1);
+  assert.equal(requestCalls, 2);
+  assert.deepEqual(order, ["request:1", "guest:true", "request:2"]);
+});
+
+test("a second 401 is returned without another renewal or retry loop", async () => {
+  const { runSessionMutation } = await loadSessionFlow();
+  assert.equal(typeof runSessionMutation, "function");
+
+  let requestCalls = 0;
+  let renewalCalls = 0;
+  await assert.rejects(
+    runSessionMutation({
+      hasSession: true,
+      startGuestSession: async () => {
+        renewalCalls += 1;
+      },
+      request: async () => {
+        requestCalls += 1;
+        throw { status: 401 };
+      },
+      isUnauthorized: (error) => error?.status === 401,
+    }),
+    (error) => error?.status === 401,
+  );
+
+  assert.equal(renewalCalls, 1);
+  assert.equal(requestCalls, 2);
 });
