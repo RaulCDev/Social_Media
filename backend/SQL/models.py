@@ -8,6 +8,14 @@ class User(db.Model):
     accountname = db.Column(db.String(50), unique=True, nullable=False)
     avatarUrl = db.Column(db.String(200), nullable=True)
     access_token = db.Column(db.String(255), unique=True, nullable=True)
+    is_guest = db.Column(db.Boolean, nullable=False, default=False, server_default="0")
+    guest_public_name = db.Column(db.String(50), unique=True, nullable=True)
+
+
+class RevokedToken(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(36), unique=True, nullable=False, index=True)
+    revoked_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)

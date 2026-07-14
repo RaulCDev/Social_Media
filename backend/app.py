@@ -1,33 +1,41 @@
-from flask import Flask, request, jsonify, url_for, make_response
+from flask import Flask, g, request, jsonify, make_response
 from flask_cors import CORS, cross_origin
-import jwt
-from datetime import datetime, timedelta, timezone
 from functools import wraps
-from github import Github
 
 import os
-import requests
+import jwt
 #Import SQL database models from models.py and the database itself from database.py
+from auth import issue_guest_session, require_jwt
 from SQL.database import db
-from SQL.models import Post, Like, User
+from SQL.models import Post, Like, RevokedToken, User
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'change-me')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'mysql+pymysql://user:1234@db-mysql:3306/socialmedia')
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', '')
+app.config['JWT_ALGORITHM'] = os.getenv('JWT_ALGORITHM', 'HS256')
+app.config['JWT_ACCESS_MINUTES'] = int(os.getenv('JWT_ACCESS_MINUTES', '60'))
+app.config['FRONTEND_ORIGIN'] = os.getenv('FRONTEND_ORIGIN', 'http://localhost:3000')
+app.config['COOKIE_SECURE'] = os.getenv('COOKIE_SECURE', 'false').lower() in ('1', 'true', 'yes')
+SECRET_KEY = os.getenv('JWT_SECRET_KEY', os.getenv('FLASK_SECRET_KEY', 'change-me'))
+JWT_ALGORITHM = os.getenv('JWT_ALGORITHM', 'HS256')
 # Initialize the database
 db.init_app(app)
 
 # Inicializa la extensión CORS
-CORS(app, resources={r'/*': {'origins': '*'}})
-cors = CORS(app)
+CORS(
+    app,
+    resources={r'/*': {'origins': [app.config['FRONTEND_ORIGIN']]}},
+    supports_credentials=True,
+)
 
 # Configura el tiempo de expiración del JWT
-app.config['JWT_EXPIRATION_DELTA'] = timedelta(days=1)
-SECRET_KEY = os.getenv('JWT_SECRET_KEY', os.getenv('FLASK_SECRET_KEY', 'change-me'))
-JWT_ALGORITHM = os.getenv('JWT_ALGORITHM', 'HS256')
+# HISTORICAL GITHUB LOGIN (DISABLED)
+# from github import Github
+# import requests
+# Client_id = os.getenv('GITHUB_CLIENT_ID', '')
+# Client_secret = os.getenv('GITHUB_CLIENT_SECRET', '')
 
-Client_id = os.getenv('GITHUB_CLIENT_ID', '')
-Client_secret = os.getenv('GITHUB_CLIENT_SECRET', '')
 
 def jwt_required(fn):
     @wraps(fn)
@@ -54,7 +62,6 @@ def jwt_required(fn):
         return fn(*args, **kwargs)
 
     return wrapper
-
 
 def insert_predefined_data():
     # Get the first user from the database
@@ -105,61 +112,118 @@ def insert_predefined_data():
             db.session.commit()
 
 
-def save_user(email, username, accountname, avatarUrl, token):
-    user = User.query.filter_by(email=email).first()
-
-    if user:
-        #Save the new token if the user already exists
-        user.access_token = token
-        db.session.commit()
-        return {'success': True}
-    else:
-        new_user = User(email=email, username=username, accountname=accountname, avatarUrl=avatarUrl, access_token=token)
-        db.session.add(new_user)
-        db.session.commit()
-        return {'success': True}
-
-
-@cross_origin
-@app.route('/get_user_data', methods=['POST'])
-@jwt_required
-def get_user():
-    token = request.headers.get('Authorization').split(' ')[1]
-    print(token)
-    user = User.query.filter_by(access_token=token).first()
-    if not user:
-        print("User not found")
-        return jsonify({"message": "User not found"}), 404
-
-    return jsonify({
-        'email': user.email,
+def _public_identity(user):
+    return {
+        'id': user.id,
         'username': user.username,
         'accountname': user.accountname,
-        'avatarUrl': user.avatarUrl
-    })
-
-
-@cross_origin
-@app.route('/github_callback', methods=['POST'])
-def github_callback():
-    data = {
-        'client_id': Client_id,
-        'client_secret': Client_secret,
-        'code': request.json['code']
+        'is_guest': user.is_guest,
     }
-    token_response = requests.post('https://github.com/login/oauth/access_token', data=data)
-    access_token = token_response.text.split('=')[1].split('&')[0]
-    github_client = Github(access_token)
-    user = github_client.get_user()
-    emails = user.get_emails()
-    for email in emails:
-        email_value = email.email
-        username_value = user.login
-        avatarUrl_value = f"https://github.com/{user.login}.png"
-        token = create_token(email.email)
-        print(token)
-        save_user(email_value, username_value, username_value, avatarUrl_value, token)
-        return jsonify({'succes': True,'access_token': token})
+
+
+@app.route('/auth/guest', methods=['POST'])
+def guest_session():
+    if not app.config['JWT_SECRET_KEY']:
+        return jsonify({'message': 'Authentication is not configured'}), 503
+
+    user, token = issue_guest_session()
+    response = make_response(jsonify({'user': _public_identity(user)}), 201)
+    response.set_cookie(
+        'access_token',
+        token,
+        httponly=True,
+        secure=app.config['COOKIE_SECURE'],
+        samesite='Lax',
+        path='/',
+    )
+    return response
+
+
+@app.route('/auth/me', methods=['GET'])
+@require_jwt
+def current_session():
+    return jsonify(_public_identity(g.current_user))
+
+
+@app.route('/auth/logout', methods=['POST'])
+@require_jwt
+def logout():
+    db.session.add(RevokedToken(jti=g.jwt_payload['jti']))
+    db.session.commit()
+    response = make_response('', 204)
+    response.delete_cookie(
+        'access_token',
+        httponly=True,
+        secure=app.config['COOKIE_SECURE'],
+        samesite='Lax',
+        path='/',
+    )
+    return response
+
+
+# HISTORICAL GITHUB LOGIN (DISABLED)
+# The original save_user helper, /github_callback route and create_token helper
+# are preserved below as comments for archaeology only. They must not be enabled
+# without a separate, explicitly approved authentication design.
+# def save_user(email, username, accountname, avatarUrl, token):
+#     user = User.query.filter_by(email=email).first()
+#     if user:
+#         user.access_token = token
+#         db.session.commit()
+#         return {'success': True}
+#     new_user = User(
+#         email=email,
+#         username=username,
+#         accountname=accountname,
+#         avatarUrl=avatarUrl,
+#         access_token=token,
+#     )
+#     db.session.add(new_user)
+#     db.session.commit()
+#     return {'success': True}
+#
+# @cross_origin
+# @app.route('/get_user_data', methods=['POST'])
+# @jwt_required
+# def get_user():
+#     token = request.headers.get('Authorization').split(' ')[1]
+#     print(token)
+#     user = User.query.filter_by(access_token=token).first()
+#     if not user:
+#         print("User not found")
+#         return jsonify({"message": "User not found"}), 404
+#     return jsonify({
+#         'email': user.email,
+#         'username': user.username,
+#         'accountname': user.accountname,
+#         'avatarUrl': user.avatarUrl,
+#     })
+#
+# @cross_origin
+# @app.route('/github_callback', methods=['POST'])
+# def github_callback():
+#     data = {
+#         'client_id': Client_id,
+#         'client_secret': Client_secret,
+#         'code': request.json['code'],
+#     }
+#     token_response = requests.post(
+#         'https://github.com/login/oauth/access_token', data=data
+#     )
+#     access_token = token_response.text.split('=')[1].split('&')[0]
+#     github_client = Github(access_token)
+#     user = github_client.get_user()
+#     emails = user.get_emails()
+#     for email in emails:
+#         email_value = email.email
+#         username_value = user.login
+#         avatarUrl_value = f"https://github.com/{user.login}.png"
+#         token = create_token(email.email)
+#         print(token)
+#         save_user(
+#             email_value, username_value, username_value, avatarUrl_value, token
+#         )
+#         return jsonify({'succes': True, 'access_token': token})
 
 
 @cross_origin
@@ -457,17 +521,12 @@ def get_current_user(token):
         return None
 
 
-#Create a token JWT whit the user identity
-def create_token(identity):
-    expires_delta = timedelta(minutes=60)
-    expires = datetime.now(timezone.utc) + expires_delta
-
-    payload = {
-        "identity": identity,
-        "exp": expires,
-    }
-    token = jwt.encode(payload, SECRET_KEY, algorithm=JWT_ALGORITHM)
-    return token
+# HISTORICAL GITHUB LOGIN (DISABLED)
+# def create_token(identity):
+#     expires_delta = timedelta(minutes=60)
+#     expires = datetime.now(timezone.utc) + expires_delta
+#     payload = {"identity": identity, "exp": expires}
+#     return jwt.encode(payload, SECRET_KEY, algorithm=JWT_ALGORITHM)
 
 
 if __name__ == '__main__':
