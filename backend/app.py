@@ -65,52 +65,37 @@ CORS(
 # Client_secret = os.getenv('GITHUB_CLIENT_SECRET', '')
 
 def insert_predefined_data():
-    # Get the first user from the database
-    user = User.query.with_entities(User.id, User.email, User.username, User.accountname, User.avatarUrl).first()
+    demo_users = []
 
-    # Create 10 predefined users
-    users = [
-        User(email='user1@example.com', username='user1', accountname='user1', avatarUrl='https://github.com/user1.png'),
-        User(email='user2@example.com', username='user2', accountname='user2', avatarUrl='https://github.com/user2.png'),
-        User(email='user3@example.com', username='user3', accountname='user3', avatarUrl='https://github.com/user3.png'),
-        User(email='user4@example.com', username='user4', accountname='user4', avatarUrl='https://github.com/user4.png'),
-        User(email='user5@example.com', username='user5', accountname='user5', avatarUrl='https://github.com/user5.png'),
-        User(email='user6@example.com', username='user6', accountname='user6', avatarUrl='https://github.com/user6.png'),
-        User(email='user7@example.com', username='user7', accountname='user7', avatarUrl='https://github.com/user7.png'),
-        User(email='user8@example.com', username='user8', accountname='user8', avatarUrl='https://github.com/user8.png'),
-        User(email='user9@example.com', username='user9', accountname='user9', avatarUrl='https://github.com/user9.png'),
-        User(email='user10@example.com', username='user10', accountname='user10', avatarUrl='https://github.com/user10.png'),
+    for number in range(1, 11):
+        email = f'user{number}@example.com'
+        user = User.query.filter_by(email=email).first()
+        if user is None:
+            user = User(
+                email=email,
+                username=f'user{number}',
+                accountname=f'user{number}',
+                avatarUrl=f'https://github.com/user{number}.png',
+                access_token=None,
+            )
+            db.session.add(user)
+        demo_users.append(user)
+
+    db.session.flush()
+
+    contents = ['This is the first content'] + [
+        f'This is demo content {number}' for number in range(2, 11)
     ]
+    for user in demo_users:
+        existing_contents = {
+            content
+            for (content,) in Post.query.with_entities(Post.content).filter_by(user_id=user.id).all()
+        }
+        for content in contents:
+            if content not in existing_contents:
+                db.session.add(Post(user_id=user.id, content=content))
 
-    # Add the users to the database
-    for user_data in users:
-        existing_user = User.query.filter_by(email=user_data.email).first()
-        if existing_user:
-            continue
-
-        user = User(
-            email=user_data.email,
-            username=user_data.username,
-            accountname=user_data.accountname,
-            avatarUrl=user_data.avatarUrl,
-            access_token=None,
-        )
-        db.session.add(user)
-        db.session.commit()
-
-    # Create 10 predefined posts for each user
-    users = User.query.all()
-    for user in users:
-        posts = []
-        for i in range(10):
-            post_data = Post(user_id=user.id, content='This is the first content')
-            existing_post = Post.query.filter_by(user_id=user.id, content=post_data.content).first()
-            if existing_post:
-                continue
-
-            posts.append(post_data)
-            db.session.add(post_data)
-            db.session.commit()
+    db.session.commit()
 
 
 @app.cli.command('init-db')

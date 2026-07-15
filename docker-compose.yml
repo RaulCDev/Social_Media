@@ -44,7 +44,7 @@ services:
       PYTHONDONTWRITEBYTECODE: "1"
       PYTHONPATH: /app
     command: >-
-      sh -c "flask --app app init-db &&
+      sh -c "flask --app app seed-demo &&
       flask --app app run --host 0.0.0.0 --port 5000 --debug"
     ports:
       - "${API_PORT}:5000"
