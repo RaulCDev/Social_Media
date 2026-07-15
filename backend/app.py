@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 import os
 #Import SQL database models from models.py and the database itself from database.py
 from auth import issue_guest_session, require_jwt
+from demo_data import DEMO_USERS
 from moderation import require_moderator
 from rate_limits import reserve_session_ip, reserve_write
 from SQL.database import db
@@ -67,15 +68,14 @@ CORS(
 def insert_predefined_data():
     demo_users = []
 
-    for number in range(1, 11):
-        email = f'user{number}@example.com'
-        user = User.query.filter_by(email=email).first()
+    for user_data in DEMO_USERS:
+        user = User.query.filter_by(email=user_data['email']).first()
         if user is None:
             user = User(
-                email=email,
-                username=f'user{number}',
-                accountname=f'user{number}',
-                avatarUrl=f'https://github.com/user{number}.png',
+                email=user_data['email'],
+                username=user_data['username'],
+                accountname=user_data['accountname'],
+                avatarUrl=user_data['avatar_url'],
                 access_token=None,
             )
             db.session.add(user)
