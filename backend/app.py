@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 import os
 #Import SQL database models from models.py and the database itself from database.py
 from auth import issue_guest_session, require_jwt
-from demo_data import DEMO_USERS
+from demo_data import DEMO_POSTS, DEMO_USERS
 from moderation import require_moderator
 from rate_limits import reserve_session_ip, reserve_write
 from SQL.database import db
@@ -66,7 +66,7 @@ CORS(
 # Client_secret = os.getenv('GITHUB_CLIENT_SECRET', '')
 
 def insert_predefined_data():
-    demo_users = []
+    demo_users_by_email = {}
 
     for user_data in DEMO_USERS:
         user = User.query.filter_by(email=user_data['email']).first()
@@ -79,21 +79,18 @@ def insert_predefined_data():
                 access_token=None,
             )
             db.session.add(user)
-        demo_users.append(user)
+        demo_users_by_email[user_data['email']] = user
 
     db.session.flush()
 
-    contents = ['This is the first content'] + [
-        f'This is demo content {number}' for number in range(2, 11)
-    ]
-    for user in demo_users:
-        existing_contents = {
-            content
-            for (content,) in Post.query.with_entities(Post.content).filter_by(user_id=user.id).all()
-        }
-        for content in contents:
-            if content not in existing_contents:
-                db.session.add(Post(user_id=user.id, content=content))
+    for post_data in DEMO_POSTS:
+        user = demo_users_by_email[post_data['user_email']]
+        existing_post = Post.query.filter_by(
+            user_id=user.id,
+            content=post_data['content'],
+        ).first()
+        if existing_post is None:
+            db.session.add(Post(user_id=user.id, content=post_data['content']))
 
     db.session.commit()
 
