@@ -22,17 +22,19 @@ function HomeContent() {
           onSectionChange={setActiveSection}
         />
         {activeSection ? (
-          <main className="sectionWorkspace" aria-label={`${activeSection} section`}>
+          <main
+            className="sectionWorkspace homeContentArea"
+            aria-label={`${activeSection} section`}>
             <h1 className="sectionWorkspaceTitle">{activeSection}</h1>
           </main>
         ) : (
-          <main className="flex">
-          <div className="midContainer">
-            <PostTipes />
-            <WritePost userName={username} />
-            <Post_Cards />
-          </div>
-          <RightSide />
+          <main className="homeContentArea">
+            <div className="midContainer">
+              <PostTipes />
+              <WritePost userName={username} />
+              <Post_Cards />
+            </div>
+            <RightSide />
           </main>
         )}
     </div>

@@ -59,9 +59,12 @@ test("sidebar sections replace the feed with a centered workspace label", async 
 
   assert.match(home, /useState<SidebarSection>\(null\)/);
   assert.match(home, /activeSection\s*\?/);
-  assert.match(home, /sectionWorkspace/);
+  assert.match(home, /sectionWorkspace homeContentArea/);
+  assert.match(home, /main className="homeContentArea"/);
   assert.match(home, /\{activeSection\}/);
-  assert.match(styles, /\.sectionWorkspace\s*\{[^}]*flex:\s*1/s);
+  assert.match(styles, /\.homeContentArea\s*\{[^}]*width:\s*978px/s);
+  assert.match(styles, /\.homeContentArea\s*\{[^}]*flex:\s*0 0 978px/s);
+  assert.doesNotMatch(styles, /\.sectionWorkspace\s*\{[^}]*flex:\s*1/s);
   assert.match(styles, /\.sectionWorkspace\s*\{[^}]*align-items:\s*center/s);
   assert.match(styles, /\.sectionWorkspace\s*\{[^}]*justify-content:\s*center/s);
 });
