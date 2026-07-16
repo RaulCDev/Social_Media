@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { Avatar } from "@nextui-org/react";
 import {
   IconSettings,
@@ -25,12 +25,27 @@ import { toast } from "react-toastify";
 import { apiFetch } from "@/lib/api-client";
 import { useSessionMutation } from "@/components/AuthProvider";
 
+export type SidebarSection =
+  | "Search"
+  | "Notifications"
+  | "Messages"
+  | "Lists"
+  | "Premium"
+  | "Profile"
+  | "Bookmarks"
+  | "Communities"
+  | null;
+
 export default function LeftSide({
   userFullName,
   userName,
+  activeSection = null,
+  onSectionChange = () => undefined,
 }: {
   userFullName: string;
   userName: string;
+  activeSection?: SidebarSection;
+  onSectionChange?: (section: SidebarSection) => void;
 }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isWriteTextOpen, setIsWriteTextOpen] = useState(false);
@@ -110,16 +125,20 @@ export default function LeftSide({
     };
   }, []);
 
-  const buttons = [
-    { icon: <IconHome className="leftButtonssvg" />, text: "Home" },
-    { icon: <IconSearch className="leftButtonssvg" />, text: "Search" },
-    { icon: <IconBell className="leftButtonssvg" />, text: "Notifications" },
-    { icon: <IconMail className="leftButtonssvg" />, text: "Messages" },
-    { icon: <IconNotes className="leftButtonssvg" />, text: "Lists" },
-    { icon: <IconBrandX className="leftButtonssvg" />, text: "Premium" },
-    { icon: <IconUser className="leftButtonssvg" />, text: "Profile" },
-    { icon: <IconBookmark className="leftButtonssvg" />, text: "Bookmarks" },
-    { icon: <IconUsers className="leftButtonssvg" />, text: "Communities" },
+  const buttons: Array<{
+    icon: ReactNode;
+    text: string;
+    section: SidebarSection;
+  }> = [
+    { icon: <IconHome className="leftButtonssvg" />, text: "Home", section: null },
+    { icon: <IconSearch className="leftButtonssvg" />, text: "Search", section: "Search" },
+    { icon: <IconBell className="leftButtonssvg" />, text: "Notifications", section: "Notifications" },
+    { icon: <IconMail className="leftButtonssvg" />, text: "Messages", section: "Messages" },
+    { icon: <IconNotes className="leftButtonssvg" />, text: "Lists", section: "Lists" },
+    { icon: <IconBrandX className="leftButtonssvg" />, text: "Premium", section: "Premium" },
+    { icon: <IconUser className="leftButtonssvg" />, text: "Profile", section: "Profile" },
+    { icon: <IconBookmark className="leftButtonssvg" />, text: "Bookmarks", section: "Bookmarks" },
+    { icon: <IconUsers className="leftButtonssvg" />, text: "Communities", section: "Communities" },
   ];
 
   const altButtons = [
@@ -160,7 +179,13 @@ export default function LeftSide({
           </button>
         </div>
         {buttons.map((button, index) => (
-          <button key={index} className="leftButtons rounded-full">
+          <button
+            key={index}
+            className={`leftButtons rounded-full ${
+              activeSection === button.section ? "leftButtonActive" : ""
+            }`}
+            aria-current={activeSection === button.section ? "page" : undefined}
+            onClick={() => onSectionChange(button.section)}>
             {button.icon}
             <span className="buttontext">{button.text}</span>
           </button>

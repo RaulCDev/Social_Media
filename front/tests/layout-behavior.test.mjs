@@ -38,3 +38,30 @@ test("the right rail scroll follows measured content instead of a fixed offset",
   assert.doesNotMatch(hook, /translate3d/);
   assert.doesNotMatch(hook, /500/);
 });
+
+test("sidebar sections replace the feed with a centered workspace label", async () => {
+  const home = await source("src/app/home/page.tsx");
+  const leftSide = await source("src/app/components/LeftSide.tsx");
+  const styles = await source("src/app/style/globals.css");
+
+  for (const section of [
+    "Search",
+    "Notifications",
+    "Messages",
+    "Lists",
+    "Premium",
+    "Profile",
+    "Bookmarks",
+    "Communities",
+  ]) {
+    assert.match(leftSide, new RegExp(`section:\\s*["']${section}["']`));
+  }
+
+  assert.match(home, /useState<SidebarSection>\(null\)/);
+  assert.match(home, /activeSection\s*\?/);
+  assert.match(home, /sectionWorkspace/);
+  assert.match(home, /\{activeSection\}/);
+  assert.match(styles, /\.sectionWorkspace\s*\{[^}]*flex:\s*1/s);
+  assert.match(styles, /\.sectionWorkspace\s*\{[^}]*align-items:\s*center/s);
+  assert.match(styles, /\.sectionWorkspace\s*\{[^}]*justify-content:\s*center/s);
+});
