@@ -94,9 +94,9 @@
 }
 
 .leftButtonssvg {
-  margin-top: -5px;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
 }
 
 .leftButtons:hover {
@@ -130,6 +130,8 @@
 .rightSide{
   display: flex;
   flex-direction: column;
+  align-self: stretch;
+  width: 350px;
   justify-content: left;
   top: 0px;
   right: 0px;
@@ -142,12 +144,14 @@
   padding: 0%;
   margin: 0px;
   top: 0;
-  z-index: 1;
+  z-index: 3;
+  background-color: #000;
 }
 
 .bigTextRight{
   font-weight: bold;
-  font-size: larger;
+  font-size: 1.25rem;
+  line-height: 1.5rem;
   padding-top: 8px;
   padding-right: 10px;
   padding-bottom: 10px;
@@ -156,7 +160,8 @@
 
 .smallTextRight{
   font-weight: normal;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
+  line-height: 1.25rem;
   padding-right: 10px;
   padding-bottom: 10px;
   padding-left: 1rem;
@@ -200,7 +205,23 @@
 }
 
 .rightContent{
+  --right-rail-height: 100vh;
   position: sticky;
+  top: min(56px, calc(100vh - var(--right-rail-height) - 12px));
+  align-self: flex-start;
+}
+
+.rightUserName,
+.trendName {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.25rem;
+}
+
+.rightUserHandle,
+.trendMeta {
+  font-size: 0.875rem;
+  line-height: 1.125rem;
 }
 
 .rightProfileUser{
@@ -247,6 +268,10 @@
   font-size: 20px;
 }
 
+.moreMenuAnchor {
+  position: relative;
+}
+
 .overlay {
   position: fixed;
   top: 0;
@@ -264,14 +289,25 @@
 
 .dropdown {
   position: absolute;
-  top: 50px;
-  right: 0;
-  width: 200px;
+  bottom: calc(100% + 8px);
+  left: 0;
+  width: 250px;
   background-color: #000000;
   border: 1px solid #ccc;
   border-radius: 4px;
   overflow: hidden;
-  z-index: 49;
+  z-index: 50;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.dropdown .leftButtonssvg {
+  width: 24px;
+  height: 24px;
+}
+
+.dropdown .buttontext {
+  font-size: 1rem;
+  line-height: 1.25rem;
 }
 
 .dropdown-comment {
@@ -385,4 +421,36 @@
 
 p, h1{
   color: #fff;
+}
+
+.postAvatar {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+}
+
+.postAuthorName {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.25rem;
+}
+
+.postAuthorHandle {
+  font-size: 0.9375rem;
+  line-height: 1.25rem;
+}
+
+.postContent {
+  font-size: 0.9375rem;
+  line-height: 1.25rem;
+}
+
+.postActionIcon {
+  width: 19px;
+  height: 19px;
+}
+
+.postActionCount {
+  font-size: 0.875rem;
+  line-height: 1.125rem;
 }

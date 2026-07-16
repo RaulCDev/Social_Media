@@ -120,8 +120,8 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amo
   return (
     <div className="flex w-full">
       <button className='postIcons rounded-full flex items-center space-x-1' onClick={e => { e.preventDefault(); handleCommentButtonClick();}}>
-          <IconMessageCircle className='w-4 h-4' />
-          <span>{comments_amount}</span>
+          <IconMessageCircle className="postActionIcon" />
+          <span className="postActionCount">{comments_amount}</span>
       </button>
       {isDropdownOpen && <div className="overlay" />}
       {isDropdownOpen && (
@@ -130,20 +130,20 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amo
         </div>
       )}
       <button className="postIcons rounded-full flex items-center space-x-1">
-        <IconRepeat className="w-4 h-4" /><span>0</span>
+        <IconRepeat className="postActionIcon" /><span className="postActionCount">0</span>
       </button>
       <button className="postIconsHeart rounded-full flex items-center space-x-1" onClick={e => { e.preventDefault(); handleLike();}}>
-        { isHeartFilled ? <IconHeartFilled className="w-4 h-4" /> : <IconHeart className="w-4 h-4" />}<span>{likesAmount}</span>
+        { isHeartFilled ? <IconHeartFilled className="postActionIcon" /> : <IconHeart className="postActionIcon" />}<span className="postActionCount">{likesAmount}</span>
       </button>
       <button className="postIcons rounded-full flex items-center space-x-1">
-        <IconEye className="w-4 h-4" /><span>{views_amount}</span>
+        <IconEye className="postActionIcon" /><span className="postActionCount">{views_amount}</span>
       </button>
       <div className="flex items-center ml-auto">
         <button className="postIcons rounded-full flex items-center space-x-1">
-          <IconShare2 className="w-4 h-4" />
+          <IconShare2 className="postActionIcon" />
         </button>
         <button className="postIcons rounded-full">
-          <IconBookmark className="w-4 h-4" />
+          <IconBookmark className="postActionIcon" />
         </button>
       </div>
     </div>

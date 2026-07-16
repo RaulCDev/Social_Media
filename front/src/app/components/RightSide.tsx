@@ -21,10 +21,9 @@ type UserRecommendation = {
 
 export default function RightSide() {
   const rightContentRef = useRef<HTMLDivElement>(null);
-  const rightMarginRef = useRef<HTMLDivElement>(null);
   const [trends, setTrends] = useState<Trend[]>([]);
   const [usersToFollow, setUsersToFollow] = useState<UserRecommendation[]>([]);
-  useWindowScroll(rightContentRef, rightMarginRef);
+  useWindowScroll(rightContentRef);
 
   useEffect(() => {
     const fetchTrendsData = async () => {
@@ -66,11 +65,7 @@ export default function RightSide() {
             <IconSearch className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
           }></Input>
       </div>
-      <div id="marginRight" ref={rightMarginRef}></div>
-      <div
-        className="rightContent"
-        ref={rightContentRef}
-        style={{ bottom: "-500px" }}>
+      <div className="rightContent" ref={rightContentRef}>
         <Card className="w-[350px] mt-3 mb-2">
           <div className="rightBoxes">
             <p className="bigTextRight">Subscribe to Premium</p>
@@ -93,10 +88,10 @@ export default function RightSide() {
                 <button className="rightProfileUser">
                   <Avatar radius="full" size="md" src={user.src} />
                   <div className="flex flex-col gap-1 items-start justify-center">
-                    <h4 className="text-small font-semibold leading-none text-default-600">
+                    <h4 className="rightUserName text-default-600">
                       {user.name}
                     </h4>
-                    <h5 className="text-small tracking-tight text-default-400">
+                    <h5 className="rightUserHandle text-default-400">
                       {user.username}
                     </h5>
                   </div>
@@ -117,7 +112,7 @@ export default function RightSide() {
                 <button className="w-full">
                   <div className="rightTrends">
                     <div className="flex items-center gap-2">
-                      <h5 className="text-small tracking-tight text-default-400">
+                      <h5 className="trendMeta text-default-400">
                         {item.number} · {item.category && `${item.category} ·`}{" "}
                         Trending
                       </h5>
@@ -126,10 +121,10 @@ export default function RightSide() {
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
-                      <h1>{item.name}</h1>
+                      <h1 className="trendName">{item.name}</h1>
                     </div>
                     <div className="flex items-center gap-2">
-                      <h5 className="text-small tracking-tight text-default-400">
+                      <h5 className="trendMeta text-default-400">
                         {item.posts} posts
                       </h5>
                     </div>

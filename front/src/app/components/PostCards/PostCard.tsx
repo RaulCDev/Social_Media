@@ -22,16 +22,16 @@ const Post_Card: React.FC<PostCardData> = ({ id, userFullName, userName, avatarU
           <CardHeader className="cardHeader">
             <div className="flex gap-x-2">
               <Link href={`/${userName}`}>
-                <Avatar radius="full" size="md" src={`https://github.com/${userName}.png`} />
+                <Avatar className="postAvatar" radius="full" src={`https://github.com/${userName}.png`} />
               </Link>
               <div className="flex flex-col gap-1 items-start justify-center">
-                <h4 className="text-small font-semibold leading-none text-default-600">{userFullName}</h4>
-                <h5 className="text-small tracking-tight text-default-400">@{userName}</h5>
+                <h4 className="postAuthorName text-default-600">{userFullName}</h4>
+                <h5 className="postAuthorHandle text-default-400">@{userName}</h5>
               </div>
             </div>
           </CardHeader>
-          <CardBody className="px-3 py-0 text-xs text-white bg-transparent">
-            <p>
+          <CardBody className="px-3 py-0 text-white bg-transparent">
+            <p className="postContent">
               {content}
             </p>
           </CardBody>

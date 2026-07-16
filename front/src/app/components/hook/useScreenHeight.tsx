@@ -1,54 +1,24 @@
-import { useRef, useEffect, useState  } from 'react';
+import { useEffect } from "react";
 
-const useWindowScroll = (contentRef: React.RefObject<HTMLDivElement>, rightMarginRef: React.RefObject<HTMLDivElement>) => {
-  const [diference, setDiference] = useState(0);
-
-  const windowRef = useRef<Window | null>(null);
-  const lastScrollYRef = useRef(0);
-
+const useWindowScroll = (contentRef: React.RefObject<HTMLDivElement>) => {
   useEffect(() => {
-    windowRef.current = window;
-
-    const handleScroll = () => {
-      const currentWindow = windowRef.current;
+    const updateHeight = () => {
       const content = contentRef.current;
-      const rightMargin = rightMarginRef.current;
-
-      if (!currentWindow || !content || !rightMargin) {
-        return;
-      }
-
-      const currentScrollY = currentWindow.scrollY;
-      if(currentScrollY > lastScrollYRef.current) {
-        // Down
-        if(diference < 500){
-          setDiference((diference) => diference + (currentScrollY - lastScrollYRef.current));
-          console.log(diference);
-        }
-        content.style.top = '-500px';
-        content.style.removeProperty('bottom');
-        rightMargin.style.setProperty('margin-top', '15px');
-      } else {
-        // Up
-        content.style.removeProperty('top');
-        rightMargin.style.setProperty('margin-top', `${currentScrollY - diference}px`);
-        if(diference  > 0){
-          content.style.bottom = '-500px - ';
-          setDiference((diference) => diference - (currentScrollY - lastScrollYRef.current));
-          console.log(diference);
-        }
-      }
-
-      lastScrollYRef.current = currentScrollY;
+      if (!content) return;
+      content.style.setProperty(
+        "--right-rail-height",
+        `${content.scrollHeight}px`,
+      );
     };
-    windowRef.current.addEventListener('scroll', handleScroll);
+
+    const resizeObserver = new ResizeObserver(updateHeight);
+    if (contentRef.current) resizeObserver.observe(contentRef.current);
+    updateHeight();
 
     return () => {
-      windowRef.current?.removeEventListener('scroll', handleScroll);
+      resizeObserver.disconnect();
     };
-  }, []);
-
-  return;
+  }, [contentRef]);
 };
 
 export default useWindowScroll;

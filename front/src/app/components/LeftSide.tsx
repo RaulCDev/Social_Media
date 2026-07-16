@@ -165,23 +165,25 @@ export default function LeftSide({
             <span className="buttontext">{button.text}</span>
           </button>
         ))}
-        <button onClick={handleDropdown} className="leftButtons rounded-full">
-          <IconDotsCircleHorizontal className="leftButtonssvg" />
-          <span className="buttontext">More</span>
-        </button>
-        {dropdownOpen && <div className="overlay" />}
-        {dropdownOpen && (
-          <div className="dropdown" id="dropdown">
-            <div className="dropdown-content">
-              {altButtons.map((button, index) => (
-                <button key={index} className="leftButtons rounded-full">
-                  {button.icon}
-                  <span className="buttontext">{button.text}</span>
-                </button>
-              ))}
+        <div className="moreMenuAnchor">
+          <button onClick={handleDropdown} className="leftButtons rounded-full">
+            <IconDotsCircleHorizontal className="leftButtonssvg" />
+            <span className="buttontext">More</span>
+          </button>
+          {dropdownOpen && <div className="overlay" />}
+          {dropdownOpen && (
+            <div className="dropdown" id="dropdown">
+              <div className="dropdown-content">
+                {altButtons.map((button, index) => (
+                  <button key={index} className="leftButtons rounded-full">
+                    {button.icon}
+                    <span className="buttontext">{button.text}</span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
         <button
           className="leftPostButton rounded-full"
           onClick={handleWriteTextButtonClick}>
