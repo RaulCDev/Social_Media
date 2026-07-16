@@ -2,6 +2,10 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+html {
+  scrollbar-gutter: stable;
+}
+
 .icons {
   gap: 10px;
   margin-top: 0px;

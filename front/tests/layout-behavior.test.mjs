@@ -67,4 +67,5 @@ test("sidebar sections replace the feed with a centered workspace label", async 
   assert.doesNotMatch(styles, /\.sectionWorkspace\s*\{[^}]*flex:\s*1/s);
   assert.match(styles, /\.sectionWorkspace\s*\{[^}]*align-items:\s*center/s);
   assert.match(styles, /\.sectionWorkspace\s*\{[^}]*justify-content:\s*center/s);
+  assert.match(styles, /html\s*\{[^}]*scrollbar-gutter:\s*stable/s);
 });
