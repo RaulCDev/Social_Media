@@ -1,6 +1,8 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
-export const SESSION_EXPIRED_EVENT = "social-media:session-expired";
+export const apiUrl = (path: string) => `${API_BASE_URL}${path}`;
+
+export const SESSION_EXPIRED_EVENT = "social_media:session-expired";
 
 export class ApiError extends Error {
   constructor(
@@ -19,7 +21,7 @@ export async function apiFetch<T = unknown>(
   const headers = new Headers(init.headers);
   headers.set("Content-Type", "application/json");
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(apiUrl(path), {
     ...init,
     credentials: "include",
     headers,

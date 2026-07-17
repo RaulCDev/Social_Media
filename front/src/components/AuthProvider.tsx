@@ -14,19 +14,18 @@ import {
   SESSION_EXPIRED_EVENT,
   apiFetch,
 } from "@/lib/api-client";
-import { createSessionFlow, runSessionMutation } from "@/lib/session-flow.mjs";
+import { runAuthenticatedMutation } from "@/lib/session-flow.mjs";
 
 export type SessionUser = {
   id: number;
   username: string;
   accountname: string;
-  is_guest: boolean;
+  is_guest: false;
 };
 
 type AuthContextValue = {
   user: SessionUser | null;
   loading: boolean;
-  startGuestSession: (force?: boolean) => Promise<SessionUser>;
   logout: () => Promise<void>;
 };
 
@@ -36,67 +35,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const updateUser = useCallback((nextUser: SessionUser | null) => {
-    setUser(nextUser);
-  }, []);
-
-  const sessionFlow = useMemo(
-    () =>
-      createSessionFlow({
-        restoreSession: async () => {
-          try {
-            return await apiFetch<SessionUser>("/auth/me", { method: "GET" });
-          } catch (error) {
-            if (!(error instanceof ApiError && error.status === 401)) {
-              console.error("Unable to restore the session:", error);
-            }
-            return null;
-          }
-        },
-        createGuestSession: async () => {
-          const response = await apiFetch<{ user: SessionUser }>("/auth/guest", {
-            method: "POST",
-          });
-          return response.user;
-        },
-        onUserChange: updateUser,
-      }),
-    [updateUser],
-  );
-
-  const startGuestSession = useCallback(
-    (force = false) => sessionFlow.startGuestSession(force),
-    [sessionFlow],
-  );
-
   const logout = useCallback(async () => {
-    await sessionFlow.waitForRestoration();
-    await apiFetch("/auth/logout", { method: "POST" });
-    sessionFlow.clear();
-  }, [sessionFlow]);
+    try {
+      await apiFetch("/auth/logout", { method: "POST" });
+    } finally {
+      setUser(null);
+    }
+  }, []);
 
   useEffect(() => {
     let active = true;
 
-    sessionFlow
-      .restore()
+    apiFetch<SessionUser>("/auth/me", { method: "GET" })
+      .then((sessionUser) => {
+        if (active) setUser(sessionUser);
+      })
+      .catch((error) => {
+        if (!(error instanceof ApiError && error.status === 401)) {
+          console.error("Unable to restore the session:", error);
+        }
+        if (active) setUser(null);
+      })
       .finally(() => {
         if (active) setLoading(false);
       });
 
-    const clearExpiredSession = () => sessionFlow.clear();
+    const clearExpiredSession = () => setUser(null);
     window.addEventListener(SESSION_EXPIRED_EVENT, clearExpiredSession);
 
     return () => {
       active = false;
       window.removeEventListener(SESSION_EXPIRED_EVENT, clearExpiredSession);
     };
-  }, [sessionFlow]);
+  }, []);
 
-  const value = useMemo(
-    () => ({ user, loading, startGuestSession, logout }),
-    [user, loading, startGuestSession, logout],
-  );
+  const value = useMemo(() => ({ user, loading, logout }), [user, loading, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
@@ -110,17 +83,14 @@ export function useAuth() {
 }
 
 export function useSessionMutation() {
-  const { user, startGuestSession } = useAuth();
+  const { user } = useAuth();
 
   return useCallback(
     <T,>(request: () => Promise<T>) =>
-      runSessionMutation({
+      runAuthenticatedMutation({
         hasSession: Boolean(user),
-        startGuestSession,
         request,
-        isUnauthorized: (error: unknown) =>
-          error instanceof ApiError && error.status === 401,
       }) as Promise<T>,
-    [user, startGuestSession],
+    [user],
   );
 }

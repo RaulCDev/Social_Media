@@ -1,29 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Button } from "@nextui-org/button";
 import {
   IconBrandLinkedin,
   IconBrandGithub,
   IconBrandX,
 } from "@tabler/icons-react";
-import { useAuth } from "@/components/AuthProvider";
+import { apiUrl } from "@/lib/api-client";
 
 const LoginContent = () => {
   const [isStarting, setIsStarting] = useState(false);
-  const { startGuestSession } = useAuth();
-  const router = useRouter();
+  const [oauthError, setOauthError] = useState(false);
 
-  const handleLogin = async () => {
+  useEffect(() => {
+    setOauthError(new URLSearchParams(window.location.search).has("oauth_error"));
+  }, []);
+
+  const handleLogin = () => {
     setIsStarting(true);
-    try {
-      await startGuestSession(true);
-      router.push("/home");
-    } catch (error) {
-      console.error("Unable to start guest session:", error);
-      setIsStarting(false);
-    }
+    window.location.assign(apiUrl("/auth/github/start"));
   };
 
   return (
@@ -56,8 +52,14 @@ const LoginContent = () => {
             isDisabled={isStarting}
             isLoading={isStarting}
             className="text-xl">
-            LogIn (No credentials)
+            <span>LogIn with GitHub</span>
+            <IconBrandGithub className="h-5 w-5" aria-hidden="true" />
           </Button>
+          {oauthError ? (
+            <p role="alert" className="mt-3 text-sm text-red-400">
+              GitHub login could not be completed. Please try again.
+            </p>
+          ) : null}
         </div>
       </div>
     </>

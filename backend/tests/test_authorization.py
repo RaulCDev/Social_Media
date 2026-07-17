@@ -10,6 +10,7 @@ from sqlalchemy.orm import sessionmaker
 from app import _reserve_rate_limit_slot
 from SQL.database import db
 from SQL.models import Like, Post, RateLimitBucket, User
+from tests.auth_helpers import authenticated_client, create_github_user
 
 
 WRITE_ENDPOINTS = (
@@ -21,10 +22,8 @@ WRITE_ENDPOINTS = (
 
 
 def _authenticated_client(app):
-    client = app.test_client()
-    issued = client.post("/auth/guest")
-    assert issued.status_code == 201
-    return client, issued.json["user"]
+    client, identity, _token = authenticated_client(app)
+    return client, identity
 
 
 def _post(user_id, content="existing post", father_id=None):
@@ -56,15 +55,13 @@ def test_write_endpoints_reject_invalid_jwt(client, path, payload):
 
 @pytest.mark.parametrize(("path", "payload"), WRITE_ENDPOINTS)
 def test_write_endpoints_reject_expired_jwt(app, path, payload):
-    from seed_guest_policy import create_guest_user
-
-    user = create_guest_user()
+    user = create_github_user()
     now = datetime.now(timezone.utc)
     token = jwt.encode(
         {
             "sub": str(user.id),
             "jti": f"expired-{path}",
-            "is_guest": True,
+            "auth_provider": "github",
             "iat": now - timedelta(minutes=2),
             "exp": now - timedelta(minutes=1),
         },
@@ -72,11 +69,9 @@ def test_write_endpoints_reject_expired_jwt(app, path, payload):
         algorithm=app.config["JWT_ALGORITHM"],
     )
 
-    response = app.test_client().post(
-        path,
-        json=payload,
-        headers={"Authorization": f"Bearer {token}"},
-    )
+    client = app.test_client()
+    client.set_cookie("access_token", token)
+    response = client.post(path, json=payload)
 
     assert response.status_code == 401
     assert response.json == {"message": "Unauthorized"}

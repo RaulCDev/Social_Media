@@ -18,10 +18,10 @@ def test_unauthorized_origin_receives_no_cors_headers(client):
 
 def test_allowed_preflight_options_is_explicit_and_credentialed(client):
     response = client.options(
-        "/auth/guest",
+        "/auth/github/start",
         headers={
             "Origin": ALLOWED_ORIGIN,
-            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Method": "GET",
             "Access-Control-Request-Headers": "Content-Type",
         },
     )
@@ -29,15 +29,15 @@ def test_allowed_preflight_options_is_explicit_and_credentialed(client):
     assert response.status_code == 200
     assert response.headers["Access-Control-Allow-Origin"] == ALLOWED_ORIGIN
     assert response.headers["Access-Control-Allow-Credentials"] == "true"
-    assert "POST" in response.headers["Access-Control-Allow-Methods"]
+    assert "GET" in response.headers["Access-Control-Allow-Methods"]
 
 
 def test_unauthorized_preflight_options_receives_no_cors_headers(client):
     response = client.options(
-        "/auth/guest",
+        "/auth/github/start",
         headers={
             "Origin": UNAUTHORIZED_ORIGIN,
-            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Method": "GET",
         },
     )
 

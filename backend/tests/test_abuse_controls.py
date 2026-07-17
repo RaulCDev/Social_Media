@@ -4,13 +4,12 @@ import pytest
 
 from SQL.database import db
 from SQL.models import ContentReport, Post, User
+from tests.auth_helpers import authenticated_client
 
 
-def _guest(app, *, ip="127.0.0.1"):
-    client = app.test_client()
-    response = client.post("/auth/guest", environ_base={"REMOTE_ADDR": ip})
-    assert response.status_code == 201
-    return client, response.json["user"]
+def _github_user(app, *, ip="127.0.0.1"):
+    client, identity, _token = authenticated_client(app, ip=ip)
+    return client, identity
 
 
 def _post(user_id, content="root"):
@@ -20,16 +19,16 @@ def _post(user_id, content="root"):
     return post
 
 
-def test_guest_session_rate_limit_is_per_ip_and_configurable(app):
+def test_github_oauth_start_rate_limit_is_per_ip_and_configurable(app):
     app.config.update(SESSION_IP_RATE_LIMIT=1, SESSION_RATE_WINDOW_SECONDS=60)
 
-    first = app.test_client().post("/auth/guest", environ_base={"REMOTE_ADDR": "10.0.0.1"})
-    blocked = app.test_client().post("/auth/guest", environ_base={"REMOTE_ADDR": "10.0.0.1"})
-    other_ip = app.test_client().post("/auth/guest", environ_base={"REMOTE_ADDR": "10.0.0.2"})
+    first = app.test_client().get("/auth/github/start", environ_base={"REMOTE_ADDR": "10.0.0.1"})
+    blocked = app.test_client().get("/auth/github/start", environ_base={"REMOTE_ADDR": "10.0.0.1"})
+    other_ip = app.test_client().get("/auth/github/start", environ_base={"REMOTE_ADDR": "10.0.0.2"})
 
-    assert first.status_code == 201
+    assert first.status_code == 302
     assert blocked.status_code == 429
-    assert other_ip.status_code == 201
+    assert other_ip.status_code == 302
 
 
 @pytest.mark.parametrize(
@@ -40,12 +39,12 @@ def test_guest_session_rate_limit_is_per_ip_and_configurable(app):
         ("/like", {}, "LIKE_JTI_RATE_LIMIT", "LIKE_IP_RATE_LIMIT"),
     ),
 )
-def test_write_limits_use_jti_and_ip_without_merging_guest_identities(
+def test_write_limits_use_jti_and_ip_without_merging_github_identities(
     app, path, payload, jti_key, ip_key
 ):
     app.config.update({jti_key: 1, ip_key: 10, "WRITE_RATE_WINDOW_SECONDS": 60})
-    first_client, first = _guest(app, ip="10.1.0.1")
-    second_client, second = _guest(app, ip="10.1.0.1")
+    first_client, first = _github_user(app, ip="10.1.0.1")
+    second_client, second = _github_user(app, ip="10.1.0.1")
     root = _post(first["id"])
 
     first_payload = dict(payload)
@@ -64,7 +63,7 @@ def test_write_limits_use_jti_and_ip_without_merging_guest_identities(
 
 @pytest.mark.parametrize("status", ("suspended", "blocked"))
 def test_non_active_users_receive_403_for_authenticated_writes(app, status):
-    client, identity = _guest(app)
+    client, identity = _github_user(app)
     user = db.session.get(User, identity["id"])
     user.status = status
     db.session.commit()
@@ -76,8 +75,8 @@ def test_non_active_users_receive_403_for_authenticated_writes(app, status):
 
 
 def test_authenticated_users_can_report_and_only_moderators_can_hide(app):
-    reporter, reporter_identity = _guest(app)
-    moderator, moderator_identity = _guest(app)
+    reporter, reporter_identity = _github_user(app)
+    moderator, moderator_identity = _github_user(app)
     post = _post(reporter_identity["id"], "reported")
 
     report = reporter.post("/reports", json={"postId": post.id, "reason": "spam"})
@@ -101,9 +100,9 @@ def test_authenticated_users_can_report_and_only_moderators_can_hide(app):
 
 
 def test_only_moderators_can_change_user_status(app):
-    actor, actor_identity = _guest(app)
-    moderator, moderator_identity = _guest(app)
-    target_client, target_identity = _guest(app)
+    actor, actor_identity = _github_user(app)
+    moderator, moderator_identity = _github_user(app)
+    target_client, target_identity = _github_user(app)
 
     denied = actor.post(
         f"/moderation/users/{target_identity['id']}/status",
@@ -124,7 +123,7 @@ def test_only_moderators_can_change_user_status(app):
 
 
 def test_authenticated_request_updates_last_seen(app):
-    client, identity = _guest(app)
+    client, identity = _github_user(app)
     user = db.session.get(User, identity["id"])
     old = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=2)
     user.last_seen_at = old

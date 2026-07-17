@@ -1,4 +1,4 @@
-"""Anonymous session issuance and JWT validation helpers."""
+"""Application-session JWT issuance and validation helpers."""
 
 from datetime import datetime, timedelta, timezone
 from functools import wraps
@@ -9,21 +9,19 @@ from flask import current_app, g, jsonify, request
 
 from SQL.database import db
 from SQL.models import RevokedToken, User
-from seed_guest_policy import create_guest_user
 
 
 def _unauthorized():
     return jsonify({"message": "Unauthorized"}), 401
 
 
-def issue_guest_session():
-    """Create a guest identity and return it with a short-lived signed JWT."""
-    user = create_guest_user()
+def issue_user_session(user):
+    """Return a short-lived application JWT for a GitHub-linked user."""
     now = datetime.now(timezone.utc)
     payload = {
         "sub": str(user.id),
         "jti": str(uuid4()),
-        "is_guest": True,
+        "auth_provider": "github",
         "iat": now,
         "exp": now
         + timedelta(minutes=current_app.config["JWT_ACCESS_MINUTES"]),
@@ -33,7 +31,7 @@ def issue_guest_session():
         current_app.config["JWT_SECRET_KEY"],
         algorithm=current_app.config["JWT_ALGORITHM"],
     )
-    return user, token
+    return token
 
 
 def _token_from_request():
@@ -41,10 +39,6 @@ def _token_from_request():
     if token:
         return token
 
-    authorization = request.headers.get("Authorization", "")
-    parts = authorization.split()
-    if len(parts) == 2 and parts[0].lower() == "bearer":
-        return parts[1]
     return None
 
 
@@ -60,7 +54,7 @@ def decode_jwt_from_request():
             current_app.config["JWT_SECRET_KEY"],
             algorithms=[current_app.config["JWT_ALGORITHM"]],
             options={
-                "require": ["sub", "jti", "is_guest", "iat", "exp"],
+                "require": ["sub", "jti", "auth_provider", "iat", "exp"],
             },
         )
     except jwt.PyJWTError:
@@ -73,12 +67,12 @@ def decode_jwt_from_request():
         or not subject.isdigit()
         or not isinstance(jti, str)
         or not jti
-        or payload.get("is_guest") is not True
+        or payload.get("auth_provider") != "github"
     ):
         return _unauthorized()
 
     user = db.session.get(User, int(subject))
-    if user is None or user.is_guest is not True:
+    if user is None or user.is_guest is not False or user.github_id is None:
         return _unauthorized()
     if RevokedToken.query.filter_by(jti=jti).first() is not None:
         return _unauthorized()

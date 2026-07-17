@@ -41,7 +41,7 @@ def test_user_accepts_unique_github_identity(db_session):
 
 - [ ] **Step 2: Run the focused test and confirm it fails**
 
-Run: `docker compose -p social-media-oauth-test run --rm --no-deps -e DATABASE_URL=sqlite:///:memory: backend pytest -q tests/test_github_oauth.py`
+Run: `docker compose -p social_media_oauth_test run --rm --no-deps -e DATABASE_URL=sqlite:///:memory: backend pytest -q tests/test_github_oauth.py`
 
 Expected: failure because `github_id` is not a `User` field.
 
@@ -84,7 +84,7 @@ Mock `requests.post` and `requests.get`; cover state mismatch, access denied, mi
 
 - [ ] **Step 3: Run the OAuth tests and confirm endpoint-not-found failures**
 
-Run: `docker compose -p social-media-oauth-test run --rm --no-deps -e DATABASE_URL=sqlite:///:memory: backend pytest -q tests/test_github_oauth.py`
+Run: `docker compose -p social_media_oauth_test run --rm --no-deps -e DATABASE_URL=sqlite:///:memory: backend pytest -q tests/test_github_oauth.py`
 
 Expected: failures for missing routes and helpers.
 
@@ -102,7 +102,7 @@ Add `GET /auth/github/start` and `GET /auth/github/callback`; keep `/auth/me` an
 
 - [ ] **Step 7: Run authentication and authorization suites**
 
-Run: `docker compose -p social-media-oauth-test run --rm --no-deps -e DATABASE_URL=sqlite:///:memory: backend pytest -q`
+Run: `docker compose -p social_media_oauth_test run --rm --no-deps -e DATABASE_URL=sqlite:///:memory: backend pytest -q`
 
 Expected: all tests pass after replacing Guest-oriented test setup with a helper that creates a GitHub user and signs the same application cookie.
 
@@ -213,4 +213,3 @@ Expected: every command exits `0`.
 Run: `git status --short` and `git diff --check`.
 
 Expected: only OAuth, configuration, migration, tests, and this plan are changed; `.env`, caches, and generated artifacts are absent.
-

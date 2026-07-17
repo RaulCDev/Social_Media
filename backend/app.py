@@ -1,18 +1,26 @@
 from datetime import datetime, timedelta, timezone
 
-from flask import Flask, g, request, jsonify, make_response
+from flask import Flask, g, request, jsonify, make_response, redirect
 from flask_cors import CORS
 from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
 
 import os
+import hmac
 #Import SQL database models from models.py and the database itself from database.py
-from auth import issue_guest_session, require_jwt
+from auth import issue_user_session, require_jwt
 from demo_data import DEMO_POSTS, DEMO_USERS
 from moderation import require_moderator
 from rate_limits import reserve_session_ip, reserve_write
 from SQL.database import db
 from SQL.models import ContentReport, Like, Post, RateLimitBucket, RevokedToken, User
+from github_oauth import (
+    OAuthError,
+    build_authorization_request,
+    exchange_code,
+    fetch_github_identity,
+    upsert_github_user,
+)
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'change-me')
@@ -27,6 +35,12 @@ app.config['FRONTEND_ORIGINS'] = [
     if origin.strip()
 ]
 app.config['COOKIE_SECURE'] = os.getenv('COOKIE_SECURE', 'false').lower() in ('1', 'true', 'yes')
+app.config['GITHUB_CLIENT_ID'] = os.getenv('GITHUB_CLIENT_ID', '')
+app.config['GITHUB_CLIENT_SECRET'] = os.getenv('GITHUB_CLIENT_SECRET', '')
+app.config['GITHUB_CALLBACK_URL'] = os.getenv(
+    'GITHUB_CALLBACK_URL', 'http://localhost:5000/auth/github/callback'
+)
+app.config['FRONTEND_URL'] = os.getenv('FRONTEND_URL', 'http://localhost:3000').rstrip('/')
 app.config['POST_RATE_LIMIT'] = int(os.getenv('POST_RATE_LIMIT', '5'))
 app.config['POST_RATE_WINDOW_SECONDS'] = int(os.getenv('POST_RATE_WINDOW_SECONDS', '60'))
 app.config['COMMENT_RATE_LIMIT'] = int(os.getenv('COMMENT_RATE_LIMIT', '20'))
@@ -204,15 +218,85 @@ def _reserve_rate_limit(user_id, *, comments):
     )
 
 
-@app.route('/auth/guest', methods=['POST'])
-def guest_session():
-    if not app.config['JWT_SECRET_KEY']:
-        return jsonify({'message': 'Authentication is not configured'}), 503
+def _oauth_error_response(code):
+    response = redirect(f"{app.config['FRONTEND_URL']}/?oauth_error={code}")
+    return _clear_oauth_cookies(response)
+
+
+def _clear_oauth_cookies(response):
+    for name in ('oauth_state', 'oauth_code_verifier'):
+        response.delete_cookie(
+            name,
+            httponly=True,
+            secure=app.config['COOKIE_SECURE'],
+            samesite='Lax',
+            path='/auth/github',
+        )
+    return response
+
+
+@app.route('/auth/github/start', methods=['GET'])
+def github_start():
+    required = (
+        app.config['GITHUB_CLIENT_ID'],
+        app.config['GITHUB_CLIENT_SECRET'],
+        app.config['GITHUB_CALLBACK_URL'],
+        app.config['JWT_SECRET_KEY'],
+    )
+    if not all(required):
+        return jsonify({'message': 'GitHub authentication is not configured'}), 503
     if not reserve_session_ip():
         return jsonify({'message': 'Rate limit exceeded'}), 429
 
-    user, token = issue_guest_session()
-    response = make_response(jsonify({'user': _public_identity(user)}), 201)
+    authorization_url, state, verifier = build_authorization_request(
+        app.config['GITHUB_CLIENT_ID'], app.config['GITHUB_CALLBACK_URL']
+    )
+    response = redirect(authorization_url)
+    for name, value in (
+        ('oauth_state', state),
+        ('oauth_code_verifier', verifier),
+    ):
+        response.set_cookie(
+            name,
+            value,
+            max_age=600,
+            httponly=True,
+            secure=app.config['COOKIE_SECURE'],
+            samesite='Lax',
+            path='/auth/github',
+        )
+    return response
+
+
+@app.route('/auth/github/callback', methods=['GET'])
+def github_callback():
+    if request.args.get('error'):
+        return _oauth_error_response('access_denied')
+
+    code = request.args.get('code')
+    returned_state = request.args.get('state')
+    expected_state = request.cookies.get('oauth_state')
+    verifier = request.cookies.get('oauth_code_verifier')
+    if not all((code, returned_state, expected_state, verifier)):
+        return _oauth_error_response('invalid_request')
+    if not hmac.compare_digest(returned_state, expected_state):
+        return _oauth_error_response('invalid_state')
+
+    try:
+        github_token = exchange_code(
+            client_id=app.config['GITHUB_CLIENT_ID'],
+            client_secret=app.config['GITHUB_CLIENT_SECRET'],
+            callback_url=app.config['GITHUB_CALLBACK_URL'],
+            code=code,
+            verifier=verifier,
+        )
+        identity = fetch_github_identity(github_token)
+        user = upsert_github_user(identity)
+        token = issue_user_session(user)
+    except OAuthError as exc:
+        return _oauth_error_response(exc.code)
+
+    response = redirect(f"{app.config['FRONTEND_URL']}/home")
     response.set_cookie(
         'access_token',
         token,
@@ -222,7 +306,7 @@ def guest_session():
         samesite='Lax',
         path='/',
     )
-    return response
+    return _clear_oauth_cookies(response)
 
 
 @app.route('/auth/me', methods=['GET'])

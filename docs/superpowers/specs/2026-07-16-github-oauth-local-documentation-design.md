@@ -8,7 +8,7 @@ Rama de trabajo: `feature/github-oauth-documentation`
 
 ## 1. Objetivo
 
-Preparar Social Media como un proyecto de portfolio que cualquier persona con
+Preparar social_media como un proyecto de portfolio que cualquier persona con
 Docker y una cuenta de GitHub pueda ejecutar localmente. La aplicación no se
 desplegará públicamente.
 

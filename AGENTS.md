@@ -2,7 +2,7 @@
 
 ## Project overview
 
-This repository contains the original Social Media application recovered from
+This repository contains the original social_media application recovered from
 commit `9469ec49` (15 September 2025).
 
 The application has two source components:
@@ -18,7 +18,7 @@ migration.
 ## Repository layout
 
 ```text
-Social_Media/
+social_media/
 |-- backend/           Flask backend
 |-- front/             Next.js frontend
 |-- docker-compose.yml Local development services
@@ -51,7 +51,7 @@ npm run dev
 Run backend tests in the isolated development image:
 
 ```powershell
-docker compose -p social-media-anon-test run --rm --no-deps `
+docker compose -p social_media_test run --rm --no-deps `
   -e DATABASE_URL=sqlite:///:memory: `
   -e PYTHONDONTWRITEBYTECODE=1 backend pytest -q
 ```
@@ -77,19 +77,19 @@ at `http://localhost:5000`.
 ## Known project state
 
 - The frontend README is still the generic Create Next App document.
-- Active login is anonymous: `LogIn (No credentials)` creates a guest identity
-  through `POST /auth/guest` and receives JWT authentication only in an
-  `HttpOnly` cookie. Deleting that cookie makes the guest session unrecoverable.
+- Active login is GitHub OAuth: `LogIn with GitHub` starts the backend-owned
+  Authorization Code flow through `GET /auth/github/start`, with `state` and
+  PKCE. The application JWT is stored only in an `HttpOnly` cookie.
 - Public reads remain available without a session; writes require the shared
   JWT boundary and derive identity only from `flask.g.current_user`.
-- Active frontend API calls use the centralized cookie client. GitHub OAuth is
-  retained only inside disabled historical blocks headed
-  `HISTORICAL GITHUB LOGIN (DISABLED)`.
+- Active frontend API calls use the centralized cookie client. The frontend
+  never receives the GitHub token, application JWT, client secret, or OAuth
+  callback code.
 - Abuse controls include database-backed `jti` and IP limits, account states,
-  reports, moderator-only hiding, and a documented non-destructive guest
-  lifecycle policy. No automatic guest or content deletion is enabled.
-- MySQL migrations are additive files `001` through `004`; validate them only
-  against a temporary database or verified copy before production use.
+  reports, moderator-only hiding, and rejection of legacy Guest JWTs. Existing
+  Guest rows are retained non-destructively but cannot start sessions.
+- MySQL migrations are additive files `001` through `005`; Compose runs them
+  idempotently before the backend seed and startup.
 - Generated `.pyc` files exist in Git history and should be removed in a
   separate, explicitly approved cleanup.
 - Backend pytest, frontend contract tests/build, Compose validation, and

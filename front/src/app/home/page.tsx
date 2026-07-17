@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import WritePost from "../components/Write-Post";
 import PostTipes from "../components/PostTipes";
 import LeftSide, { type SidebarSection } from "../components/LeftSide";
@@ -9,9 +10,20 @@ import Post_Cards from "../components/PostCards/PostCards";
 import { useAuth } from "@/components/AuthProvider";
 
 function HomeContent() {
-  const { user } = useAuth();
-  const username = user?.username ?? "";
+  const { user, loading } = useAuth();
+  const router = useRouter();
   const [activeSection, setActiveSection] = useState<SidebarSection>(null);
+
+  useEffect(() => {
+    if (!loading && !user) router.replace("/");
+  }, [loading, router, user]);
+
+  if (loading) {
+    return <div className="bigLoginContainer" aria-busy="true" />;
+  }
+  if (!user) return null;
+
+  const username = user.username;
 
   return (
     <div className="homeShell">

@@ -4,7 +4,7 @@ param()
 $ErrorActionPreference = 'Stop'
 $OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::new()
 
-$containerName = "social-media-migration-002-$PID"
+$containerName = "social_media_migration_002_$PID"
 $migration = Get-Content -Raw (Join-Path $PSScriptRoot '002_unique_like_user_post.sql')
 $rateLimitMigration = Get-Content -Raw (Join-Path $PSScriptRoot '003_create_rate_limit_bucket.sql')
 $guestMigration = Get-Content -Raw (Join-Path $PSScriptRoot '001_add_guest_fields.sql')

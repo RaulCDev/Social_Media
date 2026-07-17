@@ -9,6 +9,10 @@ os.environ["JWT_ALGORITHM"] = "HS256"
 os.environ["JWT_ACCESS_MINUTES"] = "60"
 os.environ["FRONTEND_ORIGIN"] = "http://localhost:3000"
 os.environ["COOKIE_SECURE"] = "false"
+os.environ["GITHUB_CLIENT_ID"] = "test-client-id"
+os.environ["GITHUB_CLIENT_SECRET"] = "test-client-secret"
+os.environ["GITHUB_CALLBACK_URL"] = "http://localhost:5000/auth/github/callback"
+os.environ["FRONTEND_URL"] = "http://localhost:3000"
 
 from app import app as flask_app  # noqa: E402
 from SQL.database import db  # noqa: E402

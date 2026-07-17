@@ -1,3 +1,5 @@
+name: social_media
+
 services:
   db-mysql:
     image: mysql:8.0
@@ -19,6 +21,25 @@ services:
     networks:
       - socialnet
 
+  db-migrate:
+    image: mysql:8.0
+    env_file:
+      - .env
+    volumes:
+      - ./backend/migrations:/migrations:ro
+    depends_on:
+      db-mysql:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        for migration in /migrations/[0-9][0-9][0-9]_*.sql; do
+        MYSQL_PWD="$$MYSQL_PASSWORD" mysql -h db-mysql -u"$$MYSQL_USER"
+        "$$MYSQL_DATABASE" < "$$migration" > /dev/null || exit 1;
+        done
+    networks:
+      - socialnet
+
   backend:
     build:
       context: ./backend
@@ -36,9 +57,10 @@ services:
       JWT_ACCESS_MINUTES: ${JWT_ACCESS_MINUTES:-60}
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:3000}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
-      # HISTORICAL GITHUB LOGIN (DISABLED)
-      # GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
-      # GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      GITHUB_CALLBACK_URL: ${GITHUB_CALLBACK_URL:-http://localhost:5000/auth/github/callback}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
       API_PORT: ${API_PORT}
       PYTHONUNBUFFERED: "1"
       PYTHONDONTWRITEBYTECODE: "1"
@@ -53,6 +75,8 @@ services:
     depends_on:
       db-mysql:
         condition: service_healthy
+      db-migrate:
+        condition: service_completed_successfully
     networks:
       - socialnet
     develop:
@@ -82,10 +106,12 @@ services:
     volumes:
       - ./front:/usr/src/app
       - /usr/src/app/node_modules
+      - /usr/src/app/.next
     environment:
       NODE_ENV: ${NODE_ENV}
       WATCHPACK_POLLING: "true"
       CHOKIDAR_USEPOLLING: "true"
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:5000}
     depends_on:
       - db-mysql
     networks:
