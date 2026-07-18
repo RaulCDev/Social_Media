@@ -23,7 +23,7 @@ a backend-owned GitHub OAuth flow without replacing the original
 - An application JWT stored only in an `HttpOnly` cookie.
 - Database-backed write and session rate limits.
 - Reports, account states and moderator-only post hiding in the API.
-- Additive MySQL migrations and idempotent demonstration data.
+- Historical additive MySQL migrations and idempotent demonstration data.
 - Separate development and production Dockerfile stages.
 
 Some controls and screens are deliberately incomplete because this repository
@@ -128,9 +128,14 @@ From the repository root:
 docker compose up --build
 ```
 
-Compose starts MySQL, creates the base tables, applies migrations `001` through
-`005`, inserts demonstration data idempotently, and then starts the Flask and
-Next.js development servers.
+Compose starts MySQL, creates the current schema from the SQLAlchemy models,
+inserts demonstration data idempotently, and then starts the Flask and Next.js
+development servers.
+
+The supported workflow expects a new Compose database volume. The historical
+migrations in `backend/migrations/` are retained for reference, but Compose no
+longer applies them automatically. If the volume comes from an older revision,
+delete it before starting the application.
 
 Open <http://localhost:3000> and select **LogIn with GitHub**. The first login
 shows GitHub's authorization screen; after approval, GitHub redirects through
