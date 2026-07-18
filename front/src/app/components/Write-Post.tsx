@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import { Card, Avatar } from '@nextui-org/react';
 import Link from 'next/link';
 import { IconGif, IconPhoto, IconMoodSmile } from '@tabler/icons-react';
@@ -29,38 +29,37 @@ export default function WritePost({ userName }: Props) {
     };
 
     try {
-      const data = await runMutation(() =>
+      await runMutation(() =>
         apiFetch('/post', {
           method: 'POST',
           body: JSON.stringify(postData),
         }),
       );
-        console.log('Server response:', data);
-        toast.success('Post created successfully', {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Bounce,
-        });
-        setContent('');
+      toast.success('Post created successfully', {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+      setContent('');
     } catch (error) {
-        console.error('Error:', error);
-        toast.error('Something went wrong', {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Bounce,
-        });
+      console.error('Error:', error);
+      toast.error('Something went wrong', {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
     }
   };
 

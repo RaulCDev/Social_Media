@@ -26,6 +26,7 @@ const LoginContent = () => {
     <>
       <div className="bigLoginContainer">
         <div className="main_text">
+          <h1 className="loginTitle">Social Media</h1>
           <div className="loginIcons">
             <button className="iconButton">
               <IconBrandX className="myLinks" />

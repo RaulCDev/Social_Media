@@ -43,6 +43,7 @@ html {
 
 .loginIcons{
   display: flex;
+  justify-content: center;
   color: #fff;
 }
 
@@ -442,8 +443,20 @@ html {
 }
 
 .main_text{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-size: 40px;
   color: black;
+}
+
+.loginTitle {
+  margin: 0 0 32px;
+  color: #fff;
+  font-size: clamp(2.5rem, 7vw, 4rem);
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
 }
 
 .form {

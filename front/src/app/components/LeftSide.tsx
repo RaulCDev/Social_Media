@@ -57,7 +57,7 @@ export default function LeftSide({
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = () => {
       if (dropdownOpen) {
         setDropdownOpen(false);
       }
@@ -78,35 +78,34 @@ export default function LeftSide({
     };
 
     try {
-      const data = await runMutation(() =>
+      await runMutation(() =>
         apiFetch("/post", {
           method: "POST",
           body: JSON.stringify(postData),
         }),
       );
-        console.log("Server response:", data);
-        toast.success("Post created successfully", {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
+      toast.success("Post created successfully", {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     } catch (error) {
-        console.error("Error:", error);
-        toast.error("Something went wrong", {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
+      console.error("Error:", error);
+      toast.error("Something went wrong", {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     }
   };
 
@@ -144,7 +143,7 @@ export default function LeftSide({
   const altButtons = [
     {
       icon: <IconCashBanknote className="leftButtonssvg" />,
-      text: "MOnetization",
+      text: "Monetization",
     },
     { icon: <IconVip className="leftButtonssvg" />, text: "Pro" },
     { icon: <IconExternalLink className="leftButtonssvg" />, text: "Ads" },

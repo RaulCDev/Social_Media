@@ -15,7 +15,7 @@ export type PostCardData = {
   isLiked: boolean
 }
 
-const Post_Card: React.FC<PostCardData> = ({ id, userFullName, userName, avatarUrl, content, views_amount, likes_amount, comments_amount, isLiked}) => {
+const Post_Card: React.FC<PostCardData> = ({ id, userFullName, userName, content, views_amount, likes_amount, comments_amount, isLiked}) => {
   return (
     <Link href={`/${userName}/${id}`}>
         <Card className="flex items-center shadow-none bg-transparent hover:bg-slate-800 transition border-b rounded-none cursor-pointer border-white/20">
@@ -36,7 +36,7 @@ const Post_Card: React.FC<PostCardData> = ({ id, userFullName, userName, avatarU
             </p>
           </CardBody>
           <CardFooter className="gap-3">
-            <PostButtons id={id} views_amount={views_amount} likes_amount={likes_amount} comments_amount={comments_amount} is_liked={isLiked} userFullName={userFullName} userName={userName} avatarUrl={avatarUrl}/>
+            <PostButtons id={id} views_amount={views_amount} likes_amount={likes_amount} comments_amount={comments_amount} is_liked={isLiked} userName={userName}/>
           </CardFooter>
         </Card>
     </Link>

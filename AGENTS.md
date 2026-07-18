@@ -21,7 +21,9 @@ migration.
 social_media/
 |-- backend/           Flask backend
 |-- front/             Next.js frontend
+|-- docs/              Public project notes and known limitations
 |-- docker-compose.yml Local development services
+|-- README.md           Local setup and project overview
 |-- .env               Local secrets and configuration; never commit
 `-- AGENTS.md           Tool-independent agent instructions
 ```
@@ -76,7 +78,9 @@ at `http://localhost:5000`.
 
 ## Known project state
 
-- The frontend README is still the generic Create Next App document.
+- The root README documents the supported local workflow. The frontend README
+  points back to it, and `docs/KNOWN_LIMITATIONS.md` records deliberately
+  preserved historical defects and incomplete product areas.
 - Active login is GitHub OAuth: `LogIn with GitHub` starts the backend-owned
   Authorization Code flow through `GET /auth/github/start`, with `state` and
   PKCE. The application JWT is stored only in an `HttpOnly` cookie.

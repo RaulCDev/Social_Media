@@ -1,9 +1,6 @@
-import React, { type ChangeEvent, useState, useRef, useEffect  } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { IconHeart, IconMessageCircle, IconRepeat, IconHeartFilled, IconEye, IconBookmark, IconShare2 } from '@tabler/icons-react'
-import { Bounce, ToastContainer, toast } from 'react-toastify';
-import Link from 'next/link';
-import { Avatar } from '@nextui-org/react';
-import PostButtons from './buttons';
+import { toast } from 'react-toastify';
 import TextAreaPost from '../../TextArea-Post';
 import { apiFetch } from '@/lib/api-client';
 import { useSessionMutation } from '@/components/AuthProvider';
@@ -14,12 +11,10 @@ type Post_ButtonsProps = {
   likes_amount: number
   comments_amount: number
   is_liked: boolean
-  userFullName: string
   userName: string
-  avatarUrl: string
 }
 
-const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amount, comments_amount, is_liked, userFullName, userName, avatarUrl}) => {
+const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amount, comments_amount, is_liked, userName}) => {
   const [isHeartFilled, setIsHeartFilled] = useState(is_liked);
   const [likesAmount, setLikesAmount] = useState(likes_amount);
   const [content, setContent] = useState('');
@@ -52,17 +47,6 @@ const Post_Buttons: React.FC<Post_ButtonsProps> = ({ id, views_amount, likes_amo
       console.error(error);
     }
   }
-
-  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-      const textarea = event.target;
-      textarea.style.height = '54px';
-      textarea.style.height = `${textarea.scrollHeight}px`;
-      const inputValue = event.target.value;
-      if (inputValue.length <= 280) {
-        setContent(textarea.value);
-      }
-  };
-
 
   const handleCommentButtonClick = () => {
     setIsDropdownOpen(!isDropdownOpen);

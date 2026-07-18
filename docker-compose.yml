@@ -21,6 +21,26 @@ services:
     networks:
       - socialnet
 
+  db-bootstrap:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: /app
+    command: ["flask", "--app", "app", "init-db"]
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db-mysql:
+        condition: service_healthy
+    networks:
+      - socialnet
+
   db-migrate:
     image: mysql:8.0
     env_file:
@@ -30,6 +50,8 @@ services:
     depends_on:
       db-mysql:
         condition: service_healthy
+      db-bootstrap:
+        condition: service_completed_successfully
     entrypoint: ["/bin/sh", "-c"]
     command:
       - >-

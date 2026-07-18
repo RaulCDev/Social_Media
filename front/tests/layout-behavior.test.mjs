@@ -16,6 +16,43 @@ test("post typography and action icons use readable timeline sizes", async () =>
   assert.match(buttons, /postActionCount/);
 });
 
+test("maintained frontend sources contain no debug logs or visible menu typos", async () => {
+  const paths = [
+    "src/app/[userName]/page.tsx",
+    "src/app/components/LeftSide.tsx",
+    "src/app/components/PostCards/PostCards.tsx",
+    "src/app/components/RightSide.tsx",
+    "src/app/components/TextArea-Post.tsx",
+    "src/app/components/Write-Post.tsx",
+  ];
+  const contents = (await Promise.all(paths.map(source))).join("\n");
+
+  assert.doesNotMatch(contents, /console\.log\s*\(/);
+  assert.match(contents, /Monetization/);
+  assert.doesNotMatch(contents, /MOnetization/);
+  assert.match(contents, /placeholder="Search"/);
+  assert.match(contents, /Load more posts/);
+  assert.doesNotMatch(contents, /Buscar|Cargar más tarjetas/);
+});
+
+test("login social icons share the login action horizontal center", async () => {
+  const login = await source("src/app/page.tsx");
+  const styles = await source("src/app/style/globals.css");
+
+  assert.match(login, /className="loginIcons"/);
+  assert.match(styles, /\.loginIcons\s*\{[^}]*justify-content:\s*center/s);
+});
+
+test("login presents the responsive Social Media project title", async () => {
+  const login = await source("src/app/page.tsx");
+  const styles = await source("src/app/style/globals.css");
+
+  assert.match(login, /<h1 className="loginTitle">Social Media<\/h1>/);
+  assert.match(styles, /\.loginTitle\s*\{[^}]*font-size:\s*clamp\(2\.5rem,\s*7vw,\s*4rem\)/s);
+  assert.match(styles, /\.loginTitle\s*\{[^}]*font-weight:\s*700/s);
+  assert.match(styles, /\.main_text\s*\{[^}]*align-items:\s*center/s);
+});
+
 test("the More menu is positioned above its own button", async () => {
   const leftSide = await source("src/app/components/LeftSide.tsx");
   const styles = await source("src/app/style/globals.css");

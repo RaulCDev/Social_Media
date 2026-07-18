@@ -78,7 +78,6 @@ const TextAreaPost: React.FC<TextAreaPostProps> = ({
       })
         .then((data) => {
           setData(data);
-          console.log("Server response:", data);
         })
         .catch((error) => {
           console.error("Error:", error);

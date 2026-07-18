@@ -58,7 +58,7 @@ export default function RightSide() {
       <div className="searchBar">
         <Input
           className="max-w-[350px] bg-black pb-1 pt-1"
-          placeholder="Buscar"
+          placeholder="Search"
           variant="bordered"
           labelPlacement="outside"
           startContent={
