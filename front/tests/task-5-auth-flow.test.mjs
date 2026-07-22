@@ -31,11 +31,32 @@ test("AuthProvider restores and logs out without creating Guest sessions", async
 test("login button starts backend GitHub OAuth with the requested label and icon", async () => {
   const contents = activeSource(await source("src/app/page.tsx"));
 
-  assert.match(contents, /LogIn with GitHub/);
+  assert.match(contents, /Sign in with GitHub/);
+  assert.doesNotMatch(contents, /Continue with GitHub/);
   assert.match(contents, /IconBrandGithub/);
   assert.match(contents, /apiUrl\(["']\/auth\/github\/start["']\)/);
   assert.match(contents, /window\.location\.assign/);
   assert.doesNotMatch(contents, /auth\/guest|startGuestSession|No credentials/);
+});
+
+test("login translates OAuth error codes into actionable recovery messages", async () => {
+  const contents = activeSource(await source("src/app/page.tsx"));
+
+  assert.match(contents, /\.get\(["']oauth_error["']\)/);
+  assert.match(contents, /access_denied/);
+  assert.match(contents, /GitHub sign-in was cancelled\./);
+  assert.match(contents, /invalid_request/);
+  assert.match(contents, /invalid_state/);
+  assert.match(contents, /Your sign-in request expired\. Please try again\./);
+  assert.match(contents, /verified_email_required/);
+  assert.match(contents, /Verify an email address on GitHub, then try again\./);
+  assert.match(contents, /identity_conflict/);
+  assert.match(contents, /That email is already linked to another GitHub account\./);
+  assert.match(contents, /provider_unavailable/);
+  assert.match(contents, /token_exchange_failed/);
+  assert.match(contents, /invalid_provider_response/);
+  assert.match(contents, /GitHub is unavailable right now\. Please try again later\./);
+  assert.match(contents, /GitHub sign-in could not be completed\. Please try again\./);
 });
 
 test("home redirects unauthenticated visitors after session restoration", async () => {

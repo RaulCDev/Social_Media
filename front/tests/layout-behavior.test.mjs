@@ -35,22 +35,43 @@ test("maintained frontend sources contain no debug logs or visible menu typos", 
   assert.doesNotMatch(contents, /Buscar|Cargar más tarjetas/);
 });
 
-test("login social icons share the login action horizontal center", async () => {
+test("login uses semantic personal links and omits the unused X action", async () => {
   const login = await source("src/app/page.tsx");
-  const styles = await source("src/app/style/globals.css");
 
-  assert.match(login, /className="loginIcons"/);
-  assert.match(styles, /\.loginIcons\s*\{[^}]*justify-content:\s*center/s);
+  assert.match(login, /<main className="bigLoginContainer">/);
+  assert.match(login, /<section className="loginPanel"/);
+  assert.match(login, /className="loginButton"/);
+  assert.match(login, /<nav className="loginLinks"/);
+  assert.match(login, /href="https:\/\/www\.linkedin\.com\/in\/ra%C3%BAl-conde-rodr%C3%ADguez\/"/);
+  assert.match(login, /href="https:\/\/github\.com\/RaulCDev"/);
+  assert.equal((login.match(/target="_blank"/g) ?? []).length, 2);
+  assert.equal((login.match(/rel="noopener noreferrer"/g) ?? []).length, 2);
+  assert.match(login, /className="loginLinksDivider" aria-hidden="true"/);
+  assert.doesNotMatch(login, /IconBrandX/);
+  assert.doesNotMatch(login, /<button[^>]*>\s*<a/s);
 });
 
-test("login presents the responsive Social Media project title", async () => {
+test("login matches the approved centered responsive visual system", async () => {
   const login = await source("src/app/page.tsx");
   const styles = await source("src/app/style/globals.css");
 
-  assert.match(login, /<h1 className="loginTitle">Social Media<\/h1>/);
-  assert.match(styles, /\.loginTitle\s*\{[^}]*font-size:\s*clamp\(2\.5rem,\s*7vw,\s*4rem\)/s);
+  assert.match(login, /className="loginTitle">\s*Social Media\s*<\/h1>/);
+  assert.match(login, /className="loginErrorSlot"/);
+  assert.match(styles, /\.bigLoginContainer\s*\{[^}]*min-height:\s*100svh/s);
+  assert.match(styles, /\.bigLoginContainer\s*\{[^}]*background:\s*#07080b/s);
+  assert.match(styles, /\.loginPanel\s*\{[^}]*width:\s*min\(100%,\s*26\.75rem\)/s);
+  assert.match(styles, /\.loginTitle\s*\{[^}]*font-size:\s*clamp\(/s);
   assert.match(styles, /\.loginTitle\s*\{[^}]*font-weight:\s*700/s);
-  assert.match(styles, /\.main_text\s*\{[^}]*align-items:\s*center/s);
+  assert.match(styles, /\.loginButton\s*\{[^}]*background:\s*rgb\(1,\s*147,\s*89\)/s);
+  assert.match(styles, /\.loginButton\s*\{[^}]*box-shadow:[^}]*rgba\(1,\s*147,\s*89,/s);
+  assert.match(styles, /\.loginButton:hover\s*\{[^}]*background:\s*rgb\(2,\s*166,\s*100\)/s);
+  assert.match(styles, /\.loginButton:active\s*\{[^}]*background:\s*rgb\(1,\s*126,\s*76\)/s);
+  assert.match(styles, /\.loginButton:focus-visible,[^}]*outline:\s*3px solid #8ee8bd/s);
+  assert.match(styles, /\.loginErrorSlot\s*\{[^}]*min-height:/s);
+  assert.match(styles, /\.loginButton:focus-visible/);
+  assert.match(styles, /\.loginLink:focus-visible/);
+  assert.match(styles, /@media\s*\(max-width:\s*480px\)/);
+  assert.match(styles, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
 });
 
 test("the More menu is positioned above its own button", async () => {

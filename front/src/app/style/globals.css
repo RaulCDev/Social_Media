@@ -41,17 +41,153 @@ html {
 }
 
 
-.loginIcons{
-  display: flex;
-  justify-content: center;
-  color: #fff;
-}
-
 .bigLoginContainer{
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 2rem 1.5rem;
+  background: #07080b;
+}
+
+.loginPanel {
+  display: flex;
+  width: min(100%, 26.75rem);
+  flex-direction: column;
+  align-items: center;
+  transform: translateY(1.5rem);
+  color: #f7f8fb;
+}
+
+.loginTitle {
+  margin: 0 0 clamp(4rem, 8vh, 5.25rem);
+  color: #f7f8fb;
+  font-size: clamp(2.75rem, 6vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.loginButton {
+  display: inline-flex;
+  width: 100%;
+  min-height: 4.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.875rem;
+  background: rgb(1, 147, 89);
+  box-shadow: 0 0.75rem 2.5rem rgba(1, 147, 89, 0.18);
+  color: #fff;
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.2;
+  transition: background-color 160ms ease, box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.loginButton:hover {
+  background: rgb(2, 166, 100);
+  box-shadow: 0 1rem 3rem rgba(1, 147, 89, 0.28);
+  transform: translateY(-1px);
+}
+
+.loginButton:active {
+  background: rgb(1, 126, 76);
+  box-shadow: 0 0.5rem 1.5rem rgba(1, 147, 89, 0.2);
+  transform: translateY(1px);
+}
+
+.loginButton:focus-visible,
+.loginButton[data-focus-visible="true"] {
+  outline: 3px solid #8ee8bd;
+  outline-offset: 4px;
+}
+
+.loginButton[disabled],
+.loginButton[data-disabled="true"],
+.loginButton[data-loading="true"] {
+  cursor: wait;
+  opacity: 0.66;
+  transform: none;
+}
+
+.loginButtonIcon {
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: 0 0 auto;
+}
+
+.loginErrorSlot {
+  display: flex;
+  min-height: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+.loginError {
+  margin: 0;
+  color: #fda4af;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  text-align: center;
+}
+
+.loginLinks {
+  display: flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  margin-top: 1rem;
+  color: #aeb4c0;
+}
+
+.loginLink {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0 0.5rem;
+  border-radius: 0.5rem;
+  color: inherit;
+  font-size: 1.125rem;
+  line-height: 1;
+  text-decoration: none;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.loginLink:hover {
+  color: #f7f8fb;
+}
+
+.loginLink:active {
+  color: #d9deea;
+}
+
+.loginLink:focus-visible {
+  outline: 2px solid #8da9ff;
+  outline-offset: 2px;
+  color: #f7f8fb;
+}
+
+.loginLinkIcon {
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: 0 0 auto;
+}
+
+.loginLinksDivider {
+  width: 1px;
+  height: 1.75rem;
+  flex: 0 0 1px;
+  background: #3a3f49;
 }
 
 .midContainer{
@@ -442,23 +578,6 @@ html {
   margin-left: 90%;
 }
 
-.main_text{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 40px;
-  color: black;
-}
-
-.loginTitle {
-  margin: 0 0 32px;
-  color: #fff;
-  font-size: clamp(2.5rem, 7vw, 4rem);
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-}
-
 .form {
   display: flex;
   flex-direction: column;
@@ -500,4 +619,44 @@ p, h1{
 .postActionCount {
   font-size: 0.875rem;
   line-height: 1.125rem;
+}
+
+@media (max-width: 480px) {
+  .bigLoginContainer {
+    padding-inline: 1.25rem;
+  }
+
+  .loginPanel {
+    transform: none;
+  }
+
+  .loginTitle {
+    margin-bottom: 3.5rem;
+  }
+
+  .loginButton {
+    min-height: 4.25rem;
+  }
+
+  .loginLinks {
+    gap: 0.25rem;
+  }
+
+  .loginLink {
+    gap: 0.5rem;
+    padding-inline: 0.375rem;
+    font-size: 1rem;
+  }
+
+  .loginLinkIcon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loginButton,
+  .loginLink {
+    transition: none;
+  }
 }

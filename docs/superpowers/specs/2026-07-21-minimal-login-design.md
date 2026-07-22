@@ -31,15 +31,16 @@ content column. Generous negative space supplies most of the visual character.
 The hierarchy is:
 
 1. `Social Media` as a large, high-contrast heading.
-2. `Continue with GitHub` as the dominant action.
+2. `Sign in with GitHub` as the dominant action.
 3. LinkedIn and GitHub as smaller, muted external links separated by a quiet
    vertical divider.
 4. The OAuth error message directly below the login action when needed.
 
-The primary button uses a restrained blue treatment with white text and the
-GitHub icon. Its hover, active, loading, disabled, and keyboard-focus states
-remain clearly distinguishable. External links brighten on hover and expose a
-visible keyboard-focus state without competing with the login action.
+The primary button uses the interface's established green (`rgb(1, 147, 89)`)
+with white text and the GitHub icon. Its hover, active, loading, disabled, and
+keyboard-focus states remain clearly distinguishable within the same green
+family. External links brighten on hover and expose a visible keyboard-focus
+state without competing with the login action.
 
 Typography remains system-based so the change does not add a font dependency.
 Spacing, weight, line height, border radius, and muted colors provide the
@@ -69,10 +70,12 @@ already supplies the accessible name.
 
 ## Error Handling
 
-The current OAuth error condition is preserved. Its message appears in a
-reserved area beneath the primary action so showing the error does not cause a
-large layout shift. The error uses semantic `role="alert"` and sufficient color
-contrast against the dark background.
+The OAuth error condition is preserved. Its message appears in a reserved area
+beneath the primary action so showing the error does not cause a large layout
+shift. Known cancellation, expired-request, verified-email, identity-conflict,
+and provider failures receive specific actionable copy; unknown codes use a
+safe generic fallback. The error uses semantic `role="alert"` and sufficient
+color contrast against the dark background.
 
 ## Verification
 
@@ -85,4 +88,3 @@ Implementation is complete when:
 - lint and the production frontend build succeed;
 - a desktop and mobile visual check confirms the approved hierarchy, centered
   layout, focus visibility, and absence of the removed decorations.
-
