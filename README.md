@@ -1,5 +1,12 @@
 # Social Media
 
+<video controls width="100%">
+  <source src="docs/assets/social-media-demo.mp4" type="video/mp4">
+  Your browser does not support embedded video.
+</video>
+
+[Watch the application demo](docs/assets/social-media-demo.mp4)
+
 A local social-network application built as an early learning project with a
 Next.js frontend, a Flask API and MySQL. The repository is intentionally kept
 close to the original implementation so it can be read as a record of
