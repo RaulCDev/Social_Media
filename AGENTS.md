@@ -92,8 +92,10 @@ at `http://localhost:5000`.
 - Abuse controls include database-backed `jti` and IP limits, account states,
   reports, moderator-only hiding, and rejection of legacy Guest JWTs. Existing
   Guest rows are retained non-destructively but cannot start sessions.
-- MySQL migrations are additive files `001` through `005`; Compose runs them
-  idempotently before the backend seed and startup.
+- MySQL migrations are additive files `001` through `005` retained as
+  historical reference. Compose creates the current schema through
+  `seed-demo` and expects a new database volume instead of upgrading an old
+  one automatically.
 - Generated `.pyc` files exist in Git history and should be removed in a
   separate, explicitly approved cleanup.
 - Backend pytest, frontend contract tests/build, Compose validation, and

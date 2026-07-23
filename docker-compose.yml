@@ -21,47 +21,6 @@ services:
     networks:
       - socialnet
 
-  db-bootstrap:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-      target: development
-    env_file:
-      - .env
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-      PYTHONDONTWRITEBYTECODE: "1"
-      PYTHONPATH: /app
-    command: ["flask", "--app", "app", "init-db"]
-    volumes:
-      - ./backend:/app
-    depends_on:
-      db-mysql:
-        condition: service_healthy
-    networks:
-      - socialnet
-
-  db-migrate:
-    image: mysql:8.0
-    env_file:
-      - .env
-    volumes:
-      - ./backend/migrations:/migrations:ro
-    depends_on:
-      db-mysql:
-        condition: service_healthy
-      db-bootstrap:
-        condition: service_completed_successfully
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - >-
-        for migration in /migrations/[0-9][0-9][0-9]_*.sql; do
-        MYSQL_PWD="$$MYSQL_PASSWORD" mysql -h db-mysql -u"$$MYSQL_USER"
-        "$$MYSQL_DATABASE" < "$$migration" > /dev/null || exit 1;
-        done
-    networks:
-      - socialnet
-
   backend:
     build:
       context: ./backend
@@ -97,8 +56,6 @@ services:
     depends_on:
       db-mysql:
         condition: service_healthy
-      db-migrate:
-        condition: service_completed_successfully
     networks:
       - socialnet
     develop:
